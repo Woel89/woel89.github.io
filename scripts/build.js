@@ -170,7 +170,7 @@ function gamePageHTML(g, all) {
 
   <footer class="site-footer">
     <div class="container">
-      <p><a href="/">← Назад в каталог</a></p>
+      <p><a href="/">← Назад в каталог</a> · <a href="/my/">Разработчикам</a></p>
     </div>
   </footer>
 
