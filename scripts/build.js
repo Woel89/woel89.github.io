@@ -159,6 +159,8 @@ function gamePageHTML(g, all) {
         allowfullscreen loading="lazy"></iframe>
     </div>
 
+    <div id="ngf-ratings" data-slug="${esc(g.id)}"></div>
+
     <section class="game-meta" aria-label="Об игре">
       <p>${desc}</p>
       <p>Жанр: ${esc(g.category)} · Автор: ${esc(g.author || "NetGameForge")}</p>
@@ -175,6 +177,8 @@ function gamePageHTML(g, all) {
   </footer>
 
   <script src="/js/track.js"></script>
+  <script src="/js/ratings.js"></script>
+  <script src="/js/game-ratings.js"></script>
   <script>
     (function () {
       var slug = "${esc(g.id)}";

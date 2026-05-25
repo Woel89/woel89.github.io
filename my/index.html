@@ -106,8 +106,29 @@
         </form>
       </section>
     </section>
+
+    <!-- Модерация отзывов (отдельный вход по модер-токену) -->
+    <section id="mod-view" class="cab-card" aria-labelledby="mod-heading">
+      <h2 id="mod-heading">Модерация отзывов</h2>
+
+      <form id="mod-login-form" autocomplete="off">
+        <label class="cab-field">
+          <span>Модераторский токен (не GitHub PAT)</span>
+          <input type="password" id="mod-token-input" name="modToken" autocomplete="off" spellcheck="false" placeholder="модераторский токен">
+        </label>
+        <p class="cab-error" id="mod-error" role="alert" hidden></p>
+        <div class="cab-toolbar">
+          <button type="submit" class="cab-btn cab-btn--primary" id="mod-login-submit">Открыть очередь</button>
+          <button type="button" class="cab-btn cab-btn--ghost" id="mod-logout-btn" hidden>Сбросить токен</button>
+        </div>
+      </form>
+
+      <p class="cab-status" id="mod-status" role="status"></p>
+      <div id="mod-queue" class="cab-games"></div>
+    </section>
   </main>
 
   <script type="module" src="/my/cabinet.js"></script>
+  <script type="module" src="/my/moderation.js"></script>
 </body>
 </html>

@@ -317,3 +317,76 @@ section.shelf > h2 {
 .cab-tag--pop { background: var(--color-accent-2); color: #2a0411; }
 .cab-tag--pub { background: #1c2a12; color: var(--color-accent); }
 .cab-tag--draft { background: var(--color-surface-2); color: var(--color-text-muted); }
+
+/* ---------- Ratings: action-bar (FE-13) ---------- */
+.ngf-actionbar {
+  display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+  margin-block: 1rem;
+}
+.ngf-vote {
+  min-width: 44px; min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; line-height: 1;
+  background: var(--color-surface-2); color: var(--color-text);
+  border: 1px solid var(--color-border); border-radius: var(--radius);
+  cursor: pointer;
+}
+.ngf-vote.is-active {
+  background: var(--color-accent); border-color: var(--color-accent);
+}
+.ngf-vote.is-active[aria-label="Не нравится"] {
+  background: var(--color-accent-2); border-color: var(--color-accent-2);
+}
+.ngf-vote-summary { color: var(--color-text-muted); font-size: 0.95rem; }
+
+/* ---------- Ratings: reviews accordion (FE-14) ---------- */
+.ngf-reviews {
+  border: 1px solid var(--color-border); border-radius: var(--radius);
+  background: var(--color-surface); margin-block: 1rem;
+}
+.ngf-reviews-summary {
+  cursor: pointer; list-style: none;
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.85rem 1rem; min-height: 44px;
+  font-weight: 600;
+}
+.ngf-reviews-summary::-webkit-details-marker { display: none; }
+.ngf-reviews-count { color: var(--color-text-muted); font-weight: 400; }
+.ngf-reviews-panel { padding: 0 1rem 1rem; }
+
+.ngf-review-form { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+.ngf-field { display: block; }
+.ngf-field > span { display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: var(--color-text-muted); }
+.ngf-field input, .ngf-field textarea {
+  width: 100%; font: inherit;
+  background: var(--color-bg); color: var(--color-text);
+  border: 1px solid var(--color-border); border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+}
+.ngf-counter { font-size: 0.8rem; color: var(--color-text-muted); align-self: flex-end; }
+.ngf-btn {
+  font: inherit; font-weight: 600; min-height: 44px;
+  border-radius: var(--radius); padding: 0.6rem 1.1rem;
+  border: 1px solid var(--color-border); cursor: pointer; align-self: flex-start;
+}
+.ngf-btn:disabled { opacity: 0.6; cursor: default; }
+.ngf-btn--primary { background: var(--color-accent); color: #0d0f0e; border-color: var(--color-accent); }
+.ngf-form-msg { color: var(--color-accent-2); margin: 0.25rem 0; }
+
+.ngf-my-review { margin-bottom: 1rem; }
+.ngf-reject-note {
+  color: var(--color-text-muted); font-size: 0.9rem;
+  border: 1px solid var(--color-border); border-radius: 8px; padding: 0.6rem 0.8rem; margin: 0;
+}
+.ngf-chip {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
+  padding: 0.15rem 0.5rem; border-radius: 999px;
+}
+.ngf-chip--pending { background: #3a3413; color: #e6cf00; }
+
+.ngf-review-list { display: flex; flex-direction: column; gap: 0.85rem; }
+.ngf-review { border-top: 1px solid var(--color-border); padding-top: 0.85rem; }
+.ngf-review-head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+.ngf-review-date { color: var(--color-text-muted); font-size: 0.82rem; }
+.ngf-review-text { margin: 0.3rem 0 0; white-space: pre-wrap; }
+.ngf-reviews-empty { color: var(--color-text-muted); }
