@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Node / сборка (когда появится)
+node_modules/
+dist/
+.cache/
+*.log
+
+# Секреты и локальная конфигурация
+.env
+.env.*
+!.env.example
+*.local
+secrets/

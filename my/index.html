@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Кабинет владельца — NetGameForge</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/my/">
+        <img src="/assets/logo/site-logo.png" alt="NetGameForge" width="1254" height="1254" decoding="async">
+        <span>Кабинет</span>
+      </a>
+      <button type="button" id="logout-btn" class="cab-btn cab-btn--ghost" hidden style="margin-left:auto">Выйти</button>
+    </div>
+  </header>
+
+  <main class="container cab">
+    <!-- Экран входа -->
+    <section id="login-view" class="cab-card" hidden aria-labelledby="login-heading">
+      <h1 id="login-heading">Вход в кабинет</h1>
+      <p class="cab-muted">Вставьте свой fine-grained Personal Access Token. Токен хранится только в этой вкладке и стирается при закрытии.</p>
+      <form id="login-form" autocomplete="off">
+        <label class="cab-field">
+          <span>Personal Access Token</span>
+          <input type="password" id="token-input" name="token" autocomplete="off" spellcheck="false" required placeholder="github_pat_…">
+        </label>
+        <p class="cab-error" id="login-error" role="alert" hidden></p>
+        <button type="submit" class="cab-btn cab-btn--primary" id="login-submit">Войти</button>
+      </form>
+    </section>
+
+    <!-- Кабинет -->
+    <section id="cabinet-view" hidden>
+      <div class="cab-toolbar">
+        <h1>Мои игры</h1>
+        <button type="button" id="new-game-btn" class="cab-btn cab-btn--primary">+ Новая игра</button>
+      </div>
+
+      <p class="cab-status" id="list-status" role="status"></p>
+      <div id="games-list" class="cab-games"></div>
+
+      <!-- Форма игры -->
+      <section id="form-view" class="cab-card" hidden aria-labelledby="form-heading">
+        <h2 id="form-heading">Игра</h2>
+        <form id="game-form" autocomplete="off">
+          <label class="cab-field">
+            <span>ID (slug, только a-z 0-9 -)</span>
+            <input type="text" id="f-id" name="id" required pattern="[a-z0-9-]+">
+          </label>
+          <label class="cab-field">
+            <span>Название</span>
+            <input type="text" id="f-title" name="title" required>
+          </label>
+          <label class="cab-field">
+            <span>Описание</span>
+            <textarea id="f-description" name="description" rows="3"></textarea>
+          </label>
+          <label class="cab-field">
+            <span>URL обложки</span>
+            <input type="url" id="f-coverUrl" name="coverUrl" placeholder="https://…">
+          </label>
+          <label class="cab-field">
+            <span>Теги (через запятую)</span>
+            <input type="text" id="f-tags" name="tags" placeholder="аркада, головоломка">
+          </label>
+          <label class="cab-field">
+            <span>Категория</span>
+            <input type="text" id="f-category" name="category">
+          </label>
+          <label class="cab-field">
+            <span>Ориентация</span>
+            <select id="f-orientation" name="orientation">
+              <option value="landscape">landscape (горизонтальная)</option>
+              <option value="portrait">portrait (вертикальная)</option>
+            </select>
+          </label>
+          <label class="cab-field">
+            <span>Автор</span>
+            <input type="text" id="f-author" name="author">
+          </label>
+
+          <fieldset class="cab-flags">
+            <legend>Флаги</legend>
+            <label><input type="checkbox" id="f-isNew" name="isNew"> Новинка</label>
+            <label><input type="checkbox" id="f-isPopular" name="isPopular"> Популярное</label>
+            <label><input type="checkbox" id="f-isPublished" name="isPublished"> Опубликовано</label>
+          </fieldset>
+
+          <label class="cab-field">
+            <span>Билд (.zip) — необязательно при правке метаданных</span>
+            <input type="file" id="f-zip" name="zip" accept=".zip,application/zip">
+          </label>
+
+          <p class="cab-status" id="form-status" role="status"></p>
+          <p class="cab-error" id="form-error" role="alert" hidden></p>
+          <div class="cab-warnings" id="form-warnings" hidden></div>
+
+          <div class="cab-toolbar">
+            <button type="submit" class="cab-btn cab-btn--primary" id="publish-btn">Опубликовать</button>
+            <button type="button" class="cab-btn cab-btn--ghost" id="cancel-btn">Отмена</button>
+          </div>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="/my/cabinet.js"></script>
+</body>
+</html>

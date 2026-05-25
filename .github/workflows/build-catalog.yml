@@ -1,0 +1,38 @@
+name: build-catalog
+
+# Дефект C (NGF-007): после изменения games.json (кабинет коммитит его через GitHub API)
+# пересобрать страницы игр + sitemap и закоммитить. Без сервера, бесплатно.
+on:
+  push:
+    paths:
+      - 'games.json'        # триггер ТОЛЬКО на games.json → нет петли (коммитим games/** и sitemap.xml)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-catalog
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Generate game pages + sitemap
+        run: node scripts/build.js
+      - name: Commit generated catalog
+        run: |
+          git config user.name "ngf-bot"
+          git config user.email "noreply@netgameforge.com"
+          git add games/ sitemap.xml index.html
+          if git diff --cached --quiet; then
+            echo "Нет изменений каталога — пропуск."
+          else
+            git commit -m "build: пересборка страниц игр + sitemap [skip ci]"
+            git push
+          fi
