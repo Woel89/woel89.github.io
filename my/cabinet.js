@@ -6,8 +6,25 @@
 
 import { isAuthed, saveToken, clearToken } from './lib/auth.js';
 import { authedRequest } from './lib/auth.js';
-import { readCatalog, publishGame, upsertGame } from './lib/games-api.js';
-import { GITHUB_API_BASE } from './lib/config.js';
+import {
+  readCatalog, publishGame, upsertGame,
+  generateSlug, findDuplicate, getViewerLogin, suggestTags,
+} from './lib/games-api.js';
+import { putFile } from './lib/storage.js';
+import { GITHUB_API_BASE, CATALOG_REPO } from './lib/config.js';
+
+/** Список категорий каталога (value = хранимое значение). */
+const CATEGORIES = [
+  'arcade', 'puzzle', 'racing', 'action', 'shooter',
+  'strategy', 'casual', 'sport', 'adventure', 'board',
+];
+
+/** Мягкие/жёсткие лимиты символов по полям. */
+const LIMITS = {
+  title: { max: 60, soft: 50 },
+  description: { max: 300, soft: 250 },
+  howToPlay: { max: 400, soft: 340 },
+};
 
 const JSZIP_CDN = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
 const OBFUSCATOR_CDN = 'https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.1.0/+esm';
@@ -32,19 +49,33 @@ const els = {
   formWarnings: $('form-warnings'),
   publishBtn: $('publish-btn'),
   cancelBtn: $('cancel-btn'),
-  fId: $('f-id'),
   fTitle: $('f-title'),
   fDescription: $('f-description'),
+  fHowToPlay: $('f-howToPlay'),
   fCoverUrl: $('f-coverUrl'),
   fTags: $('f-tags'),
-  fCategory: $('f-category'),
+  fCat1: $('f-cat1'),
+  fCat2: $('f-cat2'),
   fOrientation: $('f-orientation'),
-  fAuthor: $('f-author'),
-  fIsNew: $('f-isNew'),
-  fIsPopular: $('f-isPopular'),
   fIsPublished: $('f-isPublished'),
+  fIcon: $('f-icon'),
   fZip: $('f-zip'),
+  cTitle: $('c-title'),
+  cDescription: $('c-description'),
+  cHowToPlay: $('c-howToPlay'),
+  slugLine: $('f-slug-line'),
+  dupWarn: $('f-dup-warn'),
+  authorLine: $('f-author-line'),
+  tagSuggestions: $('tag-suggestions'),
+  iconCropper: $('icon-cropper'),
+  iconCanvas: $('icon-canvas'),
+  iconZoom: $('icon-zoom'),
 };
+
+/** Текущий каталог игр (для slug/дублей), обновляется в loadGames. */
+let catalogGames = [];
+/** Состояние редактирования: id правимой игры (null = новая). */
+let editingId = null;
 
 function showError(el, msg) {
   el.textContent = msg;
@@ -109,6 +140,7 @@ async function loadGames() {
   els.gamesList.innerHTML = '';
   try {
     const { games } = await readCatalog();
+    catalogGames = games;
     els.listStatus.textContent = games.length ? '' : 'Пока нет игр. Нажмите «Новая игра».';
     for (const g of games) els.gamesList.appendChild(gameCard(g));
   } catch (err) {
@@ -134,7 +166,8 @@ function gameCard(g) {
 
   const meta = document.createElement('div');
   meta.className = 'cab-muted';
-  meta.textContent = `${g.id} · ${g.category || '—'}${g.dateAdded ? ' · ' + g.dateAdded.slice(0, 10) : ''}`;
+  const cat = (Array.isArray(g.categories) && g.categories[0]) || g.category || '—';
+  meta.textContent = `${g.id} · ${cat}${g.dateAdded ? ' · ' + g.dateAdded.slice(0, 10) : ''}`;
   info.appendChild(meta);
 
   const flags = document.createElement('div');
@@ -157,7 +190,214 @@ function gameCard(g) {
   return card;
 }
 
-/* ---------- Form ---------- */
+/* ---------- Form: categories ---------- */
+
+function fillCategorySelects() {
+  const opts1 = CATEGORIES.map((c) => `<option value="${c}">${c}</option>`).join('');
+  els.fCat1.innerHTML = opts1;
+  els.fCat2.innerHTML =
+    '<option value="">— нет —</option>' +
+    CATEGORIES.map((c) => `<option value="${c}">${c}</option>`).join('');
+}
+
+/* ---------- Form: char counters ---------- */
+
+function bindCounter(input, counterEl, key) {
+  const { max, soft } = LIMITS[key];
+  const update = () => {
+    const len = input.value.length;
+    if (len >= soft) {
+      counterEl.hidden = false;
+      counterEl.textContent = `${len} / ${max}`;
+      counterEl.classList.toggle('cab-counter--warn', len >= max);
+    } else {
+      counterEl.hidden = true;
+      counterEl.classList.remove('cab-counter--warn');
+    }
+  };
+  input.addEventListener('input', update);
+  return update;
+}
+
+const updTitleCounter = bindCounter(els.fTitle, els.cTitle, 'title');
+const updDescCounter = bindCounter(els.fDescription, els.cDescription, 'description');
+const updHowCounter = bindCounter(els.fHowToPlay, els.cHowToPlay, 'howToPlay');
+
+/* ---------- Form: slug + duplicate ---------- */
+
+function existingIdsExcept(id) {
+  return catalogGames.map((g) => g.id).filter((x) => x !== id);
+}
+
+function updateSlugLine() {
+  const title = els.fTitle.value.trim();
+  if (!title) {
+    els.slugLine.textContent = 'Адрес игры: /games/—/';
+    els.dupWarn.hidden = true;
+    return;
+  }
+  // При редактировании slug не меняется (id readonly-контракт).
+  const slug = editingId || generateSlug(title, existingIdsExcept(editingId));
+  els.slugLine.textContent = `Адрес игры: /games/${slug}/`;
+
+  if (!editingId) {
+    const dup = findDuplicate(title, catalogGames);
+    if (dup) {
+      els.dupWarn.textContent = `Игра с похожим названием уже есть: «${dup.title || dup.id}».`;
+      els.dupWarn.hidden = false;
+    } else {
+      els.dupWarn.hidden = true;
+    }
+  }
+}
+
+/* ---------- Form: tag suggestions ---------- */
+
+function currentTags() {
+  return els.fTags.value.split(',').map((t) => t.trim()).filter(Boolean);
+}
+
+function updateTagSuggestions() {
+  const cands = suggestTags(els.fTitle.value, els.fDescription.value);
+  const have = new Set(currentTags());
+  const fresh = cands.filter((t) => !have.has(t));
+  els.tagSuggestions.innerHTML = '';
+  if (!fresh.length) {
+    els.tagSuggestions.hidden = true;
+    return;
+  }
+  for (const t of fresh) {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'cab-chip-btn';
+    chip.textContent = `+ ${t}`;
+    chip.addEventListener('click', () => {
+      const tags = currentTags();
+      if (!tags.includes(t)) tags.push(t);
+      els.fTags.value = tags.join(', ');
+      updateTagSuggestions();
+    });
+    els.tagSuggestions.appendChild(chip);
+  }
+  els.tagSuggestions.hidden = false;
+}
+
+els.fTitle.addEventListener('input', () => { updateSlugLine(); updateTagSuggestions(); });
+els.fDescription.addEventListener('input', updateTagSuggestions);
+els.fTags.addEventListener('input', updateTagSuggestions);
+
+/* ---------- Form: icon cropper (canvas, square) ---------- */
+
+const cropper = {
+  img: null,
+  size: 256,      // canvas (preview) size
+  scale: 1,       // base scale to cover square
+  zoom: 1,
+  offX: 0,        // pan offset in canvas px
+  offY: 0,
+  dragging: false,
+  lastX: 0,
+  lastY: 0,
+};
+
+function cropperDraw() {
+  const c = els.iconCanvas;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+  if (!cropper.img) return;
+  const s = cropper.scale * cropper.zoom;
+  const w = cropper.img.width * s;
+  const h = cropper.img.height * s;
+  const x = (c.width - w) / 2 + cropper.offX;
+  const y = (c.height - h) / 2 + cropper.offY;
+  ctx.drawImage(cropper.img, x, y, w, h);
+}
+
+function cropperLoad(file) {
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    cropper.img = img;
+    cropper.scale = Math.max(els.iconCanvas.width / img.width, els.iconCanvas.height / img.height);
+    cropper.zoom = 1;
+    cropper.offX = 0;
+    cropper.offY = 0;
+    els.iconZoom.value = '1';
+    els.iconCropper.hidden = false;
+    cropperDraw();
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
+
+els.fIcon.addEventListener('change', () => {
+  const f = els.fIcon.files[0];
+  if (f) cropperLoad(f);
+  else els.iconCropper.hidden = true;
+});
+els.iconZoom.addEventListener('input', () => {
+  cropper.zoom = parseFloat(els.iconZoom.value);
+  cropperDraw();
+});
+
+function cropperPointerDown(e) {
+  cropper.dragging = true;
+  const p = e.touches ? e.touches[0] : e;
+  cropper.lastX = p.clientX;
+  cropper.lastY = p.clientY;
+}
+function cropperPointerMove(e) {
+  if (!cropper.dragging) return;
+  const p = e.touches ? e.touches[0] : e;
+  cropper.offX += p.clientX - cropper.lastX;
+  cropper.offY += p.clientY - cropper.lastY;
+  cropper.lastX = p.clientX;
+  cropper.lastY = p.clientY;
+  cropperDraw();
+  e.preventDefault();
+}
+function cropperPointerUp() { cropper.dragging = false; }
+
+els.iconCanvas.addEventListener('mousedown', cropperPointerDown);
+window.addEventListener('mousemove', cropperPointerMove);
+window.addEventListener('mouseup', cropperPointerUp);
+els.iconCanvas.addEventListener('touchstart', cropperPointerDown, { passive: false });
+els.iconCanvas.addEventListener('touchmove', cropperPointerMove, { passive: false });
+els.iconCanvas.addEventListener('touchend', cropperPointerUp);
+
+/**
+ * Экспортировать кроп в 512×512 blob (webp, png-фолбэк).
+ * @returns {Promise<{blob: Blob, ext: string}|null>}
+ */
+function cropperExport() {
+  if (!cropper.img) return Promise.resolve(null);
+  const OUT = 512;
+  const ratio = OUT / els.iconCanvas.width;
+  const out = document.createElement('canvas');
+  out.width = OUT;
+  out.height = OUT;
+  const ctx = out.getContext('2d');
+  const s = cropper.scale * cropper.zoom * ratio;
+  const w = cropper.img.width * s;
+  const h = cropper.img.height * s;
+  const x = (OUT - w) / 2 + cropper.offX * ratio;
+  const y = (OUT - h) / 2 + cropper.offY * ratio;
+  ctx.drawImage(cropper.img, x, y, w, h);
+  return new Promise((resolve) => {
+    out.toBlob(
+      (b) => (b ? resolve({ blob: b, ext: 'webp' }) : out.toBlob((p) => resolve({ blob: p, ext: 'png' }), 'image/png')),
+      'image/webp',
+      0.9,
+    );
+  });
+}
+
+async function blobToBytes(blob) {
+  const buf = await blob.arrayBuffer();
+  return new Uint8Array(buf);
+}
+
+/* ---------- Form: open / collect / submit ---------- */
 
 function openForm(game) {
   hideError(els.formError);
@@ -165,22 +405,37 @@ function openForm(game) {
   els.formWarnings.hidden = true;
   els.formWarnings.innerHTML = '';
   els.gameForm.reset();
+  fillCategorySelects();
 
   const editing = Boolean(game);
-  els.fId.readOnly = editing;
-  els.fId.value = editing ? game.id : '';
+  editingId = editing ? game.id : null;
   els.fTitle.value = editing ? game.title || '' : '';
   els.fDescription.value = editing ? game.description || '' : '';
+  els.fHowToPlay.value = editing ? game.howToPlay || '' : '';
   els.fCoverUrl.value = editing ? game.coverUrl || '' : '';
   els.fTags.value = editing && Array.isArray(game.tags) ? game.tags.join(', ') : '';
-  els.fCategory.value = editing ? game.category || '' : '';
+  const cats = (editing && Array.isArray(game.categories) && game.categories) ||
+    (editing && game.category ? [game.category] : []);
+  els.fCat1.value = cats[0] && CATEGORIES.includes(cats[0]) ? cats[0] : CATEGORIES[0];
+  els.fCat2.value = cats[1] && CATEGORIES.includes(cats[1]) ? cats[1] : '';
   els.fOrientation.value = editing ? game.orientation || 'landscape' : 'landscape';
-  els.fAuthor.value = editing ? game.author || '' : '';
   const fl = (editing && game.flags) || {};
-  els.fIsNew.checked = Boolean(fl.isNew);
-  els.fIsPopular.checked = Boolean(fl.isPopular);
   els.fIsPublished.checked = editing ? Boolean(fl.isPublished) : true;
+  els.fIcon.value = '';
   els.fZip.value = '';
+  cropper.img = null;
+  els.iconCropper.hidden = true;
+
+  els.authorLine.textContent = 'Автор: …';
+  getViewerLogin().then((login) => {
+    els.authorLine.textContent = `Автор: ${login || '—'}`;
+  }).catch(() => { els.authorLine.textContent = 'Автор: —'; });
+
+  updTitleCounter();
+  updDescCounter();
+  updHowCounter();
+  updateSlugLine();
+  updateTagSuggestions();
 
   $('form-heading').textContent = editing ? `Редактирование: ${game.id}` : 'Новая игра';
   els.formView.hidden = false;
@@ -192,23 +447,19 @@ els.cancelBtn.addEventListener('click', () => {
   els.formView.hidden = true;
 });
 
-function collectMeta() {
-  const tags = els.fTags.value
-    .split(',')
-    .map((t) => t.trim())
-    .filter(Boolean);
+function collectMeta(slug) {
+  const tags = currentTags();
+  const categories = [els.fCat1.value, els.fCat2.value].filter(Boolean);
   return {
-    id: els.fId.value.trim(),
+    id: slug,
     title: els.fTitle.value.trim(),
     description: els.fDescription.value.trim(),
+    howToPlay: els.fHowToPlay.value.trim(),
     coverUrl: els.fCoverUrl.value.trim(),
     tags,
-    category: els.fCategory.value.trim(),
+    categories,
     orientation: els.fOrientation.value,
-    author: els.fAuthor.value.trim(),
     flags: {
-      isNew: els.fIsNew.checked,
-      isPopular: els.fIsPopular.checked,
       isPublished: els.fIsPublished.checked,
     },
   };
@@ -220,11 +471,31 @@ els.gameForm.addEventListener('submit', async (e) => {
   els.formWarnings.hidden = true;
   els.formWarnings.innerHTML = '';
 
-  const meta = collectMeta();
+  const title = els.fTitle.value.trim();
+  if (!title) {
+    showError(els.formError, 'Укажите название.');
+    return;
+  }
+  const slug = editingId || generateSlug(title, existingIdsExcept(editingId));
+  const meta = collectMeta(slug);
   const zipFile = els.fZip.files[0] || null;
 
   els.publishBtn.disabled = true;
   try {
+    // Иконка: кроп → 512×512 → коммит в каталог-репо.
+    if (cropper.img) {
+      els.formStatus.textContent = 'Загрузка иконки…';
+      const exported = await cropperExport();
+      if (exported) {
+        const bytes = await blobToBytes(exported.blob);
+        const iconPath = `assets/icons/${slug}.${exported.ext}`;
+        await putFile(CATALOG_REPO, iconPath, bytes, {
+          message: `Upload icon for ${slug}`,
+        });
+        meta.icon = iconPath;
+      }
+    }
+
     let result;
     if (zipFile) {
       els.formStatus.textContent = 'Загрузка библиотек (zip + защита)…';

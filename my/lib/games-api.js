@@ -21,9 +21,8 @@ const CATALOG_PATH = 'games.json';
 
 /**
  * @typedef {Object} GameFlags
- * @property {boolean} isNew
- * @property {boolean} isPopular
- * @property {boolean} isPublished
+ * @property {boolean} isPopular ставится автоматикой позже (дефолт false).
+ * @property {boolean} isPublished из формы.
  */
 
 /**
@@ -31,14 +30,16 @@ const CATALOG_PATH = 'games.json';
  * @property {string} id slug игры ([a-z0-9-]), уникален.
  * @property {string} title
  * @property {string} description
+ * @property {string} howToPlay «Как играть» (новое).
+ * @property {string} icon Путь к квадратной иконке (новое, отдельно от coverUrl).
  * @property {string} coverUrl
  * @property {string} buildUrl URL опубликованного билда.
  * @property {string[]} tags
- * @property {string} category
+ * @property {string[]} categories 1-2 категории; primary = categories[0] (заменяет category).
  * @property {string} dateAdded ISO-дата добавления.
  * @property {GameFlags} flags
  * @property {'portrait'|'landscape'} orientation
- * @property {string} author
+ * @property {string} author ник GitHub, проставляется автоматически.
  */
 
 /**
@@ -75,6 +76,134 @@ function encodeBase64(str) {
  */
 function isValidSlug(slug) {
   return typeof slug === 'string' && /^[a-z0-9-]+$/.test(slug);
+}
+
+/**
+ * Таблица транслитерации кириллицы в латиницу для slug.
+ * @type {Record<string,string>}
+ */
+const TRANSLIT = {
+  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z',
+  и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r',
+  с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch', ш: 'sh',
+  щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya',
+};
+
+/**
+ * Транслитерировать строку (RU→latin) посимвольно.
+ * @param {string} str
+ * @returns {string}
+ */
+function transliterate(str) {
+  let out = '';
+  for (const ch of String(str)) {
+    const lower = ch.toLowerCase();
+    out += Object.prototype.hasOwnProperty.call(TRANSLIT, lower) ? TRANSLIT[lower] : ch;
+  }
+  return out;
+}
+
+/**
+ * Сгенерировать уникальный slug из названия.
+ * RU→latin транслит, lowercase, только [a-z0-9-], схлопывание дефисов.
+ * Если slug занят в existingIds — добавляет -2, -3…
+ * @param {string} title
+ * @param {string[]} [existingIds] список уже занятых id.
+ * @returns {string} уникальный валидный slug.
+ */
+export function generateSlug(title, existingIds = []) {
+  let base = transliterate(title)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  if (!base) base = 'game';
+
+  const taken = new Set(existingIds);
+  if (!taken.has(base)) return base;
+  let n = 2;
+  while (taken.has(`${base}-${n}`)) n++;
+  return `${base}-${n}`;
+}
+
+/**
+ * Нормализовать название для сравнения «похожести» (lowercase, без пунктуации/пробелов).
+ * @param {string} title
+ * @returns {string}
+ */
+function normalizeTitle(title) {
+  return transliterate(title || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+/**
+ * Найти возможный дубликат игры по slug или похожему названию.
+ * @param {string} title
+ * @param {GameMeta[]} games текущий каталог.
+ * @returns {GameMeta|null} найденная игра-дубль или null.
+ */
+export function findDuplicate(title, games) {
+  if (!Array.isArray(games) || !games.length) return null;
+  const slug = generateSlug(title, []);
+  const norm = normalizeTitle(title);
+  return (
+    games.find((g) => g.id === slug || normalizeTitle(g.title) === norm) || null
+  );
+}
+
+/** Кэш ника GitHub-владельца (в памяти, на время жизни модуля). */
+let _viewerLogin = null;
+
+/**
+ * Получить ник (login) текущего владельца токена через GitHub API. Кэшируется.
+ * @returns {Promise<string>} login.
+ * @throws {Error} если запрос не удался.
+ */
+export async function getViewerLogin() {
+  if (_viewerLogin) return _viewerLogin;
+  const me = await authedRequest('GET', `${GITHUB_API_BASE}/user`);
+  _viewerLogin = me && me.login ? me.login : '';
+  return _viewerLogin;
+}
+
+/**
+ * Словарь тегов-кандидатов: тег → ключевые слова (RU+en, lowercase).
+ * @type {Record<string,string[]>}
+ */
+const TAG_KEYWORDS = {
+  'гонки': ['гонк', 'race', 'racing', 'drift', 'дрифт', 'кар', 'машин', 'car'],
+  'головоломка': ['головолом', 'puzzle', 'пазл', 'логик', 'logic', 'match'],
+  'аркада': ['аркад', 'arcade'],
+  '3д': ['3д', '3d', 'трёхмерн', 'трехмерн'],
+  'стрелялка': ['стрел', 'shoot', 'shooter', 'gun', 'fps', 'тир'],
+  'платформер': ['платформ', 'platformer', 'jump', 'прыж'],
+  'раннер': ['раннер', 'runner', 'беги', 'бег ', 'endless'],
+  'стратегия': ['стратег', 'strategy', 'tower defense', 'башн'],
+  'симулятор': ['симулятор', 'simulator', 'sim ', 'тайкун', 'tycoon'],
+  'квест': ['квест', 'quest', 'adventure', 'приключен'],
+  'хоррор': ['хоррор', 'horror', 'ужас', 'страш'],
+  'файтинг': ['файтинг', 'fighting', 'бой', 'fight', 'драк'],
+  'спорт': ['спорт', 'sport', 'футбол', 'football', 'soccer', 'баскетбол'],
+  'казуальная': ['казуал', 'casual', 'клик', 'click', 'idle', 'idle'],
+  'настольная': ['настольн', 'board', 'карт', 'card', 'шахмат', 'chess'],
+  'выживание': ['выжива', 'survival'],
+};
+
+/**
+ * Предложить теги по названию/описанию (эвристика по словарю, без внешних API).
+ * @param {string} title
+ * @param {string} description
+ * @returns {string[]} до 8 тегов-кандидатов.
+ */
+export function suggestTags(title, description) {
+  const hay = `${title || ''} ${description || ''}`.toLowerCase();
+  const out = [];
+  for (const [tag, words] of Object.entries(TAG_KEYWORDS)) {
+    if (words.some((w) => hay.includes(w))) out.push(tag);
+    if (out.length >= 8) break;
+  }
+  return out;
 }
 
 /**
@@ -173,17 +302,28 @@ async function writeCatalog(games, sha, message, version) {
  */
 function normalizeMeta(meta, isNew) {
   const flags = meta.flags || {};
+  // categories: массив 1-2 строк. Фолбэк со старого одиночного category.
+  let categories;
+  if (Array.isArray(meta.categories) && meta.categories.length) {
+    categories = meta.categories.filter(Boolean).slice(0, 2);
+  } else if (meta.category) {
+    categories = [meta.category];
+  } else {
+    categories = [];
+  }
   return {
     id: meta.id,
     title: meta.title || '',
     description: meta.description || '',
+    howToPlay: meta.howToPlay || '',
+    icon: meta.icon || '',
     coverUrl: meta.coverUrl || '',
     buildUrl: meta.buildUrl || '',
     tags: Array.isArray(meta.tags) ? meta.tags : [],
-    category: meta.category || '',
+    categories: categories,
     dateAdded: meta.dateAdded || (isNew ? new Date().toISOString().slice(0, 10) : ''),
     flags: {
-      isNew: Boolean(flags.isNew),
+      // isNew больше не хранится — вычисляется при рендере из dateAdded (≤14 дней).
       isPopular: Boolean(flags.isPopular),
       isPublished: Boolean(flags.isPublished),
     },
@@ -204,6 +344,16 @@ function normalizeMeta(meta, isNew) {
 export async function upsertGame(meta) {
   if (!isValidSlug(meta.id)) {
     throw new Error(`Невалидный slug "${meta.id}": разрешены только [a-z0-9-].`);
+  }
+
+  // author проставляется из ника GitHub автоматически, если не передан явно.
+  if (!meta.author) {
+    try {
+      const login = await getViewerLogin();
+      if (login) meta = { ...meta, author: login };
+    } catch {
+      // Ник недоступен — оставляем author пустым, не блокируем сохранение.
+    }
   }
 
   const MAX_RETRIES = 3;

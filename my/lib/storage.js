@@ -124,6 +124,30 @@ export async function putBuild(repo = BUILDS_REPO, basePath, files, opts = {}) {
 }
 
 /**
+ * Записать ОДИН бинарный файл по полному пути одним коммитом (Git Data API).
+ * Обёртка над putBuild: basePath = директория, файл = имя.
+ * @param {string} repo 'owner/name'.
+ * @param {string} path полный путь в репо, напр. 'assets/icons/foo.webp'.
+ * @param {Uint8Array} bytes бинарное содержимое.
+ * @param {object} [opts]
+ * @param {string} [opts.branch='main']
+ * @param {string} [opts.message]
+ * @returns {Promise<{commitSha: string, url: string}>}
+ */
+export async function putFile(repo, path, bytes, opts = {}) {
+  const clean = path.replace(/^\/+/, '');
+  const slash = clean.lastIndexOf('/');
+  const dir = slash === -1 ? '' : clean.slice(0, slash);
+  const name = slash === -1 ? clean : clean.slice(slash + 1);
+  return putBuild(
+    repo,
+    dir,
+    [{ path: name, contentBytes: bytes, encoding: 'base64' }],
+    { branch: opts.branch, message: opts.message || `Add ${clean}` },
+  );
+}
+
+/**
  * Прочитать файл из репозитория (Contents API). Текст декодируется из base64.
  * @param {string} repo
  * @param {string} path полный путь в репо.

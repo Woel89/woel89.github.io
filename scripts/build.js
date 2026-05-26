@@ -22,22 +22,50 @@ function readGames() {
   return data.games;
 }
 
+// Категории игры: categories[] или фолбэк со старого одиночного category.
+function gameCategories(g) {
+  if (Array.isArray(g.categories) && g.categories.length) return g.categories.filter(Boolean);
+  if (g.category) return [g.category];
+  return [];
+}
+
+// Основная (primary) категория = categories[0].
+function primaryCategory(g) {
+  const cats = gameCategories(g);
+  return cats.length ? cats[0] : "";
+}
+
+// «Новинка» вычисляется из dateAdded (≤14 дней), а не из flags.
+function isNewGame(g) {
+  if (!g.dateAdded) return false;
+  const added = new Date(g.dateAdded).getTime();
+  if (isNaN(added)) return false;
+  return (Date.now() - added) <= 14 * 24 * 60 * 60 * 1000;
+}
+
 // Cover for a game page resolves one level up from games/<slug>/.
 function pageCover(g) {
   if (!g.coverUrl) return "";
   return /^https?:\/\//.test(g.coverUrl) ? g.coverUrl : SITE + "/" + g.coverUrl.replace(/^\/+/, "");
 }
 
+// Абсолютный URL иконки (если задана), как og/schema image-фолбэк.
+function pageIcon(g) {
+  if (!g.icon) return "";
+  return /^https?:\/\//.test(g.icon) ? g.icon : SITE + "/" + g.icon.replace(/^\/+/, "");
+}
+
 function leadSentence(g) {
   const control = g.orientation === "portrait" ? "управление одним касанием" : "управление с клавиатуры или касанием";
-  return `${esc(g.title)} — это ${esc(g.category)}-игра, ${control}. Играйте прямо в браузере.`;
+  return `${esc(g.title)} — это ${esc(primaryCategory(g))}-игра, ${control}. Играйте прямо в браузере.`;
 }
 
 function relatedGames(g, all) {
   const tags = new Set(g.tags || []);
+  const cats = new Set(gameCategories(g));
   return all
     .filter((x) => x.id !== g.id && x.flags && x.flags.isPublished)
-    .map((x) => ({ x, score: (x.tags || []).filter((t) => tags.has(t)).length + (x.category === g.category ? 1 : 0) }))
+    .map((x) => ({ x, score: (x.tags || []).filter((t) => tags.has(t)).length + (gameCategories(x).some((c) => cats.has(c)) ? 1 : 0) }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 4)
     .map((o) => o.x);
@@ -46,6 +74,10 @@ function relatedGames(g, all) {
 function gamePageHTML(g, all) {
   const url = `${SITE}/games/${g.id}/`;
   const cover = pageCover(g);
+  const icon = pageIcon(g);
+  const image = cover || icon;
+  const cats = gameCategories(g);
+  const primary = primaryCategory(g);
   const desc = esc(g.description || "");
   const orientation = g.orientation === "portrait" ? "portrait" : "landscape";
   const tags = (g.tags || []).map((t) => `<span>${esc(t)}</span>`).join("");
@@ -58,7 +90,7 @@ function gamePageHTML(g, all) {
         ${related.map((r) => `
         <article class="game-card">
           <a href="/games/${esc(r.id)}/">
-            <span class="cover">${r.coverUrl ? `<img src="/${esc(r.coverUrl.replace(/^\/+/, ""))}" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">` : ""}</span>
+            <span class="cover">${(r.icon || r.coverUrl) ? `<img src="/${esc((r.icon || r.coverUrl).replace(/^\/+/, ""))}" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">` : ""}</span>
             <span class="body"><h3>${esc(r.title)}</h3></span>
           </a>
         </article>`).join("")}
@@ -72,10 +104,10 @@ function gamePageHTML(g, all) {
     name: g.title,
     description: g.description,
     url: url,
-    genre: g.category,
+    genre: cats.length ? cats : undefined,
     author: { "@type": "Organization", name: g.author || "NetGameForge" },
     publisher: { "@type": "Organization", name: "NetGameForge" },
-    image: cover || undefined,
+    image: image || undefined,
     datePublished: g.dateAdded,
     keywords: (g.tags || []).join(", "),
     applicationCategory: "Game",
@@ -97,14 +129,14 @@ function gamePageHTML(g, all) {
   <meta property="og:title" content="${esc(g.title)} — играть бесплатно онлайн">
   <meta property="og:description" content="${desc}">
   <meta property="og:url" content="${url}">
-  ${cover ? `<meta property="og:image" content="${esc(cover)}">
+  ${image ? `<meta property="og:image" content="${esc(image)}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">` : ""}
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(g.title)} — играть бесплатно онлайн">
   <meta name="twitter:description" content="${desc}">
-  ${cover ? `<meta name="twitter:image" content="${esc(cover)}">` : ""}
+  ${image ? `<meta name="twitter:image" content="${esc(image)}">` : ""}
 
   <link rel="stylesheet" href="/css/styles.css">
 
@@ -143,7 +175,7 @@ function gamePageHTML(g, all) {
   <main class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
       <a href="/">Каталог</a> ›
-      <a href="/?tag=${encodeURIComponent(g.category)}">${esc(g.category)}</a> ›
+      <a href="/?category=${encodeURIComponent(primary)}">${esc(primary)}</a> ›
       <span aria-current="page">${esc(g.title)}</span>
     </nav>
 
@@ -163,9 +195,14 @@ function gamePageHTML(g, all) {
 
     <section class="game-meta" aria-label="Об игре">
       <p>${desc}</p>
-      <p>Жанр: ${esc(g.category)} · Автор: ${esc(g.author || "NetGameForge")}</p>
+      <p>Жанр: ${esc(cats.join(", "))} · Автор: ${esc(g.author || "NetGameForge")}</p>
       <div class="tags">${tags}</div>
     </section>
+${g.howToPlay ? `
+    <section class="how-to-play" aria-labelledby="howto-h">
+      <h2 id="howto-h">Как играть</h2>
+      <p>${esc(g.howToPlay)}</p>
+    </section>` : ""}
 
     ${relatedHTML}
   </main>

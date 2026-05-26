@@ -9,6 +9,25 @@
 
   var allGames = [];
   var activeTag = null;
+  var activeCategory = null;
+  var catFilterEl = document.getElementById("category-filter");
+
+  var NEW_DAYS = 14;
+
+  // Категории игры: categories[] или фолбэк со старого одиночного category.
+  function gameCategories(g) {
+    if (Array.isArray(g.categories) && g.categories.length) return g.categories;
+    if (g.category) return [g.category];
+    return [];
+  }
+
+  // «Новинка» вычисляется из dateAdded (≤14 дней), а не из flags.
+  function isNewGame(g) {
+    if (!g.dateAdded) return false;
+    var added = new Date(g.dateAdded).getTime();
+    if (isNaN(added)) return false;
+    return (Date.now() - added) <= NEW_DAYS * 24 * 60 * 60 * 1000;
+  }
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -23,15 +42,16 @@
   function cardHTML(g, headingTag) {
     var h = headingTag || "h3";
     var badges = "";
-    if (g.flags && g.flags.isNew) badges += '<span class="badge badge--new">Новинка</span>';
+    if (isNewGame(g)) badges += '<span class="badge badge--new">Новинка</span>';
     if (g.flags && g.flags.isPopular) badges += '<span class="badge badge--popular">Популярное</span>';
     var tags = (g.tags || [])
       .slice(0, 3)
       .map(function (t) { return "<span>" + esc(t) + "</span>"; })
       .join("");
-    // Cover: <img> with lazy/async + explicit dims; CSS gradient shows if it fails.
-    var img = g.coverUrl
-      ? '<img src="' + esc(g.coverUrl) + '" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">'
+    // Изображение карточки: иконка (если есть), иначе обложка; CSS-градиент при ошибке.
+    var src = g.icon || g.coverUrl;
+    var img = src
+      ? '<img src="' + esc(src) + '" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">'
       : "";
     return (
       '<article class="game-card">' +
@@ -74,16 +94,46 @@
 
   function renderShelves(games) {
     if (!shelvesEl) return;
-    var isNew = games.filter(function (g) { return g.flags && g.flags.isNew; });
+    var isNew = games.filter(isNewGame);
     var popular = games.filter(function (g) { return g.flags && g.flags.isPopular; });
     shelvesEl.innerHTML = renderShelf("Новинки", isNew) + renderShelf("Популярное", popular);
   }
 
   function applyFilter() {
-    var filtered = activeTag
-      ? allGames.filter(function (g) { return (g.tags || []).indexOf(activeTag) !== -1; })
-      : allGames;
+    var filtered = allGames.filter(function (g) {
+      if (activeTag && (g.tags || []).indexOf(activeTag) === -1) return false;
+      if (activeCategory && gameCategories(g).indexOf(activeCategory) === -1) return false;
+      return true;
+    });
     renderGrid(filtered);
+  }
+
+  function renderCategoryFilter(games) {
+    if (!catFilterEl) return;
+    var seen = {};
+    games.forEach(function (g) {
+      gameCategories(g).forEach(function (c) { if (c) seen[c] = true; });
+    });
+    var cats = Object.keys(seen).sort();
+    if (!cats.length) return;
+
+    function btn(label, cat) {
+      var pressed = activeCategory === cat;
+      return '<button type="button" aria-pressed="' + pressed + '" data-category="' +
+        (cat == null ? "" : esc(cat)) + '">' + esc(label) + "</button>";
+    }
+    catFilterEl.innerHTML =
+      btn("Все", null) + cats.map(function (c) { return btn(c, c); }).join("");
+
+    catFilterEl.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      activeCategory = b.getAttribute("data-category") || null;
+      Array.prototype.forEach.call(catFilterEl.querySelectorAll("button"), function (x) {
+        x.setAttribute("aria-pressed", (x === b).toString());
+      });
+      applyFilter();
+    });
   }
 
   function renderTagFilter(games) {
@@ -121,6 +171,7 @@
         return g.flags && g.flags.isPublished;
       });
       renderTagFilter(allGames);
+      renderCategoryFilter(allGames);
       renderShelves(allGames);
       renderGrid(allGames);
     })
