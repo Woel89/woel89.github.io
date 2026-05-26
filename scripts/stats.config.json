@@ -1,0 +1,21 @@
+{
+  "weights": {
+    "uniques": 0.30,
+    "sessionTime": 0.25,
+    "retention": 0.20,
+    "plays": 0.15,
+    "freshness": 0.10
+  },
+  "minUniques": 30,
+  "graceDays": 14,
+  "badge": {
+    "percentileTop": 0.12,
+    "minWinners": 6,
+    "maxWinners": 20,
+    "hysteresisEnterPercentile": 0.12,
+    "hysteresisExitPercentile": 0.18
+  },
+  "window": {
+    "days": 14
+  }
+}

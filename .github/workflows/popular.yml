@@ -1,0 +1,57 @@
+name: popular
+
+# NGF-007: авто-«популярное» по реальным метрикам Яндекс.Метрики.
+# Раз в сутки тянет per-page статистику и проставляет flags.isPopular в games.json.
+#
+# ТРЕБУЕТСЯ ОТ ВЛАДЕЛЦА (однократно):
+#   1. oauth.yandex.ru → создать приложение с правом «Яндекс.Метрика: получение
+#      статистики (metrika:read)», выпустить OAuth-токен.
+#   2. Settings → Secrets and variables → Actions репозитория woel89.github.io:
+#        Secret  YM_OAUTH_TOKEN = <токен>
+#      (опционально) Variable YM_COUNTER_ID = 109411317
+#   Без секрета scripts/stats-popular.js мягко выходит (0) и ничего не меняет.
+#
+# КООРДИНАЦИЯ С build-catalog.yml (без петли Actions):
+#   popular коммитит games.json БЕЗ [skip ci]  ->  build-catalog триггерится на
+#   push games.json  ->  пересобирает страницы/sitemap и коммитит с [skip ci].
+#   build-catalog слушает только games.json, поэтому его собственный коммит
+#   (games/**, sitemap.xml, index.html) петлю не запускает. popular коммитит
+#   только при РЕАЛЬНОМ изменении games.json (см. скрипт), так что лишних
+#   прогонов build не будет.
+on:
+  schedule:
+    - cron: '0 3 * * *'   # ежедневно 03:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: popular            # отдельная группа от build-catalog
+  cancel-in-progress: false
+
+jobs:
+  popular:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Compute popularity from Yandex.Metrika
+        env:
+          YM_OAUTH_TOKEN: ${{ secrets.YM_OAUTH_TOKEN }}
+          YM_COUNTER_ID: ${{ vars.YM_COUNTER_ID || '109411317' }}
+        run: node scripts/stats-popular.js
+      - name: Commit games.json if changed
+        run: |
+          git config user.name "ngf-bot"
+          git config user.email "noreply@netgameforge.com"
+          git add games.json
+          if git diff --cached --quiet; then
+            echo "games.json без изменений — пропуск (петли build не будет)."
+          else
+            # БЕЗ [skip ci]: build-catalog должен пересобрать страницы по games.json
+            git commit -m "stats: пересчёт популярного по Яндекс.Метрике"
+            git push
+          fi
