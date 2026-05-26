@@ -180,7 +180,7 @@ function gamePageHTML(g, all) {
     </nav>
 
     <div class="game-hero">
-      <h1>${esc(g.title)}</h1>
+      <h1 data-i18n="title">${esc(g.title)}</h1>
       <p class="game-lead">${leadSentence(g)}</p>
     </div>
 
@@ -194,14 +194,14 @@ function gamePageHTML(g, all) {
     <div id="ngf-ratings" data-slug="${esc(g.id)}"></div>
 
     <section class="game-meta" aria-label="Об игре">
-      <p>${desc}</p>
+      <p data-i18n="description">${desc}</p>
       <p>Жанр: ${esc(cats.join(", "))} · Автор: ${esc(g.author || "NetGameForge")}</p>
       <div class="tags">${tags}</div>
     </section>
 ${g.howToPlay ? `
     <section class="how-to-play" aria-labelledby="howto-h">
       <h2 id="howto-h">Как играть</h2>
-      <p>${esc(g.howToPlay)}</p>
+      <p data-i18n="howToPlay">${esc(g.howToPlay)}</p>
     </section>` : ""}
 
     ${relatedHTML}
@@ -212,6 +212,28 @@ ${g.howToPlay ? `
       <p><a href="/">← Назад в каталог</a></p>
     </div>
   </footer>
+
+  <!-- i18n: ru — статичная SEO-версия выше; перевод применяется на клиенте по navigator.language. -->
+  <script id="ngf-i18n" type="application/json">${esc(JSON.stringify(g.i18n || {}))}</script>
+  <script>
+    (function () {
+      var el = document.getElementById("ngf-i18n");
+      if (!el) return;
+      var i18n;
+      try { i18n = JSON.parse(el.textContent); } catch (e) { return; }
+      if (!i18n) return;
+      var nav = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
+      var lang = nav.indexOf("pt") === 0 ? "pt-br" : nav.indexOf("es") === 0 ? "es" : nav.indexOf("en") === 0 ? "en" : null;
+      if (!lang || !i18n[lang]) return; // ru / нет перевода → оставляем оригинал
+      var tr = i18n[lang];
+      document.documentElement.lang = lang === "pt-br" ? "pt-BR" : lang;
+      Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function (node) {
+        var f = node.getAttribute("data-i18n");
+        if (tr[f]) node.textContent = tr[f];
+      });
+      if (tr.title) document.title = tr.title + " — NetGameForge";
+    })();
+  </script>
 
   <script src="/js/track.js"></script>
   <script src="/js/ratings.js"></script>

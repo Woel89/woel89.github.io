@@ -1,0 +1,52 @@
+name: translate
+
+# NGF-007 (docs/cabinet-v2-design.md «Автоперевод»): при изменении games.json
+# перевести ru-поля в en/es/pt-br через бесплатный MyMemory API и записать i18n.
+# НЕ realtime — один прогон на изменение games.json. Без сервера, бесплатно.
+#
+# КООРДИНАЦИЯ Actions (без бесконечной петли):
+#   translate триггерится на push games.json. Если появились новые переводы —
+#   коммитит games.json (БЕЗ [skip ci]) → это триггерит:
+#     1) build-catalog — пересоберёт страницы/sitemap, коммит с [skip ci]
+#        (трогает games/**, sitemap.xml, index.html → translate не триггерит);
+#     2) повторный translate — но i18nSourceHash уже совпадает → ничего не
+#        переводит → exit 0 БЕЗ коммита → петля останавливается.
+#   translate коммитит ТОЛЬКО при реальном изменении i18n (см. scripts/translate.js).
+on:
+  push:
+    paths:
+      - 'games.json'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: translate            # отдельная группа от build-catalog/popular
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Translate ru -> en/es/pt-br (MyMemory)
+        env:
+          MYMEMORY_EMAIL: ${{ vars.MYMEMORY_EMAIL || '' }}
+        run: node scripts/translate.js
+      - name: Commit games.json if changed
+        run: |
+          git config user.name "ngf-bot"
+          git config user.email "noreply@netgameforge.com"
+          git add games.json
+          if git diff --cached --quiet; then
+            echo "games.json без изменений — переводы актуальны, петли нет."
+          else
+            # БЕЗ [skip ci]: build-catalog должен пересобрать страницы по games.json.
+            # Повторный translate на этом коммите найдёт актуальный i18nSourceHash → no-op.
+            git commit -m "i18n: автоперевод games.json (MyMemory)"
+            git push
+          fi

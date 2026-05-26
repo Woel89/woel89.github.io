@@ -14,6 +14,35 @@
 
   var NEW_DAYS = 14;
 
+  // i18n: поддерживаемые локали (совпадает с scripts/translate.js).
+  var SUPPORTED_LANGS = ["en", "es", "pt-br"];
+
+  // Выбор локали по navigator.language. ru-оригинал = null (фолбэк).
+  function detectLang() {
+    var nav = (navigator.languages && navigator.languages[0]) || navigator.language || "";
+    nav = String(nav).toLowerCase();
+    if (nav.indexOf("pt") === 0) return "pt-br";       // pt, pt-BR, pt-PT → pt-br
+    if (nav.indexOf("es") === 0) return "es";
+    if (nav.indexOf("en") === 0) return "en";
+    return null; // включая ru → оригинал
+  }
+  var LANG = detectLang();
+
+  // Берём перевод поля из game.i18n[LANG] с фолбэком на ru-оригинал.
+  function pickField(g, field) {
+    if (LANG && g.i18n && g.i18n[LANG] && typeof g.i18n[LANG][field] === "string" && g.i18n[LANG][field]) {
+      return g.i18n[LANG][field];
+    }
+    return g[field];
+  }
+
+  // Хелпер: вернуть объект выбранных полей в нужной локали. pickLang(g, ["title","description"]).
+  function pickLang(g, fields) {
+    var out = {};
+    (fields || []).forEach(function (f) { out[f] = pickField(g, f); });
+    return out;
+  }
+
   // Категории игры: categories[] или фолбэк со старого одиночного category.
   function gameCategories(g) {
     if (Array.isArray(g.categories) && g.categories.length) return g.categories;
@@ -41,6 +70,7 @@
 
   function cardHTML(g, headingTag) {
     var h = headingTag || "h3";
+    var title = pickLang(g, ["title"]).title;
     var badges = "";
     if (isNewGame(g)) badges += '<span class="badge badge--new">Новинка</span>';
     if (g.flags && g.flags.isPopular) badges += '<span class="badge badge--popular">Популярное</span>';
@@ -60,7 +90,7 @@
             (badges ? '<span class="badges">' + badges + "</span>" : "") +
           "</span>" +
           '<span class="body">' +
-            "<" + h + ">" + esc(g.title) + "</" + h + ">" +
+            "<" + h + ">" + esc(title) + "</" + h + ">" +
             '<span class="tags">' + tags + "</span>" +
           "</span>" +
         "</a>" +
