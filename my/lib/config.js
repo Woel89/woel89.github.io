@@ -73,6 +73,8 @@ export const ALLOWED_EXTENSIONS = [
   'png', 'jpg', 'jpeg', 'webp', 'svg', 'gif',
   'mp3', 'ogg', 'wav',
   'woff', 'woff2', 'ttf',
+  // 3D-ассеты web-игр (glTF и сопутствующее): модели, буферы, GPU-текстуры.
+  'glb', 'gltf', 'bin', 'ktx2', 'basis', 'hdr', 'dds',
 ];
 
 /**
