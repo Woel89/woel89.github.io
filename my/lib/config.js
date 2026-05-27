@@ -25,7 +25,7 @@ export const CATALOG_REPO = 'Woel89/woel89.github.io';
  * builds.netgameforge.com. Здесь — целевой публичный хост каталога.
  * @type {string}
  */
-export const BUILDS_BASE_URL = 'https://netgameforge.com/ngf-builds';
+export const BUILDS_BASE_URL = 'https://builds.netgameforge.com';
 
 /**
  * ID счётчика Яндекс.Метрики (внешняя аналитика, дизайн §7 track()).

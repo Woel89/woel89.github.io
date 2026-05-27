@@ -204,9 +204,9 @@ function gamePageHTML(g, all) {
 
     <div class="game-frame ${orientation}">
       <iframe id="game-frame" src="${esc(g.buildUrl)}" title="${esc(g.title)}"
-        sandbox="allow-scripts allow-pointer-lock"
+        sandbox="allow-scripts allow-pointer-lock allow-same-origin"
         allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"
-        allowfullscreen loading="lazy"></iframe>
+        loading="lazy"></iframe>
     </div>
 
     <div id="ngf-ratings" data-slug="${esc(g.id)}"></div>
