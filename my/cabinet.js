@@ -526,6 +526,75 @@ function coverCropperExport() {
   });
 }
 
+/* ---------- Form: draft autosave ---------- */
+
+const DRAFT_KEY = 'ngf_form_draft';
+
+function saveDraft() {
+  const draft = {
+    title: els.fTitle.value,
+    description: els.fDescription.value,
+    tags: els.fTags.value,
+    cat1: els.fCat1.value,
+    cat2: els.fCat2.value,
+    orientation: els.fOrientation.value,
+    platformPc: els.fPlatformPc.checked,
+    platformMobile: els.fPlatformMobile.checked,
+    controlsPc: els.fControlsPc.value,
+    controlsMobile: els.fControlsMobile.value,
+    isPublished: els.fIsPublished.checked,
+  };
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch (_) { /* квота исчерпана — молча игнорируем */ }
+}
+
+function clearDraft() {
+  localStorage.removeItem(DRAFT_KEY);
+}
+
+function restoreDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (d.title !== undefined) els.fTitle.value = d.title;
+    if (d.description !== undefined) els.fDescription.value = d.description;
+    if (d.tags !== undefined) els.fTags.value = d.tags;
+    if (d.cat1 !== undefined && CATEGORIES.includes(d.cat1)) els.fCat1.value = d.cat1;
+    if (d.cat2 !== undefined) els.fCat2.value = CATEGORIES.includes(d.cat2) ? d.cat2 : '';
+    if (d.orientation !== undefined) els.fOrientation.value = d.orientation;
+    if (d.platformPc !== undefined) els.fPlatformPc.checked = d.platformPc;
+    if (d.platformMobile !== undefined) els.fPlatformMobile.checked = d.platformMobile;
+    if (d.controlsPc !== undefined) els.fControlsPc.value = d.controlsPc;
+    if (d.controlsMobile !== undefined) els.fControlsMobile.value = d.controlsMobile;
+    if (d.isPublished !== undefined) els.fIsPublished.checked = d.isPublished;
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+/** Debounce-обёртка: сохраняет черновик через 300 мс после последнего события. */
+let _draftTimer = null;
+function scheduleSaveDraft() {
+  clearTimeout(_draftTimer);
+  _draftTimer = setTimeout(saveDraft, 300);
+}
+
+const DRAFT_FIELDS = [
+  els.fTitle, els.fDescription, els.fTags,
+  els.fCat1, els.fCat2, els.fOrientation,
+  els.fControlsPc, els.fControlsMobile,
+];
+for (const el of DRAFT_FIELDS) {
+  el.addEventListener('input', scheduleSaveDraft);
+  el.addEventListener('change', scheduleSaveDraft);
+}
+els.fPlatformPc.addEventListener('change', scheduleSaveDraft);
+els.fPlatformMobile.addEventListener('change', scheduleSaveDraft);
+els.fIsPublished.addEventListener('change', scheduleSaveDraft);
+
 /* ---------- Form: open / collect / submit ---------- */
 
 function openForm(game) {
@@ -538,27 +607,39 @@ function openForm(game) {
 
   const editing = Boolean(game);
   editingId = editing ? game.id : null;
-  els.fTitle.value = editing ? game.title || '' : '';
-  els.fDescription.value = editing ? game.description || '' : '';
-  els.fTags.value = editing && Array.isArray(game.tags) ? game.tags.join(', ') : '';
-  const cats = (editing && Array.isArray(game.categories) && game.categories) ||
-    (editing && game.category ? [game.category] : []);
-  els.fCat1.value = cats[0] && CATEGORIES.includes(cats[0]) ? cats[0] : CATEGORIES[0];
-  els.fCat2.value = cats[1] && CATEGORIES.includes(cats[1]) ? cats[1] : '';
-  els.fOrientation.value = editing ? game.orientation || 'landscape' : 'landscape';
 
-  // Платформы и управление
-  const platforms = (editing && Array.isArray(game.platforms)) ? game.platforms : [];
-  const controls = (editing && game.controls) || {};
-  els.fPlatformPc.checked = platforms.indexOf('pc') !== -1;
-  els.fPlatformMobile.checked = platforms.indexOf('mobile') !== -1;
-  els.fControlsPc.value = controls.pc || '';
-  els.fControlsMobile.value = controls.mobile || '';
-  els.fControlsPcWrap.hidden = !els.fPlatformPc.checked;
-  els.fControlsMobileWrap.hidden = !els.fPlatformMobile.checked;
+  if (editing) {
+    els.fTitle.value = game.title || '';
+    els.fDescription.value = game.description || '';
+    els.fTags.value = Array.isArray(game.tags) ? game.tags.join(', ') : '';
+    const cats = (Array.isArray(game.categories) && game.categories) ||
+      (game.category ? [game.category] : []);
+    els.fCat1.value = cats[0] && CATEGORIES.includes(cats[0]) ? cats[0] : CATEGORIES[0];
+    els.fCat2.value = cats[1] && CATEGORIES.includes(cats[1]) ? cats[1] : '';
+    els.fOrientation.value = game.orientation || 'landscape';
 
-  const fl = (editing && game.flags) || {};
-  els.fIsPublished.checked = editing ? Boolean(fl.isPublished) : true;
+    const platforms = Array.isArray(game.platforms) ? game.platforms : [];
+    const controls = game.controls || {};
+    els.fPlatformPc.checked = platforms.indexOf('pc') !== -1;
+    els.fPlatformMobile.checked = platforms.indexOf('mobile') !== -1;
+    els.fControlsPc.value = controls.pc || '';
+    els.fControlsMobile.value = controls.mobile || '';
+    els.fControlsPcWrap.hidden = !els.fPlatformPc.checked;
+    els.fControlsMobileWrap.hidden = !els.fPlatformMobile.checked;
+
+    const fl = game.flags || {};
+    els.fIsPublished.checked = Boolean(fl.isPublished);
+  } else {
+    // Новая игра: попробовать восстановить черновик
+    const restored = restoreDraft();
+    if (restored) {
+      syncPlatformControls();
+      els.formStatus.textContent = 'Черновик восстановлен — выберите иконку/обложку/zip заново.';
+    } else {
+      els.fOrientation.value = 'landscape';
+      els.fIsPublished.checked = true;
+    }
+  }
   els.fIcon.value = '';
   els.fCover.value = '';
   els.fZip.value = '';
@@ -584,6 +665,7 @@ function openForm(game) {
 
 els.newGameBtn.addEventListener('click', () => openForm(null));
 els.cancelBtn.addEventListener('click', () => {
+  clearDraft();
   els.formView.hidden = true;
 });
 
@@ -684,6 +766,7 @@ els.gameForm.addEventListener('submit', async (e) => {
         ? 'Создана запись (без билда).'
         : 'Метаданные сохранены.';
     }
+    clearDraft();
     await loadGames();
   } catch (err) {
     els.formStatus.textContent = '';
