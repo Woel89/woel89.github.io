@@ -82,13 +82,7 @@ export async function putBuild(repo = BUILDS_REPO, basePath, files, opts = {}) {
   const ref = `heads/${branch}`;
   const message = opts.message || `Publish build ${basePath}`;
 
-  const baseCommitSha = await getRefSha(repo, ref);
-  const baseCommit = await authedRequest(
-    'GET',
-    `${GITHUB_API_BASE}/repos/${repo}/git/commits/${baseCommitSha}`,
-  );
-  const baseTreeSha = baseCommit.tree.sha;
-
+  // Блобы контент-адресные (sha по содержимому) — создаём один раз вне ретрая.
   const tree = [];
   for (const file of files) {
     const sha = await createBlob(repo, file);
@@ -102,25 +96,45 @@ export async function putBuild(repo = BUILDS_REPO, basePath, files, opts = {}) {
     });
   }
 
-  const newTree = await authedRequest(
-    'POST',
-    `${GITHUB_API_BASE}/repos/${repo}/git/trees`,
-    { base_tree: baseTreeSha, tree },
-  );
+  // Tree → commit → update ref на текущем HEAD. Если ветку обогнал чужой коммит
+  // (Actions build-catalog/translate в этом же репо) → 422 "not a fast forward":
+  // перечитываем HEAD и пересобираем коммит на свежей базе.
+  const MAX_RETRIES = 3;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const baseCommitSha = await getRefSha(repo, ref);
+    const baseCommit = await authedRequest(
+      'GET',
+      `${GITHUB_API_BASE}/repos/${repo}/git/commits/${baseCommitSha}`,
+    );
 
-  const commit = await authedRequest(
-    'POST',
-    `${GITHUB_API_BASE}/repos/${repo}/git/commits`,
-    { message, tree: newTree.sha, parents: [baseCommitSha] },
-  );
+    const newTree = await authedRequest(
+      'POST',
+      `${GITHUB_API_BASE}/repos/${repo}/git/trees`,
+      { base_tree: baseCommit.tree.sha, tree },
+    );
 
-  await authedRequest(
-    'PATCH',
-    `${GITHUB_API_BASE}/repos/${repo}/git/refs/${ref}`,
-    { sha: commit.sha, force: false },
-  );
+    const commit = await authedRequest(
+      'POST',
+      `${GITHUB_API_BASE}/repos/${repo}/git/commits`,
+      { message, tree: newTree.sha, parents: [baseCommitSha] },
+    );
 
-  return { commitSha: commit.sha, url: urlFor(basePath) };
+    try {
+      await authedRequest(
+        'PATCH',
+        `${GITHUB_API_BASE}/repos/${repo}/git/refs/${ref}`,
+        { sha: commit.sha, force: false },
+      );
+      return { commitSha: commit.sha, url: urlFor(basePath) };
+    } catch (e) {
+      // 422/fast forward = HEAD сместился между чтением и обновлением ref.
+      const moved = /\b422\b|fast.?forward/i.test(e.message);
+      if (moved && attempt < MAX_RETRIES - 1) continue;
+      throw e;
+    }
+  }
+  // недостижимо
+  throw new Error('putBuild: исчерпаны попытки обновления ветки.');
 }
 
 /**
