@@ -99,8 +99,10 @@ export async function putBuild(repo = BUILDS_REPO, basePath, files, opts = {}) {
   // Tree → commit → update ref на текущем HEAD. Если ветку обогнал чужой коммит
   // (Actions build-catalog/translate в этом же репо) → 422 "not a fast forward":
   // перечитываем HEAD и пересобираем коммит на свежей базе.
-  const MAX_RETRIES = 3;
+  const MAX_RETRIES = 6;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    // Пауза перед повтором: всплеск коммитов от Actions успевает осесть.
+    if (attempt > 0) await new Promise((r) => setTimeout(r, 500 * attempt));
     const baseCommitSha = await getRefSha(repo, ref);
     const baseCommit = await authedRequest(
       'GET',
