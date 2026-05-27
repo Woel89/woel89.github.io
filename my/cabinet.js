@@ -7,7 +7,7 @@
 import { isAuthed, saveToken, clearToken } from './lib/auth.js';
 import { authedRequest } from './lib/auth.js';
 import {
-  readCatalog, publishGame, upsertGame,
+  readCatalog, publishGame, upsertGame, deleteGame,
   generateSlug, findDuplicate, getViewerLogin, suggestTags,
 } from './lib/games-api.js';
 import { putFile } from './lib/storage.js';
@@ -192,6 +192,31 @@ function gameCard(g) {
   editBtn.textContent = 'Редактировать';
   editBtn.addEventListener('click', () => openForm(g));
   card.appendChild(editBtn);
+
+  const delBtn = document.createElement('button');
+  delBtn.type = 'button';
+  delBtn.className = 'cab-btn cab-btn--ghost';
+  delBtn.textContent = 'Удалить';
+  delBtn.addEventListener('click', async () => {
+    const confirmed = window.confirm(
+      `Удалить игру «${g.title || g.id}»?\n\nЭто необратимо: запись из каталога, страница игры, иконка, обложка и билд будут удалены.`,
+    );
+    if (!confirmed) return;
+
+    delBtn.disabled = true;
+    editBtn.disabled = true;
+    els.listStatus.textContent = `Удаление «${g.title || g.id}»…`;
+    try {
+      await deleteGame(g.id);
+      els.listStatus.textContent = `Игра «${g.title || g.id}» удалена.`;
+      await loadGames();
+    } catch (err) {
+      els.listStatus.textContent = `Ошибка удаления: ${err.message}`;
+      delBtn.disabled = false;
+      editBtn.disabled = false;
+    }
+  });
+  card.appendChild(delBtn);
 
   return card;
 }

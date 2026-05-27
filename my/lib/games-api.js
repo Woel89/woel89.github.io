@@ -9,7 +9,7 @@
 
 import { CATALOG_REPO, BUILDS_REPO, GITHUB_API_BASE } from './config.js';
 import { authedRequest } from './auth.js';
-import { putBuild, urlFor } from './storage.js';
+import { putBuild, urlFor, deletePath, deleteTree } from './storage.js';
 import { unpackAndValidate } from './zip.js';
 import { obfuscateFiles } from './obfuscate.js';
 
@@ -392,6 +392,125 @@ export async function upsertGame(meta) {
   }
   // недостижимо, но для полноты
   throw new Error('Не удалось сохранить games.json: исчерпаны попытки слияния.');
+}
+
+/**
+ * Удалить папку целиком одним коммитом через storage.deleteTree.
+ * Пустая папка / 404 не валят операцию. Ошибки не всплывают наружу.
+ * @param {string} repo
+ * @param {string} dirPath
+ * @param {string} [message] сообщение коммита.
+ * @returns {Promise<void>}
+ */
+async function deleteDirSilent(repo, dirPath, message) {
+  try {
+    await deleteTree(repo, dirPath, { message: message || `Delete ${dirPath}` });
+  } catch (_) {
+    // Молча игнорируем ошибки подчистки (не должны валить основную операцию).
+  }
+}
+
+/**
+ * Удалить один файл без ошибки при его отсутствии (404 игнорируется).
+ * @param {string} repo
+ * @param {string} filePath
+ * @param {string} [message]
+ * @returns {Promise<void>}
+ */
+async function deleteFileSilent(repo, filePath, message) {
+  try {
+    await deletePath(repo, filePath, { message: message || `Delete ${filePath}` });
+  } catch (e) {
+    if (!/\b404\b/.test(e.message)) {
+      // Молча игнорируем (не должно валить основную операцию).
+    }
+  }
+}
+
+/**
+ * Проверить, является ли путь относительным путём репозитория (не http-URL).
+ * @param {string} p
+ * @returns {boolean}
+ */
+function isRepoPath(p) {
+  return typeof p === 'string' && p.length > 0 && !/^https?:\/\//i.test(p);
+}
+
+/**
+ * Удалить игру из каталога и подчистить связанные ассеты/билд.
+ *
+ * Порядок операций:
+ * 1. Read-modify-write games.json (retry на 409/422) — убрать запись по slug.
+ *    Если запись не найдена в каталоге — продолжаем подчистку (осиротевшие файлы).
+ * 2. Удалить страницу `games/<slug>/` в CATALOG_REPO.
+ * 3. Удалить иконку и обложку из CATALOG_REPO (только относительные пути репо).
+ * 4. Удалить `builds/<slug>/` из BUILDS_REPO.
+ * Шаги 2-4 не валят всю операцию при 404 или ошибке — оборачиваются в try/catch.
+ *
+ * @param {string} slug id игры ([a-z0-9-]).
+ * @param {object} [opts]
+ * @param {string} [opts.branch='main'] ветка (для ассетов/билда).
+ * @returns {Promise<{deleted: boolean, game: GameMeta|null}>}
+ *   deleted=true если запись была в games.json; game — удалённая мета или null.
+ * @throws {Error} при невалидном slug или неустранимом конфликте games.json.
+ */
+export async function deleteGame(slug, opts = {}) {
+  if (!isValidSlug(slug)) {
+    throw new Error(`Невалидный slug "${slug}": разрешены только [a-z0-9-].`);
+  }
+
+  // Шаг 1: убрать запись из games.json (read-modify-write с retry на 409/422).
+  let deletedGame = null;
+  let wasInCatalog = false;
+
+  const MAX_RETRIES = 3;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const { games, sha, version } = await readCatalog();
+    const idx = games.findIndex((g) => g.id === slug);
+    wasInCatalog = idx !== -1;
+
+    if (!wasInCatalog) {
+      // Записи нет в каталоге — подчистим осиротевшие файлы и выйдем.
+      break;
+    }
+
+    deletedGame = games[idx];
+    const next = games.filter((g) => g.id !== slug);
+
+    try {
+      await writeCatalog(
+        next,
+        sha,
+        `Delete game ${slug} from games.json`,
+        version,
+      );
+      break;
+    } catch (e) {
+      const isConflict = /\b409\b|\b422\b|sha/i.test(e.message);
+      if (isConflict && attempt < MAX_RETRIES - 1) continue;
+      throw new Error(`Не удалось удалить из games.json: ${e.message}`);
+    }
+  }
+
+  // Шаги 2-4: подчистка ассетов и билда. Ошибки не должны валить операцию.
+
+  // 2. Страница игры в каталог-репо: games/<slug>/
+  await deleteDirSilent(CATALOG_REPO, `games/${slug}`, `Delete game page ${slug}`);
+
+  // 3. Иконка и обложка из каталог-репо (только если это относительные пути репо).
+  const icon = deletedGame && deletedGame.icon;
+  const cover = deletedGame && deletedGame.coverUrl;
+  if (icon && isRepoPath(icon)) {
+    await deleteFileSilent(CATALOG_REPO, icon, `Delete icon for ${slug}`);
+  }
+  if (cover && isRepoPath(cover)) {
+    await deleteFileSilent(CATALOG_REPO, cover, `Delete cover for ${slug}`);
+  }
+
+  // 4. Билд-папка: builds/<slug>/ в BUILDS_REPO.
+  await deleteDirSilent(BUILDS_REPO, `builds/${slug}`, `Delete build ${slug}`);
+
+  return { deleted: wasInCatalog, game: deletedGame };
 }
 
 /**

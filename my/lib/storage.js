@@ -202,6 +202,86 @@ export async function deletePath(repo = BUILDS_REPO, path, opts = {}) {
 }
 
 /**
+ * Удалить все файлы под dirPath ОДНИМ коммитом через Git Data API.
+ * Алгоритм: получить recursive tree HEAD → отобрать blob-и под dirPath →
+ * создать новое дерево с sha:null для каждого (удаление) → commit → PATCH ref.
+ * Retry на 422 «not a fast forward» зеркалит putBuild (до 6 попыток + backoff).
+ *
+ * @param {string} repo 'owner/name'.
+ * @param {string} dirPath префикс папки в репо, напр. 'builds/my-game'.
+ * @param {object} [opts]
+ * @param {string} [opts.branch='main'] целевая ветка.
+ * @param {string} [opts.message] сообщение коммита.
+ * @returns {Promise<{deleted: number, commitSha?: string}>}
+ *   deleted=0 и нет commitSha если файлов под dirPath не было.
+ */
+export async function deleteTree(repo, dirPath, opts = {}) {
+  const branch = opts.branch || 'main';
+  const ref = `heads/${branch}`;
+  const prefix = dirPath.replace(/\/+$/, '') + '/';
+
+  const MAX_RETRIES = 6;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, 500 * attempt));
+
+    const baseCommitSha = await getRefSha(repo, ref);
+    const baseCommit = await authedRequest(
+      'GET',
+      `${GITHUB_API_BASE}/repos/${repo}/git/commits/${baseCommitSha}`,
+    );
+
+    // Получить recursive tree HEAD.
+    const treeData = await authedRequest(
+      'GET',
+      `${GITHUB_API_BASE}/repos/${repo}/git/trees/${baseCommit.tree.sha}?recursive=1`,
+    );
+
+    // Отобрать blob-файлы под dirPath.
+    const toDelete = (treeData.tree || []).filter(
+      (item) => item.type === 'blob' && item.path.startsWith(prefix),
+    );
+
+    if (toDelete.length === 0) return { deleted: 0 };
+
+    // sha:null в дереве с base_tree удаляет файл (GitHub Trees API).
+    const deletionEntries = toDelete.map((item) => ({
+      path: item.path,
+      mode: '100644',
+      type: 'blob',
+      sha: null,
+    }));
+
+    const message = opts.message || `Delete ${dirPath}`;
+
+    const newTree = await authedRequest(
+      'POST',
+      `${GITHUB_API_BASE}/repos/${repo}/git/trees`,
+      { base_tree: baseCommit.tree.sha, tree: deletionEntries },
+    );
+
+    const commit = await authedRequest(
+      'POST',
+      `${GITHUB_API_BASE}/repos/${repo}/git/commits`,
+      { message, tree: newTree.sha, parents: [baseCommitSha] },
+    );
+
+    try {
+      await authedRequest(
+        'PATCH',
+        `${GITHUB_API_BASE}/repos/${repo}/git/refs/${ref}`,
+        { sha: commit.sha, force: false },
+      );
+      return { deleted: toDelete.length, commitSha: commit.sha };
+    } catch (e) {
+      const moved = /\b422\b|fast.?forward/i.test(e.message);
+      if (moved && attempt < MAX_RETRIES - 1) continue;
+      throw e;
+    }
+  }
+  throw new Error('deleteTree: исчерпаны попытки обновления ветки.');
+}
+
+/**
  * Публичный URL билда по его basePath.
  * Origin берётся из config.BUILDS_BASE_URL (абстрактный хост).
  * @param {string} basePath напр. 'builds/<gameId>/<version>'.
