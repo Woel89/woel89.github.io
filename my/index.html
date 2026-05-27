@@ -63,19 +63,13 @@
           </label>
 
           <label class="cab-field">
-            <span>Как играть</span>
-            <textarea id="f-howToPlay" name="howToPlay" rows="3" maxlength="400"></textarea>
-            <span class="cab-counter" id="c-howToPlay" hidden></span>
-          </label>
-
-          <label class="cab-field">
             <span>Иконка игры (квадрат, 512×512)</span>
             <input type="file" id="f-icon" name="icon" accept="image/*">
           </label>
           <div class="cab-cropper" id="icon-cropper" hidden>
             <canvas id="icon-canvas" width="256" height="256"></canvas>
             <div class="cab-cropper-ctrl">
-              <label>Зум <input type="range" id="icon-zoom" min="1" max="3" step="0.01" value="1"></label>
+              <label>Зум <input type="range" id="icon-zoom" min="0.3" max="3" step="0.01" value="1"></label>
               <p class="cab-muted">Перетащите изображение, чтобы сместить.</p>
             </div>
           </div>
@@ -87,7 +81,7 @@
           <div class="cab-cropper" id="cover-cropper" hidden>
             <canvas id="cover-canvas" width="400" height="210"></canvas>
             <div class="cab-cropper-ctrl">
-              <label>Зум <input type="range" id="cover-zoom" min="1" max="3" step="0.01" value="1"></label>
+              <label>Зум <input type="range" id="cover-zoom" min="0.3" max="3" step="0.01" value="1"></label>
               <p class="cab-muted">Перетащите изображение, чтобы сместить.</p>
             </div>
           </div>
@@ -113,6 +107,21 @@
               <option value="landscape">landscape (горизонтальная)</option>
               <option value="portrait">portrait (вертикальная)</option>
             </select>
+          </label>
+
+          <fieldset class="cab-flags" id="f-platforms-fieldset">
+            <legend>Платформы</legend>
+            <label><input type="checkbox" id="f-platform-pc" value="pc"> ПК</label>
+            <label><input type="checkbox" id="f-platform-mobile" value="mobile"> Мобильные устройства</label>
+          </fieldset>
+
+          <label class="cab-field" id="f-controls-pc-wrap" hidden>
+            <span>Управление — ПК</span>
+            <textarea id="f-controls-pc" name="controls-pc" rows="2" maxlength="400"></textarea>
+          </label>
+          <label class="cab-field" id="f-controls-mobile-wrap" hidden>
+            <span>Управление — Мобильные</span>
+            <textarea id="f-controls-mobile" name="controls-mobile" rows="2" maxlength="400"></textarea>
           </label>
 
           <p class="cab-muted" id="f-author-line">Автор: —</p>

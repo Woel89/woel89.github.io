@@ -311,6 +311,9 @@ section.shelf > h2 {
   border: 1px solid var(--color-border); border-radius: 8px;
   background: var(--color-bg); touch-action: none; cursor: grab;
 }
+#cover-canvas {
+  width: 400px; aspect-ratio: 1200 / 630;
+}
 .cab-cropper-ctrl { flex: 1 1 200px; }
 .cab-cropper-ctrl label { display: block; font-size: 0.85rem; color: var(--color-text-muted); }
 .cab-cropper-ctrl input[type="range"] { width: 100%; margin-top: 0.3rem; }

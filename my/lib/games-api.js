@@ -30,12 +30,13 @@ const CATALOG_PATH = 'games.json';
  * @property {string} id slug игры ([a-z0-9-]), уникален.
  * @property {string} title
  * @property {string} description
- * @property {string} howToPlay «Как играть» (новое).
- * @property {string} icon Путь к квадратной иконке (новое, отдельно от coverUrl).
+ * @property {string} icon Путь к квадратной иконке (отдельно от coverUrl).
  * @property {string} coverUrl
  * @property {string} buildUrl URL опубликованного билда.
  * @property {string[]} tags
  * @property {string[]} categories 1-2 категории; primary = categories[0] (заменяет category).
+ * @property {string[]} platforms Платформы: подмножество ['pc','mobile'], минимум одна.
+ * @property {{pc?: string, mobile?: string}} controls Текст управления по платформе.
  * @property {string} dateAdded ISO-дата добавления.
  * @property {GameFlags} flags
  * @property {'portrait'|'landscape'} orientation
@@ -315,12 +316,16 @@ function normalizeMeta(meta, isNew) {
     id: meta.id,
     title: meta.title || '',
     description: meta.description || '',
-    howToPlay: meta.howToPlay || '',
     icon: meta.icon || '',
     coverUrl: meta.coverUrl || '',
     buildUrl: meta.buildUrl || '',
     tags: Array.isArray(meta.tags) ? meta.tags : [],
     categories: categories,
+    platforms: Array.isArray(meta.platforms) ? meta.platforms.filter(function (p) { return p === 'pc' || p === 'mobile'; }) : [],
+    controls: {
+      pc: (meta.controls && meta.controls.pc) || '',
+      mobile: (meta.controls && meta.controls.mobile) || '',
+    },
     dateAdded: meta.dateAdded || (isNew ? new Date().toISOString().slice(0, 10) : ''),
     flags: {
       // isNew больше не хранится — вычисляется при рендере из dateAdded (≤14 дней).

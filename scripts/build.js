@@ -55,8 +55,17 @@ function pageIcon(g) {
   return /^https?:\/\//.test(g.icon) ? g.icon : SITE + "/" + g.icon.replace(/^\/+/, "");
 }
 
+function platformHint(g) {
+  const pl = Array.isArray(g.platforms) ? g.platforms : [];
+  if (pl.indexOf("pc") !== -1 && pl.indexOf("mobile") !== -1) return "ПК и мобильные";
+  if (pl.indexOf("pc") !== -1) return "ПК";
+  if (pl.indexOf("mobile") !== -1) return "Мобильные";
+  // фолбэк: прежнее поведение по ориентации
+  return g.orientation === "portrait" ? "управление одним касанием" : "управление с клавиатуры или касанием";
+}
+
 function leadSentence(g) {
-  const control = g.orientation === "portrait" ? "управление одним касанием" : "управление с клавиатуры или касанием";
+  const control = platformHint(g);
   return `${esc(g.title)} — это ${esc(primaryCategory(g))}-игра, ${control}. Играйте прямо в браузере.`;
 }
 
@@ -181,6 +190,15 @@ function gamePageHTML(g, all) {
 
     <div class="game-hero">
       <h1 data-i18n="title">${esc(g.title)}</h1>
+      ${(function() {
+        const pl = Array.isArray(g.platforms) ? g.platforms : [];
+        const badges = pl.map(function(p) {
+          return p === "pc"
+            ? '<span class="platform-badge platform-badge--pc">🖥 ПК</span>'
+            : '<span class="platform-badge platform-badge--mobile">📱 Мобильные</span>';
+        }).join(" ");
+        return badges ? `<p class="platform-badges">${badges}</p>` : "";
+      })()}
       <p class="game-lead">${leadSentence(g)}</p>
     </div>
 
@@ -198,11 +216,19 @@ function gamePageHTML(g, all) {
       <p>Жанр: ${esc(cats.join(", "))} · Автор: ${esc(g.author || "NetGameForge")}</p>
       <div class="tags">${tags}</div>
     </section>
-${g.howToPlay ? `
+${(function() {
+  const pl = Array.isArray(g.platforms) ? g.platforms : [];
+  const ctrl = g.controls || {};
+  const LABEL = { pc: "ПК", mobile: "Мобильные" };
+  const items = pl.filter(function(p) { return ctrl[p]; }).map(function(p) {
+    return `<dt>${esc(LABEL[p] || p)}</dt><dd>${esc(ctrl[p])}</dd>`;
+  }).join("\n      ");
+  return items ? `
     <section class="how-to-play" aria-labelledby="howto-h">
-      <h2 id="howto-h">Как играть</h2>
-      <p data-i18n="howToPlay">${esc(g.howToPlay)}</p>
-    </section>` : ""}
+      <h2 id="howto-h">Управление</h2>
+      <dl>${items}</dl>
+    </section>` : "";
+})()}
 
     ${relatedHTML}
   </main>

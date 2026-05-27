@@ -23,7 +23,6 @@ const CATEGORIES = [
 const LIMITS = {
   title: { max: 60, soft: 50 },
   description: { max: 300, soft: 250 },
-  howToPlay: { max: 400, soft: 340 },
 };
 
 const JSZIP_CDN = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
@@ -51,18 +50,22 @@ const els = {
   cancelBtn: $('cancel-btn'),
   fTitle: $('f-title'),
   fDescription: $('f-description'),
-  fHowToPlay: $('f-howToPlay'),
   fCover: $('f-cover'),
   fTags: $('f-tags'),
   fCat1: $('f-cat1'),
   fCat2: $('f-cat2'),
   fOrientation: $('f-orientation'),
+  fPlatformPc: $('f-platform-pc'),
+  fPlatformMobile: $('f-platform-mobile'),
+  fControlsPc: $('f-controls-pc'),
+  fControlsMobile: $('f-controls-mobile'),
+  fControlsPcWrap: $('f-controls-pc-wrap'),
+  fControlsMobileWrap: $('f-controls-mobile-wrap'),
   fIsPublished: $('f-isPublished'),
   fIcon: $('f-icon'),
   fZip: $('f-zip'),
   cTitle: $('c-title'),
   cDescription: $('c-description'),
-  cHowToPlay: $('c-howToPlay'),
   slugLine: $('f-slug-line'),
   dupWarn: $('f-dup-warn'),
   authorLine: $('f-author-line'),
@@ -224,7 +227,6 @@ function bindCounter(input, counterEl, key) {
 
 const updTitleCounter = bindCounter(els.fTitle, els.cTitle, 'title');
 const updDescCounter = bindCounter(els.fDescription, els.cDescription, 'description');
-const updHowCounter = bindCounter(els.fHowToPlay, els.cHowToPlay, 'howToPlay');
 
 /* ---------- Form: slug + duplicate ---------- */
 
@@ -380,6 +382,8 @@ function cropperExport() {
   out.width = OUT;
   out.height = OUT;
   const ctx = out.getContext('2d');
+  ctx.fillStyle = '#0e0e10';
+  ctx.fillRect(0, 0, OUT, OUT);
   const s = cropper.scale * cropper.zoom * ratio;
   const w = cropper.img.width * s;
   const h = cropper.img.height * s;
@@ -478,6 +482,20 @@ els.coverCanvas.addEventListener('touchstart', coverPointerDown, { passive: fals
 els.coverCanvas.addEventListener('touchmove', coverPointerMove, { passive: false });
 els.coverCanvas.addEventListener('touchend', coverPointerUp);
 
+/* ---------- Form: platform checkboxes ---------- */
+
+function syncPlatformControls() {
+  const pcOn = els.fPlatformPc.checked;
+  const mobOn = els.fPlatformMobile.checked;
+  els.fControlsPcWrap.hidden = !pcOn;
+  els.fControlsMobileWrap.hidden = !mobOn;
+  if (!pcOn) els.fControlsPc.value = '';
+  if (!mobOn) els.fControlsMobile.value = '';
+}
+
+els.fPlatformPc.addEventListener('change', syncPlatformControls);
+els.fPlatformMobile.addEventListener('change', syncPlatformControls);
+
 /**
  * Экспортировать кроп обложки в 1200×630 blob (webp, png-фолбэк).
  * @returns {Promise<{blob: Blob, ext: string}|null>}
@@ -491,6 +509,8 @@ function coverCropperExport() {
   out.width = OUT_W;
   out.height = OUT_H;
   const ctx = out.getContext('2d');
+  ctx.fillStyle = '#0e0e10';
+  ctx.fillRect(0, 0, OUT_W, OUT_H);
   const s = coverCropper.scale * coverCropper.zoom * ratio;
   const w = coverCropper.img.width * s;
   const h = coverCropper.img.height * s;
@@ -520,13 +540,23 @@ function openForm(game) {
   editingId = editing ? game.id : null;
   els.fTitle.value = editing ? game.title || '' : '';
   els.fDescription.value = editing ? game.description || '' : '';
-  els.fHowToPlay.value = editing ? game.howToPlay || '' : '';
   els.fTags.value = editing && Array.isArray(game.tags) ? game.tags.join(', ') : '';
   const cats = (editing && Array.isArray(game.categories) && game.categories) ||
     (editing && game.category ? [game.category] : []);
   els.fCat1.value = cats[0] && CATEGORIES.includes(cats[0]) ? cats[0] : CATEGORIES[0];
   els.fCat2.value = cats[1] && CATEGORIES.includes(cats[1]) ? cats[1] : '';
   els.fOrientation.value = editing ? game.orientation || 'landscape' : 'landscape';
+
+  // Платформы и управление
+  const platforms = (editing && Array.isArray(game.platforms)) ? game.platforms : [];
+  const controls = (editing && game.controls) || {};
+  els.fPlatformPc.checked = platforms.indexOf('pc') !== -1;
+  els.fPlatformMobile.checked = platforms.indexOf('mobile') !== -1;
+  els.fControlsPc.value = controls.pc || '';
+  els.fControlsMobile.value = controls.mobile || '';
+  els.fControlsPcWrap.hidden = !els.fPlatformPc.checked;
+  els.fControlsMobileWrap.hidden = !els.fPlatformMobile.checked;
+
   const fl = (editing && game.flags) || {};
   els.fIsPublished.checked = editing ? Boolean(fl.isPublished) : true;
   els.fIcon.value = '';
@@ -544,7 +574,6 @@ function openForm(game) {
 
   updTitleCounter();
   updDescCounter();
-  updHowCounter();
   updateSlugLine();
   updateTagSuggestions();
 
@@ -561,13 +590,20 @@ els.cancelBtn.addEventListener('click', () => {
 function collectMeta(slug) {
   const tags = currentTags();
   const categories = [els.fCat1.value, els.fCat2.value].filter(Boolean);
+  const platforms = [];
+  if (els.fPlatformPc.checked) platforms.push('pc');
+  if (els.fPlatformMobile.checked) platforms.push('mobile');
+  const controls = {};
+  if (els.fPlatformPc.checked) controls.pc = els.fControlsPc.value.trim();
+  if (els.fPlatformMobile.checked) controls.mobile = els.fControlsMobile.value.trim();
   return {
     id: slug,
     title: els.fTitle.value.trim(),
     description: els.fDescription.value.trim(),
-    howToPlay: els.fHowToPlay.value.trim(),
     tags,
     categories,
+    platforms,
+    controls,
     orientation: els.fOrientation.value,
     flags: {
       isPublished: els.fIsPublished.checked,
@@ -584,6 +620,10 @@ els.gameForm.addEventListener('submit', async (e) => {
   const title = els.fTitle.value.trim();
   if (!title) {
     showError(els.formError, 'Укажите название.');
+    return;
+  }
+  if (!els.fPlatformPc.checked && !els.fPlatformMobile.checked) {
+    showError(els.formError, 'Выберите хотя бы одну платформу.');
     return;
   }
   const slug = editingId || generateSlug(title, existingIdsExcept(editingId));

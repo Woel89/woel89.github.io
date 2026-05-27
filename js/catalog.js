@@ -10,7 +10,9 @@
   var allGames = [];
   var activeTag = null;
   var activeCategory = null;
+  var activePlatform = null;
   var catFilterEl = document.getElementById("category-filter");
+  var platFilterEl = document.getElementById("platform-filter");
 
   var NEW_DAYS = 14;
 
@@ -133,6 +135,7 @@
     var filtered = allGames.filter(function (g) {
       if (activeTag && (g.tags || []).indexOf(activeTag) === -1) return false;
       if (activeCategory && gameCategories(g).indexOf(activeCategory) === -1) return false;
+      if (activePlatform && (g.platforms || []).indexOf(activePlatform) === -1) return false;
       return true;
     });
     renderGrid(filtered);
@@ -160,6 +163,33 @@
       if (!b) return;
       activeCategory = b.getAttribute("data-category") || null;
       Array.prototype.forEach.call(catFilterEl.querySelectorAll("button"), function (x) {
+        x.setAttribute("aria-pressed", (x === b).toString());
+      });
+      applyFilter();
+    });
+  }
+
+  function renderPlatformFilter(games) {
+    if (!platFilterEl) return;
+    var hasPc = games.some(function (g) { return (g.platforms || []).indexOf("pc") !== -1; });
+    var hasMobile = games.some(function (g) { return (g.platforms || []).indexOf("mobile") !== -1; });
+    if (!hasPc && !hasMobile) return;
+
+    function btn(label, plat) {
+      var pressed = activePlatform === plat;
+      return '<button type="button" aria-pressed="' + pressed + '" data-platform="' +
+        (plat == null ? "" : esc(plat)) + '">' + esc(label) + "</button>";
+    }
+    var html = btn("Все", null);
+    if (hasPc) html += btn("ПК", "pc");
+    if (hasMobile) html += btn("Мобильные", "mobile");
+    platFilterEl.innerHTML = html;
+
+    platFilterEl.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      activePlatform = b.getAttribute("data-platform") || null;
+      Array.prototype.forEach.call(platFilterEl.querySelectorAll("button"), function (x) {
         x.setAttribute("aria-pressed", (x === b).toString());
       });
       applyFilter();
@@ -202,6 +232,7 @@
       });
       renderTagFilter(allGames);
       renderCategoryFilter(allGames);
+      renderPlatformFilter(allGames);
       renderShelves(allGames);
       renderGrid(allGames);
     })
