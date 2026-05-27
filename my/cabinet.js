@@ -52,7 +52,7 @@ const els = {
   fTitle: $('f-title'),
   fDescription: $('f-description'),
   fHowToPlay: $('f-howToPlay'),
-  fCoverUrl: $('f-coverUrl'),
+  fCover: $('f-cover'),
   fTags: $('f-tags'),
   fCat1: $('f-cat1'),
   fCat2: $('f-cat2'),
@@ -70,6 +70,9 @@ const els = {
   iconCropper: $('icon-cropper'),
   iconCanvas: $('icon-canvas'),
   iconZoom: $('icon-zoom'),
+  coverCropper: $('cover-cropper'),
+  coverCanvas: $('cover-canvas'),
+  coverZoom: $('cover-zoom'),
 };
 
 /** Текущий каталог игр (для slug/дублей), обновляется в loadGames. */
@@ -397,6 +400,112 @@ async function blobToBytes(blob) {
   return new Uint8Array(buf);
 }
 
+/* ---------- Form: cover cropper (canvas, 1200×630 banner) ---------- */
+
+const coverCropper = {
+  img: null,
+  scale: 1,
+  zoom: 1,
+  offX: 0,
+  offY: 0,
+  dragging: false,
+  lastX: 0,
+  lastY: 0,
+};
+
+function coverCropperDraw() {
+  const c = els.coverCanvas;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+  if (!coverCropper.img) return;
+  const s = coverCropper.scale * coverCropper.zoom;
+  const w = coverCropper.img.width * s;
+  const h = coverCropper.img.height * s;
+  const x = (c.width - w) / 2 + coverCropper.offX;
+  const y = (c.height - h) / 2 + coverCropper.offY;
+  ctx.drawImage(coverCropper.img, x, y, w, h);
+}
+
+function coverCropperLoad(file) {
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    coverCropper.img = img;
+    coverCropper.scale = Math.max(els.coverCanvas.width / img.width, els.coverCanvas.height / img.height);
+    coverCropper.zoom = 1;
+    coverCropper.offX = 0;
+    coverCropper.offY = 0;
+    els.coverZoom.value = '1';
+    els.coverCropper.hidden = false;
+    coverCropperDraw();
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
+
+els.fCover.addEventListener('change', () => {
+  const f = els.fCover.files[0];
+  if (f) coverCropperLoad(f);
+  else els.coverCropper.hidden = true;
+});
+els.coverZoom.addEventListener('input', () => {
+  coverCropper.zoom = parseFloat(els.coverZoom.value);
+  coverCropperDraw();
+});
+
+function coverPointerDown(e) {
+  coverCropper.dragging = true;
+  const p = e.touches ? e.touches[0] : e;
+  coverCropper.lastX = p.clientX;
+  coverCropper.lastY = p.clientY;
+}
+function coverPointerMove(e) {
+  if (!coverCropper.dragging) return;
+  const p = e.touches ? e.touches[0] : e;
+  coverCropper.offX += p.clientX - coverCropper.lastX;
+  coverCropper.offY += p.clientY - coverCropper.lastY;
+  coverCropper.lastX = p.clientX;
+  coverCropper.lastY = p.clientY;
+  coverCropperDraw();
+  e.preventDefault();
+}
+function coverPointerUp() { coverCropper.dragging = false; }
+
+els.coverCanvas.addEventListener('mousedown', coverPointerDown);
+window.addEventListener('mousemove', coverPointerMove);
+window.addEventListener('mouseup', coverPointerUp);
+els.coverCanvas.addEventListener('touchstart', coverPointerDown, { passive: false });
+els.coverCanvas.addEventListener('touchmove', coverPointerMove, { passive: false });
+els.coverCanvas.addEventListener('touchend', coverPointerUp);
+
+/**
+ * Экспортировать кроп обложки в 1200×630 blob (webp, png-фолбэк).
+ * @returns {Promise<{blob: Blob, ext: string}|null>}
+ */
+function coverCropperExport() {
+  if (!coverCropper.img) return Promise.resolve(null);
+  const OUT_W = 1200;
+  const OUT_H = 630;
+  const ratio = OUT_W / els.coverCanvas.width; // 1200/400 = 630/210 = 3
+  const out = document.createElement('canvas');
+  out.width = OUT_W;
+  out.height = OUT_H;
+  const ctx = out.getContext('2d');
+  const s = coverCropper.scale * coverCropper.zoom * ratio;
+  const w = coverCropper.img.width * s;
+  const h = coverCropper.img.height * s;
+  const x = (OUT_W - w) / 2 + coverCropper.offX * ratio;
+  const y = (OUT_H - h) / 2 + coverCropper.offY * ratio;
+  ctx.drawImage(coverCropper.img, x, y, w, h);
+  return new Promise((resolve) => {
+    out.toBlob(
+      (b) => (b ? resolve({ blob: b, ext: 'webp' }) : out.toBlob((p) => resolve({ blob: p, ext: 'png' }), 'image/png')),
+      'image/webp',
+      0.9,
+    );
+  });
+}
+
 /* ---------- Form: open / collect / submit ---------- */
 
 function openForm(game) {
@@ -412,7 +521,6 @@ function openForm(game) {
   els.fTitle.value = editing ? game.title || '' : '';
   els.fDescription.value = editing ? game.description || '' : '';
   els.fHowToPlay.value = editing ? game.howToPlay || '' : '';
-  els.fCoverUrl.value = editing ? game.coverUrl || '' : '';
   els.fTags.value = editing && Array.isArray(game.tags) ? game.tags.join(', ') : '';
   const cats = (editing && Array.isArray(game.categories) && game.categories) ||
     (editing && game.category ? [game.category] : []);
@@ -422,9 +530,12 @@ function openForm(game) {
   const fl = (editing && game.flags) || {};
   els.fIsPublished.checked = editing ? Boolean(fl.isPublished) : true;
   els.fIcon.value = '';
+  els.fCover.value = '';
   els.fZip.value = '';
   cropper.img = null;
   els.iconCropper.hidden = true;
+  coverCropper.img = null;
+  els.coverCropper.hidden = true;
 
   els.authorLine.textContent = 'Автор: …';
   getViewerLogin().then((login) => {
@@ -455,7 +566,6 @@ function collectMeta(slug) {
     title: els.fTitle.value.trim(),
     description: els.fDescription.value.trim(),
     howToPlay: els.fHowToPlay.value.trim(),
-    coverUrl: els.fCoverUrl.value.trim(),
     tags,
     categories,
     orientation: els.fOrientation.value,
@@ -493,6 +603,20 @@ els.gameForm.addEventListener('submit', async (e) => {
           message: `Upload icon for ${slug}`,
         });
         meta.icon = iconPath;
+      }
+    }
+
+    // Обложка: кроп → 1200×630 → коммит в каталог-репо.
+    if (coverCropper.img) {
+      els.formStatus.textContent = 'Загрузка обложки…';
+      const exported = await coverCropperExport();
+      if (exported) {
+        const bytes = await blobToBytes(exported.blob);
+        const coverPath = `assets/covers/${slug}.${exported.ext}`;
+        await putFile(CATALOG_REPO, coverPath, bytes, {
+          message: `Upload cover for ${slug}`,
+        });
+        meta.coverUrl = coverPath;
       }
     }
 
