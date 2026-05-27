@@ -1,4 +1,38 @@
 {
   "version": 1,
-  "games": []
+  "games": [
+    {
+      "id": "broadside",
+      "title": "BROADSIDE",
+      "description": "Отбивайся от кораблей",
+      "icon": "assets/icons/broadside.webp",
+      "coverUrl": "assets/covers/broadside.webp",
+      "buildUrl": "https://netgameforge.com/ngf-builds/builds/broadside/20260527-223232/",
+      "tags": [
+        "аркада",
+        "приключения",
+        "веселое",
+        "без регистрации"
+      ],
+      "categories": [
+        "arcade",
+        "adventure"
+      ],
+      "platforms": [
+        "pc",
+        "mobile"
+      ],
+      "controls": {
+        "pc": "A/D поворот влево/вправо, пробел выстрел",
+        "mobile": "свайп влево/вправо поворот влево/вправо, для выстрела кнопка огонь"
+      },
+      "dateAdded": "2026-05-27",
+      "flags": {
+        "isPopular": false,
+        "isPublished": true
+      },
+      "orientation": "landscape",
+      "author": "Woel89"
+    }
+  ]
 }
