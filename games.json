@@ -32,7 +32,25 @@
         "isPublished": true
       },
       "orientation": "landscape",
-      "author": "Woel89"
+      "author": "Woel89",
+      "i18n": {
+        "en": {
+          "title": "BROADSIDE",
+          "description": "Fight off the ships",
+          "howToPlay": ""
+        },
+        "es": {
+          "title": "BROADSIDE",
+          "description": "Lucha contra los barcos",
+          "howToPlay": ""
+        },
+        "pt-br": {
+          "title": "BROADSIDE",
+          "description": "Lute contra os navios",
+          "howToPlay": ""
+        }
+      },
+      "i18nSourceHash": "a3e44f8ed4f5ed95"
     }
   ]
 }
