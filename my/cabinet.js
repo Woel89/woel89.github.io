@@ -47,6 +47,7 @@ const els = {
   formError: $('form-error'),
   formWarnings: $('form-warnings'),
   publishBtn: $('publish-btn'),
+  saveDraftBtn: $('save-draft-btn'),
   cancelBtn: $('cancel-btn'),
   fTitle: $('f-title'),
   fDescription: $('f-description'),
@@ -551,75 +552,6 @@ function coverCropperExport() {
   });
 }
 
-/* ---------- Form: draft autosave ---------- */
-
-const DRAFT_KEY = 'ngf_form_draft';
-
-function saveDraft() {
-  const draft = {
-    title: els.fTitle.value,
-    description: els.fDescription.value,
-    tags: els.fTags.value,
-    cat1: els.fCat1.value,
-    cat2: els.fCat2.value,
-    orientation: els.fOrientation.value,
-    platformPc: els.fPlatformPc.checked,
-    platformMobile: els.fPlatformMobile.checked,
-    controlsPc: els.fControlsPc.value,
-    controlsMobile: els.fControlsMobile.value,
-    isPublished: els.fIsPublished.checked,
-  };
-  try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-  } catch (_) { /* квота исчерпана — молча игнорируем */ }
-}
-
-function clearDraft() {
-  localStorage.removeItem(DRAFT_KEY);
-}
-
-function restoreDraft() {
-  try {
-    const raw = localStorage.getItem(DRAFT_KEY);
-    if (!raw) return false;
-    const d = JSON.parse(raw);
-    if (d.title !== undefined) els.fTitle.value = d.title;
-    if (d.description !== undefined) els.fDescription.value = d.description;
-    if (d.tags !== undefined) els.fTags.value = d.tags;
-    if (d.cat1 !== undefined && CATEGORIES.includes(d.cat1)) els.fCat1.value = d.cat1;
-    if (d.cat2 !== undefined) els.fCat2.value = CATEGORIES.includes(d.cat2) ? d.cat2 : '';
-    if (d.orientation !== undefined) els.fOrientation.value = d.orientation;
-    if (d.platformPc !== undefined) els.fPlatformPc.checked = d.platformPc;
-    if (d.platformMobile !== undefined) els.fPlatformMobile.checked = d.platformMobile;
-    if (d.controlsPc !== undefined) els.fControlsPc.value = d.controlsPc;
-    if (d.controlsMobile !== undefined) els.fControlsMobile.value = d.controlsMobile;
-    if (d.isPublished !== undefined) els.fIsPublished.checked = d.isPublished;
-    return true;
-  } catch (_) {
-    return false;
-  }
-}
-
-/** Debounce-обёртка: сохраняет черновик через 300 мс после последнего события. */
-let _draftTimer = null;
-function scheduleSaveDraft() {
-  clearTimeout(_draftTimer);
-  _draftTimer = setTimeout(saveDraft, 300);
-}
-
-const DRAFT_FIELDS = [
-  els.fTitle, els.fDescription, els.fTags,
-  els.fCat1, els.fCat2, els.fOrientation,
-  els.fControlsPc, els.fControlsMobile,
-];
-for (const el of DRAFT_FIELDS) {
-  el.addEventListener('input', scheduleSaveDraft);
-  el.addEventListener('change', scheduleSaveDraft);
-}
-els.fPlatformPc.addEventListener('change', scheduleSaveDraft);
-els.fPlatformMobile.addEventListener('change', scheduleSaveDraft);
-els.fIsPublished.addEventListener('change', scheduleSaveDraft);
-
 /* ---------- Form: open / collect / submit ---------- */
 
 function openForm(game) {
@@ -655,15 +587,8 @@ function openForm(game) {
     const fl = game.flags || {};
     els.fIsPublished.checked = Boolean(fl.isPublished);
   } else {
-    // Новая игра: попробовать восстановить черновик
-    const restored = restoreDraft();
-    if (restored) {
-      syncPlatformControls();
-      els.formStatus.textContent = 'Черновик восстановлен — выберите иконку/обложку/zip заново.';
-    } else {
-      els.fOrientation.value = 'landscape';
-      els.fIsPublished.checked = true;
-    }
+    els.fOrientation.value = 'landscape';
+    els.fIsPublished.checked = true;
   }
   els.fIcon.value = '';
   els.fCover.value = '';
@@ -690,7 +615,6 @@ function openForm(game) {
 
 els.newGameBtn.addEventListener('click', () => openForm(null));
 els.cancelBtn.addEventListener('click', () => {
-  clearDraft();
   els.formView.hidden = true;
 });
 
@@ -791,12 +715,92 @@ els.gameForm.addEventListener('submit', async (e) => {
         ? 'Создана запись (без билда).'
         : 'Метаданные сохранены.';
     }
-    clearDraft();
     await loadGames();
   } catch (err) {
     els.formStatus.textContent = '';
     showError(els.formError, err.message);
   } finally {
+    els.publishBtn.disabled = false;
+  }
+});
+
+/* ---------- Save draft button ---------- */
+
+els.saveDraftBtn.addEventListener('click', async () => {
+  hideError(els.formError);
+  els.formWarnings.hidden = true;
+  els.formWarnings.innerHTML = '';
+
+  const title = els.fTitle.value.trim();
+  if (!title) {
+    showError(els.formError, 'Укажите название — оно нужно для сохранения черновика.');
+    return;
+  }
+
+  const slug = editingId || generateSlug(title, existingIdsExcept(editingId));
+  const meta = collectMeta(slug);
+  // Черновик всегда isPublished = false, независимо от чекбокса
+  meta.flags.isPublished = false;
+  const zipFile = els.fZip.files[0] || null;
+
+  els.saveDraftBtn.disabled = true;
+  els.publishBtn.disabled = true;
+  try {
+    // Иконка: кроп → 512×512 → коммит в каталог-репо.
+    if (cropper.img) {
+      els.formStatus.textContent = 'Загрузка иконки…';
+      const exported = await cropperExport();
+      if (exported) {
+        const bytes = await blobToBytes(exported.blob);
+        const iconPath = `assets/icons/${slug}.${exported.ext}`;
+        await putFile(CATALOG_REPO, iconPath, bytes, {
+          message: `Upload icon for ${slug}`,
+        });
+        meta.icon = iconPath;
+      }
+    }
+
+    // Обложка: кроп → 1200×630 → коммит в каталог-репо.
+    if (coverCropper.img) {
+      els.formStatus.textContent = 'Загрузка обложки…';
+      const exported = await coverCropperExport();
+      if (exported) {
+        const bytes = await blobToBytes(exported.blob);
+        const coverPath = `assets/covers/${slug}.${exported.ext}`;
+        await putFile(CATALOG_REPO, coverPath, bytes, {
+          message: `Upload cover for ${slug}`,
+        });
+        meta.coverUrl = coverPath;
+      }
+    }
+
+    if (zipFile) {
+      els.formStatus.textContent = 'Загрузка библиотек (zip + защита)…';
+      const [JSZipMod, obfMod] = await Promise.all([import(JSZIP_CDN), import(OBFUSCATOR_CDN)]);
+      const JSZip = JSZipMod.default || JSZipMod;
+      const obfuscator = obfMod.default || obfMod;
+
+      els.formStatus.textContent = 'Сохранение черновика с билдом…';
+      const result = await publishGame({ meta, zipFile, deps: { JSZip, obfuscator } });
+      for (const w of result.warnings || []) {
+        const p = document.createElement('p');
+        p.textContent = `⚠ ${w} Проверьте, что игра запускается.`;
+        els.formWarnings.appendChild(p);
+      }
+      if (result.warnings && result.warnings.length) els.formWarnings.hidden = false;
+    } else {
+      els.formStatus.textContent = 'Сохранение черновика…';
+      await upsertGame(meta);
+    }
+
+    els.formStatus.textContent = 'Сохранено как черновик. Можно вернуться и доработать.';
+    await loadGames();
+    // Форма не закрывается — редактирование можно продолжить
+  } catch (err) {
+    els.formStatus.textContent = '';
+    showError(els.formError, err.message);
+  } finally {
+    els.saveDraftBtn.disabled = false;
     els.publishBtn.disabled = false;
   }
 });
