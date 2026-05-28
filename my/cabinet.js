@@ -765,6 +765,7 @@ els.gameForm.addEventListener('submit', async (e) => {
         ? 'Создана запись (без билда).'
         : 'Метаданные сохранены.';
     }
+    editingId = slug;
     await loadGames();
   } catch (err) {
     els.formStatus.textContent = '';
@@ -844,6 +845,7 @@ els.saveDraftBtn.addEventListener('click', async () => {
     }
 
     els.formStatus.textContent = 'Сохранено как черновик. Можно вернуться и доработать.';
+    editingId = slug;
     await loadGames();
     // Форма не закрывается — редактирование можно продолжить
   } catch (err) {
