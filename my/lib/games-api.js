@@ -561,6 +561,7 @@ export async function publishBuild(gameId, files, deps = {}) {
     obfuscationLog: obf.log,
     mayBreakGame: obf.mayBreakGame,
     riskyFiles: obf.riskyFiles,
+    skippedReasons: obf.skippedReasons || [],
   };
 }
 
@@ -606,7 +607,11 @@ export async function publishGame({ meta, zipFile, deps = {} }) {
   const { created } = await upsertGame(enriched);
 
   const warnings = [];
-  if (build.mayBreakGame) {
+  if (build.skippedReasons && build.skippedReasons.length > 0) {
+    for (const reason of build.skippedReasons) {
+      warnings.push(`Обфускация пропущена (риск поломки игры): ${reason}`);
+    }
+  } else if (build.mayBreakGame) {
     warnings.push(
       `Обфускация могла затронуть ${build.riskyFiles.length} JS-файл(ов) — ` +
         'требуется проверка живости игры.',

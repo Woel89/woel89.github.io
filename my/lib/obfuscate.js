@@ -35,6 +35,9 @@ const OBFUSCATOR_CDN =
  * @property {boolean} mayBreakGame true, если был хотя бы один фолбэк или
  *   обфускация применялась — сигнал, что нужна Playwright-проверка живости.
  * @property {string[]} riskyFiles пути .js, требующие проверки (обфусцированные + фолбэки).
+ * @property {boolean} didObfuscate true, если хоть один файл был обфусцирован.
+ * @property {boolean} hadFallback true, если хоть один файл упал в фолбэк.
+ * @property {string[]} [skippedReasons] причины пропуска обфускации (авто-детект рисков).
  */
 
 /**
@@ -58,6 +61,63 @@ const MODERATE_OPTIONS = {
   stringArrayThreshold: 0.5,
   unicodeEscapeSequence: false,
 };
+
+/**
+ * Паттерны, при наличии которых stringArray-обфускация ломает игру.
+ * Каждый элемент: [label, ...substrings] — срабатывает если ВСЕ substrings найдены в тексте.
+ * Исключение: для blob-worker достаточно одного из двух вариантов Worker-вызова.
+ * @type {Array<{label: string, any?: string[], all?: string[]}>}
+ */
+const RISK_PATTERNS = [
+  {
+    label: 'blob-worker (URL.createObjectURL + new Worker)',
+    all: ['URL.createObjectURL', 'new Worker('],
+  },
+  {
+    label: 'blob-worker (URL.createObjectURL + Worker()',
+    all: ['URL.createObjectURL', 'Worker('],
+  },
+  { label: 'three.js workerSourceURL', any: ['workerSourceURL'] },
+  { label: 'three.js DRACOLoader', any: ['DRACOLoader'] },
+  { label: 'three.js KTX2Loader', any: ['KTX2Loader'] },
+  { label: 'three.js BasisTextureLoader', any: ['BasisTextureLoader'] },
+  { label: 'three.js MeshoptDecoder', any: ['MeshoptDecoder'] },
+  { label: 'importScripts (worker-in-worker)', any: ['importScripts('] },
+  { label: 'new Function() (динамический код)', any: ['new Function('] },
+  { label: 'eval() (динамический код)', any: [' eval('] },
+];
+
+/**
+ * Просканировать .js-файлы билда на паттерны, несовместимые с stringArray-обфускацией.
+ * Возвращает уникальные причины (макс. 5) вида «label — path/file.js».
+ * @param {import('./zip.js').UnpackedFile[]} files
+ * @returns {string[]} список причин или пустой массив.
+ */
+function detectObfuscationRisks(files) {
+  const reasons = [];
+  const decoder = new TextDecoder('utf-8');
+
+  for (const file of files) {
+    if (!file.path.toLowerCase().endsWith('.js')) continue;
+    const text = decoder.decode(file.bytes);
+
+    for (const pattern of RISK_PATTERNS) {
+      let hit = false;
+      if (pattern.any) {
+        hit = pattern.any.some((s) => text.includes(s));
+      } else if (pattern.all) {
+        hit = pattern.all.every((s) => text.includes(s));
+      }
+      if (hit) {
+        reasons.push(`${pattern.label} — ${file.path}`);
+        if (reasons.length >= 5) return reasons;
+        break; // один паттерн на файл достаточно
+      }
+    }
+  }
+
+  return reasons;
+}
 
 /**
  * Получить либу обфускатора: переданную явно или динамический import с CDN.
@@ -143,6 +203,21 @@ function obfuscateInlineScripts(html, obfuscator, options) {
  * @returns {Promise<ObfuscateResult>}
  */
 export async function obfuscateFiles(files, opts = {}) {
+  // Авто-детект паттернов, несовместимых с stringArray-обфускацией.
+  // Если найден хоть один — пропускаем обфускацию всего билда.
+  const skippedReasons = detectObfuscationRisks(files);
+  if (skippedReasons.length > 0) {
+    return {
+      files: files.slice(),
+      log: [],
+      mayBreakGame: false,
+      riskyFiles: [],
+      didObfuscate: false,
+      hadFallback: false,
+      skippedReasons,
+    };
+  }
+
   const obfuscator = await resolveObfuscator(opts.obfuscator);
   const options = { ...MODERATE_OPTIONS, ...(opts.options || {}) };
 
@@ -226,5 +301,7 @@ export async function obfuscateFiles(files, opts = {}) {
     log,
     mayBreakGame: didObfuscate || hadFallback,
     riskyFiles,
+    didObfuscate,
+    hadFallback,
   };
 }
