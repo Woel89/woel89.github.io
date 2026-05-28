@@ -82,8 +82,13 @@
       .join("");
     // Изображение карточки: иконка (если есть), иначе обложка; CSS-градиент при ошибке.
     var src = g.icon || g.coverUrl;
-    var img = src
-      ? '<img src="' + esc(src) + '" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">'
+    // Для относительных путей (наши ассеты) добавляем ?v=updatedAt для cache-busting.
+    var imgSrc = src;
+    if (imgSrc && !/^https?:\/\//i.test(imgSrc) && g.updatedAt) {
+      imgSrc = imgSrc + "?v=" + encodeURIComponent(g.updatedAt);
+    }
+    var img = imgSrc
+      ? '<img src="' + esc(imgSrc) + '" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">'
       : "";
     return (
       '<article class="game-card">' +
@@ -224,7 +229,7 @@
     });
   }
 
-  fetch("games.json", { cache: "no-cache" })
+  fetch("games.json?v=" + Date.now(), { cache: "no-cache" })
     .then(function (r) { return r.json(); })
     .then(function (data) {
       allGames = (data.games || []).filter(function (g) {

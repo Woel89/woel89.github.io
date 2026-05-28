@@ -96,13 +96,24 @@ function gamePageHTML(g, all) {
     ? `<section class="shelf" aria-labelledby="related-h">
       <h2 id="related-h">Похожие игры</h2>
       <div class="game-grid">
-        ${related.map((r) => `
+        ${related.map((r) => {
+          const rRawSrc = r.icon || r.coverUrl;
+          const rSrc = rRawSrc
+            ? (function() {
+                const base = "/" + esc(rRawSrc.replace(/^\/+/, ""));
+                return /^https?:\/\//i.test(rRawSrc)
+                  ? esc(rRawSrc)
+                  : (r.updatedAt ? base + "?v=" + encodeURIComponent(r.updatedAt) : base);
+              })()
+            : "";
+          return `
         <article class="game-card">
           <a href="/games/${esc(r.id)}/">
-            <span class="cover">${(r.icon || r.coverUrl) ? `<img src="/${esc((r.icon || r.coverUrl).replace(/^\/+/, ""))}" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">` : ""}</span>
+            <span class="cover">${rSrc ? `<img src="${rSrc}" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">` : ""}</span>
             <span class="body"><h3>${esc(r.title)}</h3></span>
           </a>
-        </article>`).join("")}
+        </article>`;
+        }).join("")}
       </div>
     </section>`
     : "";
@@ -208,6 +219,25 @@ function gamePageHTML(g, all) {
         allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"
         loading="lazy"></iframe>
     </div>
+  <script>
+    (function () {
+      var SLUG = "${esc(g.id)}";
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("/games.json?v=" + Date.now(), { cache: "no-cache" })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            var games = data && data.games ? data.games : (Array.isArray(data) ? data : []);
+            var entry = null;
+            for (var i = 0; i < games.length; i++) { if (games[i].id === SLUG) { entry = games[i]; break; } }
+            if (!entry || !entry.buildUrl) return;
+            var frame = document.getElementById("game-frame");
+            if (!frame) return;
+            if (entry.buildUrl !== frame.src) { frame.src = entry.buildUrl; }
+          })
+          .catch(function () { /* молчок — оставляем захардкоженный src */ });
+      });
+    })();
+  </script>
 
     <div id="ngf-ratings" data-slug="${esc(g.id)}"></div>
 

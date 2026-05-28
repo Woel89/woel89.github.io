@@ -38,6 +38,7 @@ const CATALOG_PATH = 'games.json';
  * @property {string[]} platforms Платформы: подмножество ['pc','mobile'], минимум одна.
  * @property {{pc?: string, mobile?: string}} controls Текст управления по платформе.
  * @property {string} dateAdded ISO-дата добавления.
+ * @property {string} updatedAt ISO-timestamp последнего upsert (для cache-busting иконок/обложек).
  * @property {GameFlags} flags
  * @property {'portrait'|'landscape'} orientation
  * @property {string} author ник GitHub, проставляется автоматически.
@@ -327,6 +328,7 @@ function normalizeMeta(meta, isNew) {
       mobile: (meta.controls && meta.controls.mobile) || '',
     },
     dateAdded: meta.dateAdded || (isNew ? new Date().toISOString().slice(0, 10) : ''),
+    updatedAt: new Date().toISOString(),
     flags: {
       // isNew больше не хранится — вычисляется при рендере из dateAdded (≤14 дней).
       isPopular: Boolean(flags.isPopular),
