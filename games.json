@@ -2,37 +2,6 @@
   "version": 1,
   "games": [
     {
-      "id": "broadside-caribean-2",
-      "title": "Broadside caribean",
-      "description": "Почувствуй себя капитаном корабля плавающем в море пиратов",
-      "icon": "assets/icons/broadside-caribean-2.webp",
-      "coverUrl": "assets/covers/broadside-caribean-2.webp",
-      "buildUrl": "",
-      "tags": [
-        "аркада",
-        "приключения"
-      ],
-      "categories": [
-        "arcade",
-        "adventure"
-      ],
-      "platforms": [
-        "pc",
-        "mobile"
-      ],
-      "controls": {
-        "pc": "",
-        "mobile": ""
-      },
-      "dateAdded": "2026-05-28",
-      "flags": {
-        "isPopular": false,
-        "isPublished": false
-      },
-      "orientation": "landscape",
-      "author": "Woel89"
-    },
-    {
       "id": "broadside-caribean-3",
       "title": "Broadside caribean",
       "description": "Почувствуй себя капитаном корабля плавающем в море пиратов",
