@@ -55,6 +55,37 @@
       },
       "orientation": "landscape",
       "author": "Woel89"
+    },
+    {
+      "id": "broadside-caribean-3",
+      "title": "Broadside caribean",
+      "description": "Почувствуй себя капитаном корабля плавающем в море пиратов",
+      "icon": "assets/icons/broadside-caribean-3.webp",
+      "coverUrl": "assets/covers/broadside-caribean-3.webp",
+      "buildUrl": "https://builds.netgameforge.com/builds/broadside-caribean-3/20260528-061937/",
+      "tags": [
+        "аркада",
+        "приключения"
+      ],
+      "categories": [
+        "arcade",
+        "adventure"
+      ],
+      "platforms": [
+        "pc",
+        "mobile"
+      ],
+      "controls": {
+        "pc": "A\\D для управления влево\\вправо, пробел для выстрела",
+        "mobile": "свайп влево\\вправо для управления влево\\вправо, кнопка огонь для выстрела"
+      },
+      "dateAdded": "2026-05-28",
+      "flags": {
+        "isPopular": false,
+        "isPublished": false
+      },
+      "orientation": "landscape",
+      "author": "Woel89"
     }
   ]
 }
