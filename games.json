@@ -1,4 +1,29 @@
 {
   "version": 1,
-  "games": []
+  "games": [
+    {
+      "id": "broadside-caribean",
+      "title": "Broadside caribean",
+      "description": "",
+      "icon": "assets/icons/broadside-caribean.webp",
+      "coverUrl": "assets/covers/broadside-caribean.webp",
+      "buildUrl": "",
+      "tags": [],
+      "categories": [
+        "arcade"
+      ],
+      "platforms": [],
+      "controls": {
+        "pc": "",
+        "mobile": ""
+      },
+      "dateAdded": "2026-05-28",
+      "flags": {
+        "isPopular": false,
+        "isPublished": false
+      },
+      "orientation": "landscape",
+      "author": "Woel89"
+    }
+  ]
 }
