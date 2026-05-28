@@ -361,8 +361,9 @@ export async function upsertGame(meta) {
     }
   }
 
-  const MAX_RETRIES = 3;
+  const MAX_RETRIES = 6;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    if (attempt > 0) await new Promise(r => setTimeout(r, 500 * attempt));
     const { games, sha, version } = await readCatalog();
     const idx = games.findIndex((g) => g.id === meta.id);
     const created = idx === -1;

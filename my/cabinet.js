@@ -356,6 +356,7 @@ function cropperLoad(file) {
     els.iconZoom.value = '1';
     els.iconCropper.hidden = false;
     cropperDraw();
+    updatePublishButtonState();
     URL.revokeObjectURL(url);
   };
   img.src = url;
@@ -468,6 +469,7 @@ function coverCropperLoad(file) {
     els.coverZoom.value = '1';
     els.coverCropper.hidden = false;
     coverCropperDraw();
+    updatePublishButtonState();
     URL.revokeObjectURL(url);
   };
   img.src = url;
@@ -609,6 +611,7 @@ function openForm(game) {
   updateTagSuggestions();
 
   $('form-heading').textContent = editing ? `Редактирование: ${game.id}` : 'Новая игра';
+  updatePublishButtonState();
   els.formView.hidden = false;
   els.formView.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -617,6 +620,20 @@ els.newGameBtn.addEventListener('click', () => openForm(null));
 els.cancelBtn.addEventListener('click', () => {
   els.formView.hidden = true;
 });
+
+// Реактивное переключение кнопки «Опубликовать» по изменению полей формы.
+['input', 'change'].forEach(evt => {
+  els.fTitle.addEventListener(evt, updatePublishButtonState);
+  els.fDescription.addEventListener(evt, updatePublishButtonState);
+  els.fZip.addEventListener(evt, updatePublishButtonState);
+  els.fIcon.addEventListener(evt, updatePublishButtonState);
+  els.fCover.addEventListener(evt, updatePublishButtonState);
+  els.fControlsPc.addEventListener(evt, updatePublishButtonState);
+  els.fControlsMobile.addEventListener(evt, updatePublishButtonState);
+});
+els.fCat1.addEventListener('change', updatePublishButtonState);
+els.fPlatformPc.addEventListener('change', updatePublishButtonState);
+els.fPlatformMobile.addEventListener('change', updatePublishButtonState);
 
 function collectMeta(slug) {
   const tags = currentTags();
@@ -640,6 +657,18 @@ function collectMeta(slug) {
       isPublished: els.fIsPublished.checked,
     },
   };
+}
+
+/** Переключает кнопку «Опубликовать»: зелёная/активная — только когда форма валидна. */
+function updatePublishButtonState() {
+  const ok = validatePublish() === null;
+  if (ok) {
+    els.publishBtn.disabled = false;
+    els.publishBtn.classList.add('cab-btn--primary');
+  } else {
+    els.publishBtn.disabled = true;
+    els.publishBtn.classList.remove('cab-btn--primary');
+  }
 }
 
 /** Валидация перед публикацией. Возвращает строку ошибки или null. */
