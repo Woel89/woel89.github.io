@@ -642,21 +642,42 @@ function collectMeta(slug) {
   };
 }
 
+/** Валидация перед публикацией. Возвращает строку ошибки или null. */
+function validatePublish() {
+  const title = els.fTitle.value.trim();
+  if (!title) return 'Укажите название.';
+  if (!els.fPlatformPc.checked && !els.fPlatformMobile.checked)
+    return 'Выберите хотя бы одну платформу.';
+
+  const zipFile = els.fZip.files[0] || null;
+  const existingGame = editingId ? catalogGames.find(g => g.id === editingId) : null;
+  if (!zipFile && !(existingGame && existingGame.buildUrl))
+    return 'Загрузите .zip билда.';
+  if (!els.fDescription.value.trim()) return 'Заполните описание игры.';
+  if (!els.fCat1.value) return 'Выберите основную категорию.';
+  if (!cropper.img && !(existingGame && existingGame.icon)) return 'Загрузите иконку игры.';
+  if (!coverCropper.img && !(existingGame && existingGame.coverUrl)) return 'Загрузите обложку игры.';
+
+  if (els.fPlatformPc.checked && !els.fControlsPc.value.trim())
+    return 'Опишите управление на ПК.';
+  if (els.fPlatformMobile.checked && !els.fControlsMobile.value.trim())
+    return 'Опишите управление на мобильных.';
+
+  return null;
+}
+
 els.gameForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   hideError(els.formError);
   els.formWarnings.hidden = true;
   els.formWarnings.innerHTML = '';
 
+  const validationError = validatePublish();
+  if (validationError) {
+    showError(els.formError, validationError);
+    return;
+  }
   const title = els.fTitle.value.trim();
-  if (!title) {
-    showError(els.formError, 'Укажите название.');
-    return;
-  }
-  if (!els.fPlatformPc.checked && !els.fPlatformMobile.checked) {
-    showError(els.formError, 'Выберите хотя бы одну платформу.');
-    return;
-  }
   const slug = editingId || generateSlug(title, existingIdsExcept(editingId));
   const meta = collectMeta(slug);
   const zipFile = els.fZip.files[0] || null;
