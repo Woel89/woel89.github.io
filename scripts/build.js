@@ -221,12 +221,21 @@ function gamePageHTML(g, all) {
     </div>
 
     <div class="game-frame ${orientation}">
-      <iframe id="game-frame" src="${esc(g.buildUrl)}" title="${esc(g.title)}"
+${(function() {
+  const isExternal = g.source === "external";
+  if (isExternal) {
+    return `      <iframe id="game-frame" src="${esc(g.embedUrl)}" title="${esc(g.title)}"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
+        allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer-when-downgrade"
+        loading="lazy"></iframe>`;
+  }
+  return `      <iframe id="game-frame" src="${esc(g.buildUrl)}" title="${esc(g.title)}"
         sandbox="allow-scripts allow-pointer-lock allow-same-origin"
         allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"
-        loading="lazy"></iframe>
+        loading="lazy"></iframe>`;
+})()}
     </div>
-  <script>
+${g.source !== "external" ? `  <script>
     (function () {
       var SLUG = "${esc(g.id)}";
       document.addEventListener("DOMContentLoaded", function () {
@@ -248,7 +257,7 @@ function gamePageHTML(g, all) {
           .catch(function () { /* молчок — оставляем захардкоженный src */ });
       });
     })();
-  </script>
+  </script>` : ""}
 
     <div id="ngf-ratings" data-slug="${esc(g.id)}"></div>
 
@@ -335,6 +344,7 @@ ${(function() {
       var API_PLAY = "https://ngf-api.kovalevde.workers.dev/api/play";
       var BUILDS_ORIGIN = "https://builds.netgameforge.com";
       var PING_INTERVAL = 30000;
+      var IS_EXTERNAL = ${g.source === "external" ? "true" : "false"};
       var gameId = ${JSON.stringify(g.id)};
 
       function mkUuid() {
@@ -399,25 +409,29 @@ ${(function() {
       }
 
       // postMessage от SDK (приоритет — не дублируем start при авто-триггере)
-      window.addEventListener("message", function (ev) {
-        if (ev.origin !== BUILDS_ORIGIN) return;
-        var d = ev.data;
-        if (!d || typeof d.type !== "string") return;
-        var vid = (d.visitorId) || (window.NGFRatings && window.NGFRatings.getVisitorId()) || mkUuid();
-        if (d.type === "ngf:start") {
-          sdkStarted = true;
-          if (started) return; // уже запущено — игнорируем дубль
-          startSession(d.sessionId || null, vid);
-        } else if (d.type === "ngf:ping") {
-          if (sessionId) {
-            seq = typeof d.seq === "number" ? d.seq : seq + 1;
-            sendPlay({ game_id: gameId, session_id: sessionId, visitor_id: vid, event_type: "ping", seq: seq });
+      // Для external-игр postMessage не слушаем: другой origin, наш фильтр отклонит чужие сообщения,
+      // но не создаём лишний слушатель во избежание шума от провайдерских скриптов.
+      if (!IS_EXTERNAL) {
+        window.addEventListener("message", function (ev) {
+          if (ev.origin !== BUILDS_ORIGIN) return;
+          var d = ev.data;
+          if (!d || typeof d.type !== "string") return;
+          var vid = (d.visitorId) || (window.NGFRatings && window.NGFRatings.getVisitorId()) || mkUuid();
+          if (d.type === "ngf:start") {
+            sdkStarted = true;
+            if (started) return; // уже запущено — игнорируем дубль
+            startSession(d.sessionId || null, vid);
+          } else if (d.type === "ngf:ping") {
+            if (sessionId) {
+              seq = typeof d.seq === "number" ? d.seq : seq + 1;
+              sendPlay({ game_id: gameId, session_id: sessionId, visitor_id: vid, event_type: "ping", seq: seq });
+            }
+          } else if (d.type === "ngf:end") {
+            endSession(vid);
+            sdkStarted = false;
           }
-        } else if (d.type === "ngf:end") {
-          endSession(vid);
-          sdkStarted = false;
-        }
-      });
+        });
+      }
 
       // Авто-старт при загрузке iframe (fallback, пока нет SDK)
       var frame = document.getElementById("game-frame");

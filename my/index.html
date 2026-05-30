@@ -47,6 +47,12 @@
       <section id="form-view" class="cab-card" hidden aria-labelledby="form-heading">
         <h2 id="form-heading">Игра</h2>
         <form id="game-form" autocomplete="off">
+          <fieldset class="cab-flags" id="f-source-fieldset">
+            <legend>Тип игры</legend>
+            <label><input type="radio" id="f-source-hosted" name="source" value="hosted" checked> Свой билд (zip)</label>
+            <label><input type="radio" id="f-source-external" name="source" value="external"> Внешняя игра (embed URL)</label>
+          </fieldset>
+
           <label class="cab-field">
             <span>Название</span>
             <input type="text" id="f-title" name="title" required maxlength="60">
@@ -131,10 +137,28 @@
             <label><input type="checkbox" id="f-isPublished" name="isPublished"> Опубликовать</label>
           </fieldset>
 
-          <label class="cab-field">
-            <span>Билд (.zip) — необязательно при правке метаданных</span>
-            <input type="file" id="f-zip" name="zip" accept=".zip,application/zip">
-          </label>
+          <div id="f-embed-wrap" hidden>
+            <label class="cab-field">
+              <span>Embed URL (iframe src)</span>
+              <input type="url" id="f-embed-url" name="embedUrl" placeholder="https://html5.gamemonetize.co/…">
+              <span class="cab-hint">URL iframe-страницы игры от провайдера (HTTPS).</span>
+            </label>
+            <label class="cab-field">
+              <span>Провайдер</span>
+              <select id="f-provider" name="provider">
+                <option value="gamemonetize">GameMonetize</option>
+                <option value="gamedistribution">GameDistribution</option>
+                <option value="custom">Custom</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="f-zip-wrap">
+            <label class="cab-field">
+              <span>Билд (.zip) — необязательно при правке метаданных</span>
+              <input type="file" id="f-zip" name="zip" accept=".zip,application/zip">
+            </label>
+          </div>
 
           <p class="cab-status" id="form-status" role="status"></p>
           <p class="cab-error" id="form-error" role="alert" hidden></p>

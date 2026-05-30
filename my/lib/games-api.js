@@ -32,7 +32,10 @@ const CATALOG_PATH = 'games.json';
  * @property {string} description
  * @property {string} icon Путь к квадратной иконке (отдельно от coverUrl).
  * @property {string} coverUrl
- * @property {string} buildUrl URL опубликованного билда.
+ * @property {string} buildUrl URL опубликованного билда. У external = ''.
+ * @property {'hosted'|'external'} source Тип хостинга (дефолт 'hosted').
+ * @property {string} embedUrl iframe src для external-игры; у hosted = ''.
+ * @property {''|'gamemonetize'|'gamedistribution'|'custom'} provider Провайдер; у hosted = ''.
  * @property {string[]} tags
  * @property {string[]} categories 1-2 категории; primary = categories[0] (заменяет category).
  * @property {string[]} platforms Платформы: подмножество ['pc','mobile'], минимум одна.
@@ -387,6 +390,9 @@ function normalizeMeta(meta, isNew) {
       isPopular: Boolean(flags.isPopular),
       isPublished: Boolean(flags.isPublished),
     },
+    source: meta.source || 'hosted',
+    embedUrl: meta.embedUrl || '',
+    provider: meta.provider || '',
     orientation: meta.orientation || 'landscape',
     author: meta.author || '',
     owner_id: meta.owner_id || 'woel89',

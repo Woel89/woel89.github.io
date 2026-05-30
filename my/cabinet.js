@@ -66,6 +66,12 @@ const els = {
   fIsPublished: $('f-isPublished'),
   fIcon: $('f-icon'),
   fZip: $('f-zip'),
+  fZipWrap: $('f-zip-wrap'),
+  fSourceHosted: $('f-source-hosted'),
+  fSourceExternal: $('f-source-external'),
+  fEmbedWrap: $('f-embed-wrap'),
+  fEmbedUrl: $('f-embed-url'),
+  fProvider: $('f-provider'),
   cTitle: $('c-title'),
   cDescription: $('c-description'),
   slugLine: $('f-slug-line'),
@@ -646,6 +652,22 @@ function syncPlatformControls() {
 els.fPlatformPc.addEventListener('change', syncPlatformControls);
 els.fPlatformMobile.addEventListener('change', syncPlatformControls);
 
+/* ---------- Form: source type (hosted / external) ---------- */
+
+function isExternalSource() {
+  return els.fSourceExternal && els.fSourceExternal.checked;
+}
+
+function syncSourceType() {
+  const ext = isExternalSource();
+  if (els.fEmbedWrap) els.fEmbedWrap.hidden = !ext;
+  if (els.fZipWrap) els.fZipWrap.hidden = ext;
+  updatePublishButtonState();
+}
+
+if (els.fSourceHosted) els.fSourceHosted.addEventListener('change', syncSourceType);
+if (els.fSourceExternal) els.fSourceExternal.addEventListener('change', syncSourceType);
+
 /**
  * Экспортировать кроп обложки в 1200×630 blob (webp, png-фолбэк).
  * @returns {Promise<{blob: Blob, ext: string}|null>}
@@ -733,6 +755,18 @@ function openForm(entry) {
   coverCropper.fromFile = false;
   els.coverCropper.hidden = true;
 
+  // Переключатель hosted/external + поля embed
+  const isExternal = game && game.source === 'external';
+  if (els.fSourceHosted) els.fSourceHosted.checked = !isExternal;
+  if (els.fSourceExternal) els.fSourceExternal.checked = isExternal;
+  if (els.fEmbedUrl) els.fEmbedUrl.value = (game && game.embedUrl) || '';
+  if (els.fProvider) {
+    const prov = (game && game.provider) || 'gamemonetize';
+    els.fProvider.value = ['gamemonetize', 'gamedistribution', 'custom'].includes(prov) ? prov : 'gamemonetize';
+  }
+  if (els.fEmbedWrap) els.fEmbedWrap.hidden = !isExternal;
+  if (els.fZipWrap) els.fZipWrap.hidden = isExternal;
+
   // NGF-042: показать превью текущей иконки/обложки из загруженного слоя.
   // Рисуем на canvas через Image — пользователь видит что стоит сейчас.
   if (game && game.icon) {
@@ -810,6 +844,7 @@ els.cancelBtn.addEventListener('click', () => {
   els.fCover.addEventListener(evt, updatePublishButtonState);
   els.fControlsPc.addEventListener(evt, updatePublishButtonState);
   els.fControlsMobile.addEventListener(evt, updatePublishButtonState);
+  if (els.fEmbedUrl) els.fEmbedUrl.addEventListener(evt, updatePublishButtonState);
 });
 els.fCat1.addEventListener('change', updatePublishButtonState);
 els.fPlatformPc.addEventListener('change', updatePublishButtonState);
@@ -824,6 +859,7 @@ function collectMeta(slug) {
   const controls = {};
   if (els.fPlatformPc.checked) controls.pc = els.fControlsPc.value.trim();
   if (els.fPlatformMobile.checked) controls.mobile = els.fControlsMobile.value.trim();
+  const ext = isExternalSource();
   return {
     id: slug,
     title: els.fTitle.value.trim(),
@@ -833,6 +869,9 @@ function collectMeta(slug) {
     platforms,
     controls,
     orientation: els.fOrientation.value,
+    source: ext ? 'external' : 'hosted',
+    embedUrl: ext ? (els.fEmbedUrl ? els.fEmbedUrl.value.trim() : '') : '',
+    provider: ext ? (els.fProvider ? els.fProvider.value : '') : '',
     flags: {
       isPublished: els.fIsPublished.checked,
     },
@@ -858,12 +897,23 @@ function validatePublish() {
   if (!els.fPlatformPc.checked && !els.fPlatformMobile.checked)
     return 'Выберите хотя бы одну платформу.';
 
-  const zipFile = els.fZip.files[0] || null;
+  const ext = isExternalSource();
   // Ищем entry по editingId, берём слой: draft > published (тот же, что грузит форма).
   const existingEntry = editingId ? catalogGames.find((e) => e.id === editingId) : null;
   const existingMeta = existingEntry ? (getDraft(existingEntry) || getPublished(existingEntry)) : null;
-  if (!zipFile && !(existingMeta && existingMeta.buildUrl))
-    return 'Загрузите .zip билда.';
+
+  if (ext) {
+    // external: embedUrl обязателен
+    const url = els.fEmbedUrl ? els.fEmbedUrl.value.trim() : '';
+    if (!url) return 'Укажите Embed URL игры.';
+    if (!/^https:\/\//i.test(url)) return 'Embed URL должен начинаться с https://.';
+  } else {
+    // hosted: zip или существующий buildUrl обязателен
+    const zipFile = els.fZip.files[0] || null;
+    if (!zipFile && !(existingMeta && existingMeta.buildUrl))
+      return 'Загрузите .zip билда.';
+  }
+
   if (!els.fDescription.value.trim()) return 'Заполните описание игры.';
   if (!els.fCat1.value) return 'Выберите основную категорию.';
   if (!cropper.img && !(existingMeta && existingMeta.icon)) return 'Загрузите иконку игры.';
@@ -947,7 +997,8 @@ els.gameForm.addEventListener('submit', async (e) => {
     }
 
     let result;
-    if (zipFile) {
+    const zipFile = isExternalSource() ? null : (els.fZip.files[0] || null);
+    if (!isExternalSource() && zipFile) {
       els.formStatus.textContent = 'Загрузка библиотек (zip + защита)…';
       const [JSZipMod, obfMod] = await Promise.all([import(JSZIP_CDN), import(OBFUSCATOR_CDN)]);
       const JSZip = JSZipMod.default || JSZipMod;
@@ -965,7 +1016,7 @@ els.gameForm.addEventListener('submit', async (e) => {
       if (result.warnings && result.warnings.length) els.formWarnings.hidden = false;
     } else {
       els.formStatus.textContent = 'Сохранение метаданных…';
-      // Первая публикация draft-only игры без нового zip: пишем в published-слой напрямую.
+      // external или hosted без нового zip: пишем в published-слой напрямую.
       const res = await upsertGame(meta, { layer: 'published' });
       els.formStatus.textContent = res.created
         ? 'Создана запись (без билда).'
@@ -998,7 +1049,7 @@ els.saveDraftBtn.addEventListener('click', async () => {
   const meta = collectMeta(slug);
   // Черновик всегда isPublished = false, независимо от чекбокса
   meta.flags.isPublished = false;
-  const zipFile = els.fZip.files[0] || null;
+  const zipFile = isExternalSource() ? null : (els.fZip.files[0] || null);
 
   // NGF-042: сохранить существующие пути если ассет не менялся.
   const existingEntryForDraft = editingId ? catalogGames.find((e) => e.id === slug) : null;
@@ -1053,7 +1104,7 @@ els.saveDraftBtn.addEventListener('click', async () => {
       meta.coverUrl = existingMetaForDraft.coverUrl;
     }
 
-    if (zipFile) {
+    if (!isExternalSource() && zipFile) {
       els.formStatus.textContent = 'Загрузка библиотек (zip + защита)…';
       const [JSZipMod, obfMod] = await Promise.all([import(JSZIP_CDN), import(OBFUSCATOR_CDN)]);
       const JSZip = JSZipMod.default || JSZipMod;

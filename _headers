@@ -12,6 +12,7 @@
 
 /games/*
   Cache-Control: no-store
+  Content-Security-Policy: frame-src https://builds.netgameforge.com https://html5.gamemonetize.co https://*.gamemonetize.co https://gamedistribution.com https://*.gamedistribution.com
 
 /assets/icons/*
   Cache-Control: public, max-age=31536000, immutable
