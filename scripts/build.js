@@ -318,6 +318,115 @@ ${(function() {
       window.addEventListener("pagehide", end);
     })();
   </script>
+  <script>
+    /* NGF-026: play-tracking (start/ping/end → /api/play) */
+    (function () {
+      var API_PLAY = "https://ngf-api.kovalevde.workers.dev/api/play";
+      var BUILDS_ORIGIN = "https://builds.netgameforge.com";
+      var PING_INTERVAL = 30000;
+      var gameId = ${JSON.stringify(g.id)};
+
+      function mkUuid() {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+          return window.crypto.randomUUID();
+        }
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+          var r = (Math.random() * 16) | 0;
+          var v = c === "x" ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        });
+      }
+
+      function sendPlay(payload) {
+        var body = JSON.stringify(payload);
+        try {
+          fetch(API_PLAY, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: body,
+            keepalive: true
+          });
+        } catch (e) {}
+      }
+
+      function sendPlayBeacon(payload) {
+        var body = JSON.stringify(payload);
+        var sent = false;
+        if (navigator.sendBeacon) {
+          try {
+            sent = navigator.sendBeacon(API_PLAY, new Blob([body], { type: "application/json" }));
+          } catch (e) {}
+        }
+        if (!sent) {
+          sendPlay(payload);
+        }
+      }
+
+      var sessionId = null;
+      var seq = 0;
+      var pingTimer = null;
+      var started = false;       // guard: один start на просмотр страницы
+      var sdkStarted = false;    // true если start пришёл через postMessage SDK
+
+      function startSession(sid, vid) {
+        started = true;
+        sessionId = sid || mkUuid();
+        seq = 0;
+        sendPlay({ game_id: gameId, session_id: sessionId, visitor_id: vid, event_type: "start", seq: 0 });
+        pingTimer = setInterval(function () {
+          seq++;
+          sendPlay({ game_id: gameId, session_id: sessionId, visitor_id: vid, event_type: "ping", seq: seq });
+        }, PING_INTERVAL);
+      }
+
+      function endSession(vid) {
+        if (!sessionId) return;
+        if (pingTimer) { clearInterval(pingTimer); pingTimer = null; }
+        sendPlayBeacon({ game_id: gameId, session_id: sessionId, visitor_id: vid, event_type: "end", seq: seq });
+        sessionId = null;
+      }
+
+      // postMessage от SDK (приоритет — не дублируем start при авто-триггере)
+      window.addEventListener("message", function (ev) {
+        if (ev.origin !== BUILDS_ORIGIN) return;
+        var d = ev.data;
+        if (!d || typeof d.type !== "string") return;
+        var vid = (d.visitorId) || (window.NGFRatings && window.NGFRatings.getVisitorId()) || mkUuid();
+        if (d.type === "ngf:start") {
+          sdkStarted = true;
+          if (started) return; // уже запущено — игнорируем дубль
+          startSession(d.sessionId || null, vid);
+        } else if (d.type === "ngf:ping") {
+          if (sessionId) {
+            seq = typeof d.seq === "number" ? d.seq : seq + 1;
+            sendPlay({ game_id: gameId, session_id: sessionId, visitor_id: vid, event_type: "ping", seq: seq });
+          }
+        } else if (d.type === "ngf:end") {
+          endSession(vid);
+          sdkStarted = false;
+        }
+      });
+
+      // Авто-старт при загрузке iframe (fallback, пока нет SDK)
+      var frame = document.getElementById("game-frame");
+      if (frame) {
+        frame.addEventListener("load", function () {
+          if (started) return; // уже запущено (buildUrl-sync вызвал второй load) — игнорируем
+          if (sdkStarted) return; // SDK уже взял управление
+          var vid = (window.NGFRatings && window.NGFRatings.getVisitorId()) || mkUuid();
+          startSession(null, vid);
+        });
+      }
+
+      // end при выгрузке страницы
+      function onUnload() {
+        var vid = (window.NGFRatings && window.NGFRatings.getVisitorId()) || mkUuid();
+        endSession(vid);
+      }
+      window.addEventListener("pagehide", onUnload);
+      window.addEventListener("beforeunload", onUnload);
+    })();
+  </script>
 </body>
 </html>
 `;

@@ -336,6 +336,7 @@ function normalizeMeta(meta, isNew) {
     },
     orientation: meta.orientation || 'landscape',
     author: meta.author || '',
+    owner_id: meta.owner_id || 'woel89',
   };
 }
 
@@ -353,13 +354,19 @@ export async function upsertGame(meta) {
     throw new Error(`Невалидный slug "${meta.id}": разрешены только [a-z0-9-].`);
   }
 
-  // author проставляется из ника GitHub автоматически, если не передан явно.
-  if (!meta.author) {
+  // author и owner_id проставляются из ника GitHub автоматически, если не переданы явно.
+  if (!meta.author || !meta.owner_id) {
     try {
       const login = await getViewerLogin();
-      if (login) meta = { ...meta, author: login };
+      if (login) {
+        meta = {
+          ...meta,
+          ...(!meta.author && { author: login }),
+          ...(!meta.owner_id && { owner_id: login }),
+        };
+      }
     } catch {
-      // Ник недоступен — оставляем author пустым, не блокируем сохранение.
+      // Ник недоступен — оставляем поля пустыми, не блокируем сохранение.
     }
   }
 
