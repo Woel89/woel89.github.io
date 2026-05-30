@@ -149,8 +149,43 @@
       </section>
     </section>
 
-    <!-- Модерация отзывов (отдельный вход по модер-токену) -->
-    <section id="mod-view" class="cab-card" aria-labelledby="mod-heading">
+    <!-- Studio: per-game экран (NGF-027) -->
+    <section id="studio-view" hidden aria-labelledby="studio-heading">
+      <div class="cab-toolbar">
+        <h1 id="studio-heading">Студия</h1>
+        <button type="button" id="studio-back-btn" class="cab-btn cab-btn--ghost">← Назад к списку</button>
+      </div>
+      <p id="studio-game-name" class="cab-muted" style="margin-bottom:1rem"></p>
+
+      <!-- Вкладки -->
+      <div class="cab-tabs" role="tablist" aria-label="Разделы студии">
+        <button class="cab-tab" role="tab" id="tab-overview" aria-selected="true" aria-controls="tabpanel-overview">Обзор</button>
+        <button class="cab-tab" role="tab" id="tab-reviews" aria-selected="false" aria-controls="tabpanel-reviews">Отзывы</button>
+      </div>
+
+      <!-- Вкладка: Обзор -->
+      <div id="tabpanel-overview" role="tabpanel" aria-labelledby="tab-overview">
+        <p class="cab-status" id="stats-status" role="status"></p>
+        <div class="studio-metrics" id="studio-metrics"></div>
+        <div class="studio-chart" id="studio-chart" hidden>
+          <div class="studio-chart__title">Запуски по дням (7д)</div>
+          <div class="studio-bars" id="studio-bars"></div>
+        </div>
+      </div>
+
+      <!-- Вкладка: Отзывы -->
+      <div id="tabpanel-reviews" role="tabpanel" aria-labelledby="tab-reviews" hidden>
+        <div class="cab-subtabs" role="group" aria-label="Статус отзывов">
+          <button class="cab-subtab" id="subtab-held" aria-selected="true">На проверке</button>
+          <button class="cab-subtab" id="subtab-published" aria-selected="false">Опубликованные</button>
+        </div>
+        <p class="cab-status" id="reviews-status" role="status"></p>
+        <div id="reviews-list"></div>
+      </div>
+    </section>
+
+    <!-- Модерация отзывов (отдельный вход по модер-токену) — скрыта из UI (NGF-027) -->
+    <section id="mod-view" class="cab-card" hidden aria-labelledby="mod-heading" aria-hidden="true">
       <h2 id="mod-heading">Модерация отзывов</h2>
 
       <form id="mod-login-form" autocomplete="off">
@@ -171,6 +206,6 @@
   </main>
 
   <script type="module" src="/my/cabinet.js"></script>
-  <script type="module" src="/my/moderation.js"></script>
+  <script type="module" src="/my/studio.js"></script>
 </body>
 </html>

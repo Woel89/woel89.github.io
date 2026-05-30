@@ -187,6 +187,18 @@ function gameCard(g) {
 
   card.appendChild(info);
 
+  const studioBtn = document.createElement('button');
+  studioBtn.type = 'button';
+  studioBtn.className = 'cab-btn cab-btn--ghost';
+  studioBtn.textContent = 'Студия';
+  studioBtn.addEventListener('click', () => {
+    const url = new URL(location.href);
+    url.searchParams.set('game', g.id);
+    history.pushState({}, '', url);
+    window.dispatchEvent(new CustomEvent('ngf:studio-open', { detail: { slug: g.id, title: g.title || g.id } }));
+  });
+  card.appendChild(studioBtn);
+
   const editBtn = document.createElement('button');
   editBtn.type = 'button';
   editBtn.className = 'cab-btn cab-btn--ghost';
@@ -855,6 +867,18 @@ els.saveDraftBtn.addEventListener('click', async () => {
     els.saveDraftBtn.disabled = false;
     els.publishBtn.disabled = false;
   }
+});
+
+// Studio-роутинг: скрыть/показать cabinet-view при открытии/закрытии Studio.
+window.addEventListener('ngf:studio-open', () => {
+  els.cabinetView.hidden = true;
+});
+window.addEventListener('ngf:studio-close', () => {
+  els.cabinetView.hidden = false;
+  // Убрать ?game= из URL
+  const url = new URL(location.href);
+  url.searchParams.delete('game');
+  history.pushState({}, '', url);
 });
 
 render();
