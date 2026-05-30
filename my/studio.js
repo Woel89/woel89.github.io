@@ -137,6 +137,8 @@ const els = {
   panelReviews: $('tabpanel-reviews'),
   statsStatus: $('stats-status'),
   studioMetrics: $('studio-metrics'),
+  studioFunnel: $('studio-funnel'),
+  studioReturnGrid: $('studio-return-grid'),
   studioChart: $('studio-chart'),
   studioBars: $('studio-bars'),
   subtabHeld: $('subtab-held'),
@@ -178,58 +180,285 @@ els.subtabPublished.addEventListener('click', () => showSubtab('published'));
 async function loadStats(slug) {
   els.statsStatus.textContent = 'Загрузка метрик…';
   els.studioMetrics.innerHTML = '';
+  els.studioFunnel.hidden = true;
+  els.studioFunnel.innerHTML = '';
+  els.studioReturnGrid.innerHTML = '';
   els.studioChart.hidden = true;
   try {
     const data = await workerFetch(`/api/studio/${slug}/stats?period=7d`);
     els.statsStatus.textContent = '';
     renderMetrics(data);
+    renderFunnel(data);
+    renderReturnRetention(data.return_retention || null);
     renderChart(data.daily || []);
   } catch (err) {
     els.statsStatus.textContent = `Ошибка загрузки метрик: ${err.message}`;
   }
 }
 
+/* ---------- Benchmark thresholds (§5, studio-metrics-v2-design.md) ---------- */
+
+/**
+ * Returns 'good'|'ok'|'bad'|null for a numeric value against threshold config.
+ * thresholds: { good: N, ok: N } — value >= good → 'good', >= ok → 'ok', else 'bad'.
+ * Returns null if value is null/undefined (not enough data).
+ */
+function benchTier(value, thresholds) {
+  if (value == null) return null;
+  const v = Number(value);
+  if (v >= thresholds.good) return 'good';
+  if (v >= thresholds.ok)   return 'ok';
+  return 'bad';
+}
+
+const BENCH = {
+  retention_1min_pct:  { good: 70, ok: 40 },
+  retention_3min_pct:  { good: 40, ok: 20 },
+  retention_10min_pct: { good: 20, ok: 8  },
+  like_ratio:          { good: 75, ok: 55 },
+  avg_session_min:     { good: 8,  ok: 3  },
+};
+
+const BENCH_LABEL = { good: 'Выше нормы', ok: 'В норме', bad: 'Ниже нормы' };
+
+function makeMetricCard(valText, label, tier) {
+  const metric = document.createElement('div');
+  metric.className = 'studio-metric' + (tier ? ` studio-metric--${tier}` : '');
+
+  const valEl = document.createElement('div');
+  valEl.className = 'studio-metric__val';
+  valEl.textContent = valText;
+
+  const lblEl = document.createElement('div');
+  lblEl.className = 'studio-metric__label';
+  lblEl.textContent = label;
+
+  metric.appendChild(valEl);
+  metric.appendChild(lblEl);
+
+  if (tier) {
+    const benchEl = document.createElement('div');
+    benchEl.className = 'studio-metric__bench';
+    benchEl.textContent = BENCH_LABEL[tier];
+    metric.appendChild(benchEl);
+  }
+  return metric;
+}
+
 function renderMetrics(data) {
-  const items = [
-    { val: data.total_plays ?? '—', label: 'Запуски' },
-    { val: data.unique_players ?? '—', label: 'Уник. игроки' },
-    { val: data.avg_session_min != null ? `${Number(data.avg_session_min).toFixed(1)} мин` : '—', label: 'Ср. сессия' },
-    { val: data.retention_1min_pct != null ? `${Number(data.retention_1min_pct).toFixed(0)}%` : '—', label: 'Удержание 1мин' },
-    { val: data.like_ratio != null ? `${Number(data.like_ratio).toFixed(0)}%` : '—', label: 'Лайки' },
-  ];
   els.studioMetrics.innerHTML = '';
-  for (const { val, label } of items) {
-    const metric = document.createElement('div');
-    metric.className = 'studio-metric';
+
+  // A1: Запусков — без подсветки (объём)
+  els.studioMetrics.appendChild(makeMetricCard(
+    data.total_plays ?? '—', 'Запусков', null
+  ));
+
+  // A2: Уник. игроки — без подсветки (объём)
+  els.studioMetrics.appendChild(makeMetricCard(
+    data.unique_players ?? '—', 'Уник. игроки', null
+  ));
+
+  // A3: R@1мин
+  const r1 = data.retention_1min_pct;
+  els.studioMetrics.appendChild(makeMetricCard(
+    r1 != null ? `${Number(r1).toFixed(0)}%` : '—',
+    'R@1мин',
+    benchTier(r1, BENCH.retention_1min_pct)
+  ));
+
+  // A4: R@3мин
+  const r3 = data.retention_3min_pct;
+  els.studioMetrics.appendChild(makeMetricCard(
+    r3 != null ? `${Number(r3).toFixed(0)}%` : '—',
+    'R@3мин',
+    benchTier(r3, BENCH.retention_3min_pct)
+  ));
+
+  // A5: R@10мин
+  const r10 = data.retention_10min_pct;
+  els.studioMetrics.appendChild(makeMetricCard(
+    r10 != null ? `${Number(r10).toFixed(0)}%` : '—',
+    'R@10мин',
+    benchTier(r10, BENCH.retention_10min_pct)
+  ));
+
+  // A6: Like ratio
+  const lr = data.like_ratio;
+  els.studioMetrics.appendChild(makeMetricCard(
+    lr != null ? `${Number(lr).toFixed(0)}%` : '—',
+    'Like ratio',
+    benchTier(lr, BENCH.like_ratio)
+  ));
+
+  // A7: Ср. сессия (вспомогательное)
+  const avg = data.avg_session_min;
+  els.studioMetrics.appendChild(makeMetricCard(
+    avg != null ? `${Number(avg).toFixed(1)} мин` : '—',
+    'Ср. сессия',
+    benchTier(avg, BENCH.avg_session_min)
+  ));
+}
+
+/* ---------- Ping funnel (§6.1) ---------- */
+
+/**
+ * Determines bar fill class: 'good' → no modifier, 'ok' → '--ok', 'bad' → '--bad'.
+ */
+function funnelFillClass(pct, thresholds) {
+  const tier = benchTier(pct, thresholds);
+  if (tier === 'ok')  return 'studio-funnel__fill--ok';
+  if (tier === 'bad') return 'studio-funnel__fill--bad';
+  return '';
+}
+
+function renderFunnel(data) {
+  const r1  = data.retention_1min_pct;
+  const r3  = data.retention_3min_pct;
+  const r10 = data.retention_10min_pct;
+  const r30 = data.retention_30min_pct;
+
+  // Always show 4 steps; show R@30 only if > 0
+  const steps = [
+    { label: 'Запуск',  pct: 100,  thresholds: null },
+    { label: 'R@1мин',  pct: r1,   thresholds: BENCH.retention_1min_pct },
+    { label: 'R@3мин',  pct: r3,   thresholds: BENCH.retention_3min_pct },
+    { label: 'R@10мин', pct: r10,  thresholds: BENCH.retention_10min_pct },
+  ];
+  if (r30 != null && Number(r30) > 0) {
+    steps.push({ label: 'R@30мин', pct: r30, thresholds: { good: 8, ok: 3 } });
+  }
+
+  els.studioFunnel.innerHTML = '';
+  for (const step of steps) {
+    const row = document.createElement('div');
+    row.className = 'studio-funnel__row';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'studio-funnel__label';
+    lbl.textContent = step.label;
+
+    const track = document.createElement('div');
+    track.className = 'studio-funnel__track';
+
+    const fill = document.createElement('div');
+    const pctVal = step.pct != null ? Number(step.pct) : null;
+    const fillPct = pctVal ?? 0;
+    const fillMod = step.thresholds ? funnelFillClass(pctVal, step.thresholds) : '';
+    fill.className = ('studio-funnel__fill' + (fillMod ? ' ' + fillMod : '')).trim();
+    fill.style.width = `${Math.min(fillPct, 100)}%`;
+
+    track.appendChild(fill);
+
+    const pctEl = document.createElement('div');
+    pctEl.className = 'studio-funnel__pct';
+    pctEl.textContent = pctVal != null ? `${pctVal.toFixed(0)}%` : '—';
+
+    row.appendChild(lbl);
+    row.appendChild(track);
+    row.appendChild(pctEl);
+    els.studioFunnel.appendChild(row);
+  }
+
+  els.studioFunnel.hidden = false;
+}
+
+/* ---------- Return-retention (§3, §5.2) ---------- */
+
+const BENCH_RETURN = {
+  d1:  { good: 12,  ok: 5   },
+  d3:  { good: 6,   ok: 2   },
+  d7:  { good: 4,   ok: 1.5 },
+  d30: { good: 2,   ok: 0.5 },
+};
+
+function renderReturnRetention(rr) {
+  els.studioReturnGrid.innerHTML = '';
+  const keys = ['d1', 'd3', 'd7', 'd30'];
+  const labels = { d1: 'D1', d3: 'D3', d7: 'D7', d30: 'D30' };
+
+  for (const key of keys) {
+    const entry = rr && rr[key] ? rr[key] : null;
+    const pct   = entry && entry.pct != null ? entry.pct : null;
+    const size  = entry ? entry.cohort_size : null;
+    const tier  = pct != null ? benchTier(pct, BENCH_RETURN[key]) : null;
+
+    const card = document.createElement('div');
+    card.className = 'studio-metric' + (tier ? ` studio-metric--${tier}` : '');
+
     const valEl = document.createElement('div');
     valEl.className = 'studio-metric__val';
-    valEl.textContent = val;
+    valEl.textContent = pct != null ? `${Number(pct).toFixed(1)}%` : '—';
+
     const lblEl = document.createElement('div');
     lblEl.className = 'studio-metric__label';
-    lblEl.textContent = label;
-    metric.appendChild(valEl);
-    metric.appendChild(lblEl);
-    els.studioMetrics.appendChild(metric);
+    lblEl.textContent = labels[key];
+
+    card.appendChild(valEl);
+    card.appendChild(lblEl);
+
+    if (pct == null && size != null) {
+      // Not enough data — show cohort size hint
+      const hint = document.createElement('div');
+      hint.className = 'studio-metric__bench';
+      hint.style.color = 'var(--color-text-muted)';
+      hint.textContent = `мало данных (${size})`;
+      card.appendChild(hint);
+    } else if (tier) {
+      const benchEl = document.createElement('div');
+      benchEl.className = 'studio-metric__bench';
+      benchEl.textContent = BENCH_LABEL[tier];
+      card.appendChild(benchEl);
+    }
+
+    els.studioReturnGrid.appendChild(card);
   }
 }
 
 function renderChart(daily) {
-  if (!daily.length) return;
   els.studioChart.hidden = false;
-  const max = Math.max(...daily.map(d => d.starts || 0), 1);
   els.studioBars.innerHTML = '';
-  for (const d of daily) {
+
+  // Строим сетку из 7 дней (сегодня и 6 дней назад по UTC)
+  const DAYS = 7;
+  const todayUTC = new Date(Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth(),
+    new Date().getUTCDate()
+  ));
+  const grid = [];
+  for (let i = DAYS - 1; i >= 0; i--) {
+    const d = new Date(todayUTC);
+    d.setUTCDate(d.getUTCDate() - i);
+    const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+    grid.push({ day: key, starts: 0, uniques: 0 });
+  }
+  // Наложить реальные данные на сетку
+  const byDay = {};
+  for (const d of daily) { byDay[d.day] = d; }
+  for (const slot of grid) { if (byDay[slot.day]) Object.assign(slot, byDay[slot.day]); }
+
+  const totalStarts = grid.reduce((s, d) => s + (d.starts || 0), 0);
+  if (!totalStarts) {
+    const empty = document.createElement('div');
+    empty.className = 'studio-chart__empty';
+    empty.textContent = 'Пока нет запусков';
+    els.studioBars.appendChild(empty);
+    return;
+  }
+
+  const max = Math.max(...grid.map(d => d.starts || 0), 1);
+  for (const d of grid) {
     const pct = Math.round(((d.starts || 0) / max) * 100);
     const wrap = document.createElement('div');
     wrap.className = 'studio-bar-wrap';
     const bar = document.createElement('div');
-    bar.className = 'studio-bar';
+    bar.className = 'studio-bar' + (d.starts ? '' : ' studio-bar--empty');
     bar.style.height = `${Math.max(pct, 2)}%`;
     bar.title = `${d.day}: ${d.starts} запусков`;
     const lbl = document.createElement('div');
     lbl.className = 'studio-bar-label';
-    // Показываем день месяца из YYYY-MM-DD
-    lbl.textContent = d.day ? d.day.slice(8) : '';
+    // Формат dd.mm из YYYY-MM-DD
+    lbl.textContent = d.day ? `${d.day.slice(8)}.${d.day.slice(5, 7)}` : '';
     wrap.appendChild(bar);
     wrap.appendChild(lbl);
     els.studioBars.appendChild(wrap);

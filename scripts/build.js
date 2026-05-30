@@ -375,6 +375,7 @@ ${(function() {
         sendPlay({ game_id: gameId, session_id: sessionId, visitor_id: vid, event_type: "start", seq: 0 });
         pingTimer = setInterval(function () {
           seq++;
+          if (seq >= 120) { clearInterval(pingTimer); pingTimer = null; return; } // cap: 60 min
           sendPlay({ game_id: gameId, session_id: sessionId, visitor_id: vid, event_type: "ping", seq: seq });
         }, PING_INTERVAL);
       }

@@ -166,10 +166,30 @@
       <!-- Вкладка: Обзор -->
       <div id="tabpanel-overview" role="tabpanel" aria-labelledby="tab-overview">
         <p class="cab-status" id="stats-status" role="status"></p>
+
+        <!-- Группа A: сводные карточки -->
         <div class="studio-metrics" id="studio-metrics"></div>
+
+        <!-- Ping-воронка -->
+        <div class="studio-section-title">Воронка вовлечённости (по сессиям)</div>
+        <div class="studio-funnel" id="studio-funnel" hidden></div>
+
+        <!-- Return-retention -->
+        <div class="studio-section-title">Возвраты (return-retention)</div>
+        <div class="studio-return-grid" id="studio-return-grid"></div>
+
+        <!-- График запусков -->
         <div class="studio-chart" id="studio-chart" hidden>
           <div class="studio-chart__title">Запуски по дням (7д)</div>
           <div class="studio-bars" id="studio-bars"></div>
+        </div>
+
+        <!-- Заглушка: воронка по событиям (гейт NGF SDK) -->
+        <div class="studio-section-title">Воронка по событиям</div>
+        <div class="studio-sdk-stub" aria-disabled="true"
+             title="Доступно после подключения NGF SDK">
+          <div class="studio-sdk-stub__title">Воронка по событиям</div>
+          <div class="studio-sdk-stub__note">Доступно после подключения NGF SDK</div>
         </div>
       </div>
 

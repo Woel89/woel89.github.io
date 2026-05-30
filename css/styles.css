@@ -406,16 +406,22 @@ section.shelf > h2 {
   display: flex; align-items: flex-end; gap: 4px; height: 80px;
 }
 .studio-bar-wrap {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  justify-content: flex-end; gap: 2px; min-width: 0; height: 100%; box-sizing: border-box;
+  flex: 0 0 36px; display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; gap: 2px; height: 100%; box-sizing: border-box;
 }
 .studio-bar {
-  width: 100%; background: var(--color-accent); border-radius: 3px 3px 0 0;
+  width: 28px; background: var(--color-accent); border-radius: 3px 3px 0 0;
   min-height: 2px; opacity: 0.85;
+}
+.studio-bar--empty {
+  background: var(--color-border); opacity: 0.5;
 }
 .studio-bar-label {
   font-size: 0.6rem; color: var(--color-text-muted);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 36px; text-align: center;
+}
+.studio-chart__empty {
+  font-size: 0.82rem; color: var(--color-text-muted); padding: 1rem 0;
 }
 
 .studio-review {
@@ -546,4 +552,89 @@ section.shelf > h2 {
 .ngf-review-head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
 .ngf-review-date { color: var(--color-text-muted); font-size: 0.82rem; }
 .ngf-review-text { margin: 0.3rem 0 0; white-space: pre-wrap; }
+
+/* ---------- Studio metrics v2 (NGF-039) ---------- */
+
+/* Benchmark tint on metric card */
+.studio-metric--good {
+  border-color: #2a4a10;
+  background: #131f0a;
+}
+.studio-metric--good .studio-metric__val { color: var(--color-accent); }
+.studio-metric--ok {
+  border-color: #3a3010;
+  background: #1e1a08;
+}
+.studio-metric--ok .studio-metric__val { color: #e6c800; }
+.studio-metric--bad {
+  border-color: #3a1520;
+  background: #1e0b10;
+}
+.studio-metric--bad .studio-metric__val { color: var(--color-accent-2); }
+
+.studio-metric__bench {
+  font-size: 0.7rem; margin-top: 0.25rem; font-weight: 600;
+}
+.studio-metric--good .studio-metric__bench { color: var(--color-accent); }
+.studio-metric--ok  .studio-metric__bench { color: #e6c800; }
+.studio-metric--bad .studio-metric__bench { color: var(--color-accent-2); }
+
+/* Section headings inside Overview tab */
+.studio-section-title {
+  font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--color-text-muted);
+  margin: 1.25rem 0 0.6rem;
+}
+
+/* Ping funnel (horizontal bars) */
+.studio-funnel {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius); padding: 0.85rem 1rem; margin-bottom: 1rem;
+}
+.studio-funnel__row {
+  display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.45rem;
+}
+.studio-funnel__row:last-child { margin-bottom: 0; }
+.studio-funnel__label {
+  flex: 0 0 90px; font-size: 0.75rem; color: var(--color-text-muted);
+  text-align: right; padding-right: 0.4rem;
+}
+.studio-funnel__track {
+  flex: 1; background: var(--color-surface-2); border-radius: 4px; height: 20px;
+  position: relative; overflow: hidden;
+}
+.studio-funnel__fill {
+  height: 100%; border-radius: 4px; background: var(--color-accent);
+  opacity: 0.7; transition: width 0.3s;
+}
+.studio-funnel__fill--ok   { background: #e6c800; }
+.studio-funnel__fill--bad  { background: var(--color-accent-2); }
+.studio-funnel__pct {
+  flex: 0 0 42px; font-size: 0.82rem; font-weight: 700;
+  color: var(--color-text); text-align: right;
+}
+
+/* Return-retention grid */
+.studio-return-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem; margin-bottom: 1rem;
+}
+@media (max-width: 500px) {
+  .studio-return-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* SDK stub block */
+.studio-sdk-stub {
+  background: var(--color-surface); border: 1px dashed var(--color-border);
+  border-radius: var(--radius); padding: 1rem;
+  opacity: 0.55; cursor: not-allowed; user-select: none;
+  margin-bottom: 1rem;
+}
+.studio-sdk-stub__title {
+  font-size: 0.82rem; font-weight: 700; color: var(--color-text-muted);
+  margin-bottom: 0.3rem;
+}
+.studio-sdk-stub__note {
+  font-size: 0.75rem; color: var(--color-text-muted);
+}
 .ngf-reviews-empty { color: var(--color-text-muted); }
