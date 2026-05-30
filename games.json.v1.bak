@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "games": [
+    {
+      "id": "broadside-caribean-4",
+      "title": "Broadside caribean",
+      "description": "Почувствуй себя капитаном корабля плавающем в море пиратов",
+      "icon": "assets/icons/broadside-caribean-4.webp",
+      "coverUrl": "assets/covers/broadside-caribean-4.webp",
+      "buildUrl": "https://builds.netgameforge.com/builds/broadside-caribean-4/20260528-070826/",
+      "tags": [
+        "аркада",
+        "приключения"
+      ],
+      "categories": [
+        "arcade",
+        "adventure"
+      ],
+      "platforms": [
+        "pc",
+        "mobile"
+      ],
+      "controls": {
+        "pc": "A\\D для управления влево\\вправо, пробел для выстрела",
+        "mobile": "свайп влево\\вправо для управления влево\\вправо, кнопка огонь для выстрела"
+      },
+      "dateAdded": "2026-05-28",
+      "flags": {
+        "isPopular": false,
+        "isPublished": true
+      },
+      "orientation": "landscape",
+      "author": "Woel89"
+    }
+  ]
+}

@@ -60,7 +60,7 @@ async function createBlob(repo, file) {
  * @param {string} ref например 'heads/main'.
  * @returns {Promise<string>}
  */
-async function getRefSha(repo, ref) {
+export async function getRefSha(repo, ref) {
   const res = await authedRequest('GET', `${GITHUB_API_BASE}/repos/${repo}/git/ref/${ref}`);
   return res.object.sha;
 }

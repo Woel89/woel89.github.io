@@ -115,7 +115,14 @@ async function main() {
   const wrapper = readJSON(GAMES_FILE);
   if (!wrapper || !Array.isArray(wrapper.games)) softExit("games.json без games[]");
 
-  const published = wrapper.games.filter((g) => g.flags && g.flags.isPublished);
+  // v2 (version>=2): опубликованность = наличие published-слоя; popularity-поля
+  // (isPopular/popularityScore/statsUpdatedAt) пишем В published. v1: плоские GameMeta,
+  // опубликованность = flags.isPublished. published — массив GameMeta-слоёв (ссылки),
+  // мутации применяются на месте (анти-петля по changed сохраняется).
+  const isV2 = wrapper.version >= 2;
+  const published = isV2
+    ? wrapper.games.map((e) => e && e.published).filter(Boolean)
+    : wrapper.games.filter((g) => g.flags && g.flags.isPublished);
   if (!published.length) softExit("Нет опубликованных игр");
 
   // --- запрос к Метрике ---
@@ -220,11 +227,12 @@ async function main() {
   const scoreById = {};
   for (const c of candidates) scoreById[c.g.id] = c.score;
 
+  // Применяем только к опубликованным метам (published-слои в v2; плоские в v1).
+  // Чужие/неопубликованные записи и draft-слой не трогаем.
   let changed = false;
-  for (const g of wrapper.games) {
-    const isPub = !!(g.flags && g.flags.isPublished);
-    const newPopular = isPub && winners.has(g.id);
-    const newScore = isPub && (g.id in scoreById) ? scoreById[g.id] : 0;
+  for (const g of published) {
+    const newPopular = winners.has(g.id);
+    const newScore = (g.id in scoreById) ? scoreById[g.id] : 0;
 
     g.flags = g.flags || {};
     if (g.flags.isPopular !== newPopular) { g.flags.isPopular = newPopular; changed = true; }
