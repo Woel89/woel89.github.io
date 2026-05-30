@@ -232,9 +232,13 @@
   fetch("games.json?v=" + Date.now(), { cache: "no-cache" })
     .then(function (r) { return r.json(); })
     .then(function (data) {
-      allGames = (data.games || []).filter(function (g) {
-        return g.flags && g.flags.isPublished;
-      });
+      var entries = data.games || [];
+      // v2: показывать только published-слой; draft-only в публичный каталог не идут.
+      // legacy v1: фильтровать по flags.isPublished как прежде.
+      allGames = (data.version >= 2
+        ? entries.filter(function(e) { return e.published; }).map(function(e) { return e.published; })
+        : entries.filter(function(g) { return g.flags && g.flags.isPublished; })
+      );
       renderTagFilter(allGames);
       renderCategoryFilter(allGames);
       renderPlatformFilter(allGames);

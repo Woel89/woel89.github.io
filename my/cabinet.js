@@ -9,6 +9,7 @@ import { authedRequest } from './lib/auth.js';
 import {
   readCatalog, publishGame, upsertGame, deleteGame,
   generateSlug, findDuplicate, getViewerLogin, suggestTags,
+  getPublished, getDraft, promoteGame, discardDraft,
 } from './lib/games-api.js';
 import { putFile } from './lib/storage.js';
 import { GITHUB_API_BASE, CATALOG_REPO } from './lib/config.js';
@@ -79,7 +80,7 @@ const els = {
   coverZoom: $('cover-zoom'),
 };
 
-/** Текущий каталог игр (для slug/дублей), обновляется в loadGames. */
+/** Текущий каталог игр (GameEntry[]), обновляется в loadGames. */
 let catalogGames = [];
 /** Состояние редактирования: id правимой игры (null = новая). */
 let editingId = null;
@@ -147,9 +148,9 @@ async function loadGames() {
   els.gamesList.innerHTML = '';
   try {
     const { games } = await readCatalog();
-    catalogGames = games;
+    catalogGames = games; // GameEntry[]
     els.listStatus.textContent = games.length ? '' : 'Пока нет игр. Нажмите «Новая игра».';
-    for (const g of games) els.gamesList.appendChild(gameCard(g));
+    for (const entry of games) els.gamesList.appendChild(gameCard(entry));
   } catch (err) {
     els.listStatus.textContent = `Ошибка загрузки: ${err.message}`;
   }
@@ -162,66 +163,85 @@ function badge(text, cls) {
   return b;
 }
 
-function gameCard(g) {
+/**
+ * Построить карточку игры по GameEntry (v2). Три состояния:
+ *  - draft-only: есть draft, нет published
+ *  - опубликовано (нет черновика): есть published, нет draft
+ *  - опубликовано + черновик: есть оба
+ * @param {import('./lib/games-api.js').GameEntry} entry
+ */
+function gameCard(entry) {
+  const pub = getPublished(entry);
+  const draft = getDraft(entry);
+  // Для заголовка/мета берём актуальные данные: draft > published
+  const display = draft || pub || { id: entry.id, title: entry.id };
+
   const card = document.createElement('div');
   card.className = 'cab-game';
 
   const info = document.createElement('div');
   const h = document.createElement('strong');
-  h.textContent = g.title || g.id;
+  h.textContent = display.title || entry.id;
   info.appendChild(h);
 
   const meta = document.createElement('div');
   meta.className = 'cab-muted';
-  const cat = (Array.isArray(g.categories) && g.categories[0]) || g.category || '—';
-  meta.textContent = `${g.id} · ${cat}${g.dateAdded ? ' · ' + g.dateAdded.slice(0, 10) : ''}`;
+  const cat = (Array.isArray(display.categories) && display.categories[0]) || display.category || '—';
+  const dateStr = (pub && pub.dateAdded) ? ' · ' + pub.dateAdded.slice(0, 10) : '';
+  meta.textContent = `${entry.id} · ${cat}${dateStr}`;
   info.appendChild(meta);
 
-  const flags = document.createElement('div');
-  flags.className = 'cab-tags';
-  const f = g.flags || {};
-  if (f.isNew) flags.appendChild(badge('новинка', 'cab-tag--new'));
-  if (f.isPopular) flags.appendChild(badge('популярное', 'cab-tag--pop'));
-  flags.appendChild(badge(f.isPublished ? 'опубликовано' : 'черновик', f.isPublished ? 'cab-tag--pub' : 'cab-tag--draft'));
-  info.appendChild(flags);
+  // Бейджи состояния (по дизайн-доке §C)
+  const badgeRow = document.createElement('div');
+  badgeRow.className = 'cab-tags';
+  if (pub) {
+    badgeRow.appendChild(badge('опубликовано', 'cab-tag--pub'));
+    if (draft) badgeRow.appendChild(badge('есть правки', 'cab-tag--draft'));
+  } else {
+    badgeRow.appendChild(badge('черновик', 'cab-tag--draft'));
+  }
+  info.appendChild(badgeRow);
 
   card.appendChild(info);
 
+  // Кнопка «Студия» (всегда)
   const studioBtn = document.createElement('button');
   studioBtn.type = 'button';
   studioBtn.className = 'cab-btn cab-btn--ghost';
   studioBtn.textContent = 'Студия';
   studioBtn.addEventListener('click', () => {
     const url = new URL(location.href);
-    url.searchParams.set('game', g.id);
+    url.searchParams.set('game', entry.id);
     history.pushState({}, '', url);
-    window.dispatchEvent(new CustomEvent('ngf:studio-open', { detail: { slug: g.id, title: g.title || g.id } }));
+    window.dispatchEvent(new CustomEvent('ngf:studio-open', { detail: { slug: entry.id, title: display.title || entry.id } }));
   });
   card.appendChild(studioBtn);
 
+  // Кнопка «Редактировать» (всегда — открывает draft или published)
   const editBtn = document.createElement('button');
   editBtn.type = 'button';
   editBtn.className = 'cab-btn cab-btn--ghost';
   editBtn.textContent = 'Редактировать';
-  editBtn.addEventListener('click', () => openForm(g));
+  editBtn.addEventListener('click', () => openForm(entry));
   card.appendChild(editBtn);
 
+  // Кнопка «Удалить» (всегда)
   const delBtn = document.createElement('button');
   delBtn.type = 'button';
   delBtn.className = 'cab-btn cab-btn--ghost';
   delBtn.textContent = 'Удалить';
   delBtn.addEventListener('click', async () => {
     const confirmed = window.confirm(
-      `Удалить игру «${g.title || g.id}»?\n\nЭто необратимо: запись из каталога, страница игры, иконка, обложка и билд будут удалены.`,
+      `Удалить игру «${display.title || entry.id}»?\n\nЭто необратимо: запись из каталога, страница игры, иконка, обложка и билд будут удалены.`,
     );
     if (!confirmed) return;
 
     delBtn.disabled = true;
     editBtn.disabled = true;
-    els.listStatus.textContent = `Удаление «${g.title || g.id}»…`;
+    els.listStatus.textContent = `Удаление «${display.title || entry.id}»…`;
     try {
-      await deleteGame(g.id);
-      els.listStatus.textContent = `Игра «${g.title || g.id}» удалена.`;
+      await deleteGame(entry.id);
+      els.listStatus.textContent = `Игра «${display.title || entry.id}» удалена.`;
       await loadGames();
     } catch (err) {
       els.listStatus.textContent = `Ошибка удаления: ${err.message}`;
@@ -230,6 +250,90 @@ function gameCard(g) {
     }
   });
   card.appendChild(delBtn);
+
+  // Кнопка «Опубликовать» — только для draft-only (pub=null, draft есть)
+  if (!pub && draft) {
+    const publishDraftBtn = document.createElement('button');
+    publishDraftBtn.type = 'button';
+    publishDraftBtn.className = 'cab-btn cab-btn--ghost';
+    publishDraftBtn.textContent = 'Опубликовать';
+    publishDraftBtn.addEventListener('click', async () => {
+      const confirmed = window.confirm(
+        `Опубликовать игру «${display.title || entry.id}»?\n\nЧерновик станет публичным. Это необратимо.`,
+      );
+      if (!confirmed) return;
+
+      publishDraftBtn.disabled = true;
+      editBtn.disabled = true;
+      els.listStatus.textContent = `Публикация «${display.title || entry.id}»…`;
+      try {
+        await promoteGame(entry.id);
+        els.listStatus.textContent = `Игра «${display.title || entry.id}» опубликована.`;
+        await loadGames();
+      } catch (err) {
+        els.listStatus.textContent = `Ошибка публикации: ${err.message}`;
+        publishDraftBtn.disabled = false;
+        editBtn.disabled = false;
+      }
+    });
+    card.appendChild(publishDraftBtn);
+  }
+
+  // Кнопки «Отменить черновик» и «Опубликовать правки» — только если есть draft поверх published
+  if (pub && draft) {
+    const discardBtn = document.createElement('button');
+    discardBtn.type = 'button';
+    discardBtn.className = 'cab-btn cab-btn--ghost';
+    discardBtn.textContent = 'Отменить черновик';
+    discardBtn.addEventListener('click', async () => {
+      const confirmed = window.confirm(
+        `Отменить черновик «${display.title || entry.id}»?\n\nВсе несохранённые правки (мета, ассеты, билд) будут удалены. Это необратимо.`,
+      );
+      if (!confirmed) return;
+
+      discardBtn.disabled = true;
+      editBtn.disabled = true;
+      els.listStatus.textContent = `Отмена черновика «${display.title || entry.id}»…`;
+      try {
+        await discardDraft(entry.id);
+        els.listStatus.textContent = `Черновик «${display.title || entry.id}» отменён.`;
+        await loadGames();
+      } catch (err) {
+        els.listStatus.textContent = `Ошибка отмены черновика: ${err.message}`;
+        discardBtn.disabled = false;
+        editBtn.disabled = false;
+      }
+    });
+    card.appendChild(discardBtn);
+
+    const promoteBtn = document.createElement('button');
+    promoteBtn.type = 'button';
+    promoteBtn.className = 'cab-btn cab-btn--ghost';
+    promoteBtn.textContent = 'Опубликовать правки';
+    promoteBtn.addEventListener('click', async () => {
+      const title = display.title || entry.id;
+      const confirmed = window.confirm(
+        `Заменить опубликованную «${title}» черновиком?\n\nСейвы игроков сохранятся. Это необратимо.`,
+      );
+      if (!confirmed) return;
+
+      promoteBtn.disabled = true;
+      discardBtn.disabled = true;
+      editBtn.disabled = true;
+      els.listStatus.textContent = `Публикация правок «${title}»…`;
+      try {
+        await promoteGame(entry.id);
+        els.listStatus.textContent = `Правки к «${title}» опубликованы.`;
+        await loadGames();
+      } catch (err) {
+        els.listStatus.textContent = `Ошибка публикации правок: ${err.message}`;
+        promoteBtn.disabled = false;
+        discardBtn.disabled = false;
+        editBtn.disabled = false;
+      }
+    });
+    card.appendChild(promoteBtn);
+  }
 
   return card;
 }
@@ -269,7 +373,7 @@ const updDescCounter = bindCounter(els.fDescription, els.cDescription, 'descript
 /* ---------- Form: slug + duplicate ---------- */
 
 function existingIdsExcept(id) {
-  return catalogGames.map((g) => g.id).filter((x) => x !== id);
+  return catalogGames.map((e) => e.id).filter((x) => x !== id);
 }
 
 function updateSlugLine() {
@@ -284,7 +388,9 @@ function updateSlugLine() {
   els.slugLine.textContent = `Адрес игры: /games/${slug}/`;
 
   if (!editingId) {
-    const dup = findDuplicate(title, catalogGames);
+    // findDuplicate ожидает GameMeta[]; передаём published-слои (что видит каталог).
+    const publishedMetas = catalogGames.map(getPublished).filter(Boolean);
+    const dup = findDuplicate(title, publishedMetas);
     if (dup) {
       els.dupWarn.textContent = `Игра с похожим названием уже есть: «${dup.title || dup.id}».`;
       els.dupWarn.hidden = false;
@@ -341,6 +447,7 @@ const cropper = {
   dragging: false,
   lastX: 0,
   lastY: 0,
+  fromFile: false, // true только когда изображение загружено из файла пользователем (не превью из репо)
 };
 
 function cropperDraw() {
@@ -361,6 +468,7 @@ function cropperLoad(file) {
   const img = new Image();
   img.onload = () => {
     cropper.img = img;
+    cropper.fromFile = true;
     cropper.scale = Math.max(els.iconCanvas.width / img.width, els.iconCanvas.height / img.height);
     cropper.zoom = 1;
     cropper.offX = 0;
@@ -454,6 +562,7 @@ const coverCropper = {
   dragging: false,
   lastX: 0,
   lastY: 0,
+  fromFile: false, // true только когда изображение загружено из файла пользователем
 };
 
 function coverCropperDraw() {
@@ -474,6 +583,7 @@ function coverCropperLoad(file) {
   const img = new Image();
   img.onload = () => {
     coverCropper.img = img;
+    coverCropper.fromFile = true;
     coverCropper.scale = Math.max(els.coverCanvas.width / img.width, els.coverCanvas.height / img.height);
     coverCropper.zoom = 1;
     coverCropper.offX = 0;
@@ -568,7 +678,11 @@ function coverCropperExport() {
 
 /* ---------- Form: open / collect / submit ---------- */
 
-function openForm(game) {
+/**
+ * Открыть форму редактирования.
+ * @param {import('./lib/games-api.js').GameEntry|null} entry — entry v2 или null (новая игра).
+ */
+function openForm(entry) {
   hideError(els.formError);
   els.formStatus.textContent = '';
   els.formWarnings.hidden = true;
@@ -576,10 +690,14 @@ function openForm(game) {
   els.gameForm.reset();
   fillCategorySelects();
 
-  const editing = Boolean(game);
-  editingId = editing ? game.id : null;
+  const editing = Boolean(entry);
+  editingId = editing ? entry.id : null;
 
-  if (editing) {
+  // Выбор слоя по дизайн-доке §C:
+  // есть draft → грузим draft; есть только published → грузим published; новая → пусто.
+  const game = editing ? (getDraft(entry) || getPublished(entry)) : null;
+
+  if (game) {
     els.fTitle.value = game.title || '';
     els.fDescription.value = game.description || '';
     els.fTags.value = Array.isArray(game.tags) ? game.tags.join(', ') : '';
@@ -604,13 +722,57 @@ function openForm(game) {
     els.fOrientation.value = 'landscape';
     els.fIsPublished.checked = true;
   }
+
   els.fIcon.value = '';
   els.fCover.value = '';
   els.fZip.value = '';
   cropper.img = null;
+  cropper.fromFile = false;
   els.iconCropper.hidden = true;
   coverCropper.img = null;
+  coverCropper.fromFile = false;
   els.coverCropper.hidden = true;
+
+  // NGF-042: показать превью текущей иконки/обложки из загруженного слоя.
+  // Рисуем на canvas через Image — пользователь видит что стоит сейчас.
+  if (game && game.icon) {
+    const iconUrl = /^https?:\/\//i.test(game.icon)
+      ? game.icon
+      : `https://raw.githubusercontent.com/${CATALOG_REPO}/main/${game.icon}`;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      cropper.img = img;
+      cropper.scale = Math.max(els.iconCanvas.width / img.width, els.iconCanvas.height / img.height);
+      cropper.zoom = 1;
+      cropper.offX = 0;
+      cropper.offY = 0;
+      els.iconZoom.value = '1';
+      els.iconCropper.hidden = false;
+      cropperDraw();
+      updatePublishButtonState();
+    };
+    img.src = iconUrl;
+  }
+  if (game && game.coverUrl) {
+    const coverUrl = /^https?:\/\//i.test(game.coverUrl)
+      ? game.coverUrl
+      : `https://raw.githubusercontent.com/${CATALOG_REPO}/main/${game.coverUrl}`;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      coverCropper.img = img;
+      coverCropper.scale = Math.max(els.coverCanvas.width / img.width, els.coverCanvas.height / img.height);
+      coverCropper.zoom = 1;
+      coverCropper.offX = 0;
+      coverCropper.offY = 0;
+      els.coverZoom.value = '1';
+      els.coverCropper.hidden = false;
+      coverCropperDraw();
+      updatePublishButtonState();
+    };
+    img.src = coverUrl;
+  }
 
   els.authorLine.textContent = 'Автор: …';
   getViewerLogin().then((login) => {
@@ -622,7 +784,13 @@ function openForm(game) {
   updateSlugLine();
   updateTagSuggestions();
 
-  $('form-heading').textContent = editing ? `Редактирование: ${game.id}` : 'Новая игра';
+  $('form-heading').textContent = editing ? `Редактирование: ${entry.id}` : 'Новая игра';
+
+  // Кнопка «Опубликовать» — только для первой публикации (нет published-слоя).
+  // Для опубликованных игр правки идут через «Сохранить черновик» → «Опубликовать правки».
+  const hasPublished = Boolean(entry && getPublished(entry));
+  els.publishBtn.hidden = hasPublished;
+
   updatePublishButtonState();
   els.formView.hidden = false;
   els.formView.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -691,13 +859,15 @@ function validatePublish() {
     return 'Выберите хотя бы одну платформу.';
 
   const zipFile = els.fZip.files[0] || null;
-  const existingGame = editingId ? catalogGames.find(g => g.id === editingId) : null;
-  if (!zipFile && !(existingGame && existingGame.buildUrl))
+  // Ищем entry по editingId, берём слой: draft > published (тот же, что грузит форма).
+  const existingEntry = editingId ? catalogGames.find((e) => e.id === editingId) : null;
+  const existingMeta = existingEntry ? (getDraft(existingEntry) || getPublished(existingEntry)) : null;
+  if (!zipFile && !(existingMeta && existingMeta.buildUrl))
     return 'Загрузите .zip билда.';
   if (!els.fDescription.value.trim()) return 'Заполните описание игры.';
   if (!els.fCat1.value) return 'Выберите основную категорию.';
-  if (!cropper.img && !(existingGame && existingGame.icon)) return 'Загрузите иконку игры.';
-  if (!coverCropper.img && !(existingGame && existingGame.coverUrl)) return 'Загрузите обложку игры.';
+  if (!cropper.img && !(existingMeta && existingMeta.icon)) return 'Загрузите иконку игры.';
+  if (!coverCropper.img && !(existingMeta && existingMeta.coverUrl)) return 'Загрузите обложку игры.';
 
   if (els.fPlatformPc.checked && !els.fControlsPc.value.trim())
     return 'Опишите управление на ПК.';
@@ -713,6 +883,18 @@ els.gameForm.addEventListener('submit', async (e) => {
   els.formWarnings.hidden = true;
   els.formWarnings.innerHTML = '';
 
+  // Защита: опубликованную игру нельзя менять через этот путь — только через черновик + promoteGame.
+  if (editingId) {
+    const existingEntryCheck = catalogGames.find((en) => en.id === editingId);
+    if (existingEntryCheck && getPublished(existingEntryCheck)) {
+      showError(
+        els.formError,
+        'Опубликованную игру нельзя менять напрямую. Сохраните черновик и нажмите «Опубликовать правки» на карточке.'
+      );
+      return;
+    }
+  }
+
   const validationError = validatePublish();
   if (validationError) {
     showError(els.formError, validationError);
@@ -723,10 +905,16 @@ els.gameForm.addEventListener('submit', async (e) => {
   const meta = collectMeta(slug);
   const zipFile = els.fZip.files[0] || null;
 
+  // NGF-042: если ассет не менялся (превью из репо) — сохранить существующий путь.
+  const existingEntryForSubmit = editingId ? catalogGames.find((e) => e.id === slug) : null;
+  const existingMetaForSubmit = existingEntryForSubmit
+    ? (getDraft(existingEntryForSubmit) || getPublished(existingEntryForSubmit))
+    : null;
+
   els.publishBtn.disabled = true;
   try {
-    // Иконка: кроп → 512×512 → коммит в каталог-репо.
-    if (cropper.img) {
+    // Иконка: кроп → 512×512 → коммит в каталог-репо (только при новом файле от пользователя).
+    if (cropper.img && cropper.fromFile) {
       els.formStatus.textContent = 'Загрузка иконки…';
       const exported = await cropperExport();
       if (exported) {
@@ -737,10 +925,13 @@ els.gameForm.addEventListener('submit', async (e) => {
         });
         meta.icon = iconPath;
       }
+    } else if (existingMetaForSubmit && existingMetaForSubmit.icon) {
+      // Ассет не менялся — сохранить текущий путь чтобы upsert не затёр его пустой строкой.
+      meta.icon = existingMetaForSubmit.icon;
     }
 
-    // Обложка: кроп → 1200×630 → коммит в каталог-репо.
-    if (coverCropper.img) {
+    // Обложка: кроп → 1200×630 → коммит в каталог-репо (только при новом файле от пользователя).
+    if (coverCropper.img && coverCropper.fromFile) {
       els.formStatus.textContent = 'Загрузка обложки…';
       const exported = await coverCropperExport();
       if (exported) {
@@ -751,6 +942,8 @@ els.gameForm.addEventListener('submit', async (e) => {
         });
         meta.coverUrl = coverPath;
       }
+    } else if (existingMetaForSubmit && existingMetaForSubmit.coverUrl) {
+      meta.coverUrl = existingMetaForSubmit.coverUrl;
     }
 
     let result;
@@ -772,7 +965,8 @@ els.gameForm.addEventListener('submit', async (e) => {
       if (result.warnings && result.warnings.length) els.formWarnings.hidden = false;
     } else {
       els.formStatus.textContent = 'Сохранение метаданных…';
-      const res = await upsertGame(meta);
+      // Первая публикация draft-only игры без нового zip: пишем в published-слой напрямую.
+      const res = await upsertGame(meta, { layer: 'published' });
       els.formStatus.textContent = res.created
         ? 'Создана запись (без билда).'
         : 'Метаданные сохранены.';
@@ -806,35 +1000,57 @@ els.saveDraftBtn.addEventListener('click', async () => {
   meta.flags.isPublished = false;
   const zipFile = els.fZip.files[0] || null;
 
+  // NGF-042: сохранить существующие пути если ассет не менялся.
+  const existingEntryForDraft = editingId ? catalogGames.find((e) => e.id === slug) : null;
+  const existingMetaForDraft = existingEntryForDraft
+    ? (getDraft(existingEntryForDraft) || getPublished(existingEntryForDraft))
+    : null;
+
   els.saveDraftBtn.disabled = true;
   els.publishBtn.disabled = true;
   try {
-    // Иконка: кроп → 512×512 → коммит в каталог-репо.
-    if (cropper.img) {
+    // NGF-017: если у игры уже есть published-слой — ассеты черновика кладём под -draft суффикс
+    // чтобы не перезаписать опубликованные файлы.
+    // Для draft-only (новой игры без published) — обычные пути (они и станут published-путями при promote).
+    const existingEntryForDraftCheck = editingId ? catalogGames.find((e) => e.id === slug) : null;
+    const hasDraftSuffix = Boolean(existingEntryForDraftCheck && existingEntryForDraftCheck.published);
+
+    // Иконка: кроп → 512×512 → коммит в каталог-репо (только при новом файле от пользователя).
+    if (cropper.img && cropper.fromFile) {
       els.formStatus.textContent = 'Загрузка иконки…';
       const exported = await cropperExport();
       if (exported) {
         const bytes = await blobToBytes(exported.blob);
-        const iconPath = `assets/icons/${slug}.${exported.ext}`;
+        // NGF-017: published уже есть → суффикс -draft; иначе обычное имя.
+        const iconPath = hasDraftSuffix
+          ? `assets/icons/${slug}-draft.${exported.ext}`
+          : `assets/icons/${slug}.${exported.ext}`;
         await putFile(CATALOG_REPO, iconPath, bytes, {
-          message: `Upload icon for ${slug}`,
+          message: `Upload draft icon for ${slug}`,
         });
         meta.icon = iconPath;
       }
+    } else if (existingMetaForDraft && existingMetaForDraft.icon) {
+      meta.icon = existingMetaForDraft.icon;
     }
 
-    // Обложка: кроп → 1200×630 → коммит в каталог-репо.
-    if (coverCropper.img) {
+    // Обложка: кроп → 1200×630 → коммит в каталог-репо (только при новом файле от пользователя).
+    if (coverCropper.img && coverCropper.fromFile) {
       els.formStatus.textContent = 'Загрузка обложки…';
       const exported = await coverCropperExport();
       if (exported) {
         const bytes = await blobToBytes(exported.blob);
-        const coverPath = `assets/covers/${slug}.${exported.ext}`;
+        // NGF-017: published уже есть → суффикс -draft; иначе обычное имя.
+        const coverPath = hasDraftSuffix
+          ? `assets/covers/${slug}-draft.${exported.ext}`
+          : `assets/covers/${slug}.${exported.ext}`;
         await putFile(CATALOG_REPO, coverPath, bytes, {
-          message: `Upload cover for ${slug}`,
+          message: `Upload draft cover for ${slug}`,
         });
         meta.coverUrl = coverPath;
       }
+    } else if (existingMetaForDraft && existingMetaForDraft.coverUrl) {
+      meta.coverUrl = existingMetaForDraft.coverUrl;
     }
 
     if (zipFile) {
@@ -844,7 +1060,8 @@ els.saveDraftBtn.addEventListener('click', async () => {
       const obfuscator = obfMod.default || obfMod;
 
       els.formStatus.textContent = 'Сохранение черновика с билдом…';
-      const result = await publishGame({ meta, zipFile, deps: { JSZip, obfuscator } });
+      // layer:'draft' — залить билд, но записать в draft-слой (не публиковать).
+      const result = await publishGame({ meta, zipFile, deps: { JSZip, obfuscator }, layer: 'draft' });
       for (const w of result.warnings || []) {
         const p = document.createElement('p');
         p.textContent = `⚠ ${w} Проверьте, что игра запускается.`;

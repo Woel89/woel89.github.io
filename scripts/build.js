@@ -19,6 +19,13 @@ function readGames() {
   const raw = fs.readFileSync(path.join(ROOT, "games.json"), "utf8");
   const data = JSON.parse(raw);
   if (!data || !Array.isArray(data.games)) throw new Error("games.json: missing games[]");
+  // v2: извлечь published-слой; draft-only записи в публичный каталог не попадают.
+  if (data.version >= 2) {
+    return data.games
+      .filter(function(e) { return e.published; })
+      .map(function(e) { return e.published; });
+  }
+  // legacy v1: плоский GameMeta[]
   return data.games;
 }
 
@@ -226,7 +233,11 @@ function gamePageHTML(g, all) {
         fetch("/games.json?v=" + Date.now(), { cache: "no-cache" })
           .then(function (r) { return r.json(); })
           .then(function (data) {
-            var games = data && data.games ? data.games : (Array.isArray(data) ? data : []);
+            var rawGames = data && data.games ? data.games : (Array.isArray(data) ? data : []);
+            // v2: достать published-слой; v1 (legacy): плоская запись.
+            var games = (data && data.version >= 2)
+              ? rawGames.filter(function(e) { return e.published; }).map(function(e) { return e.published; })
+              : rawGames;
             var entry = null;
             for (var i = 0; i < games.length; i++) { if (games[i].id === SLUG) { entry = games[i]; break; } }
             if (!entry || !entry.buildUrl) return;
