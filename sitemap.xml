@@ -2,10 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://netgameforge.com/</loc>
-    <lastmod>2026-05-30</lastmod>
+    <lastmod>2026-05-31</lastmod>
   </url>
   <url>
     <loc>https://netgameforge.com/games/broadside-caribean-4/</loc>
     <lastmod>2026-05-28</lastmod>
+  </url>
+  <url>
+    <loc>https://netgameforge.com/games/screw-master/</loc>
+    <lastmod>2026-05-31</lastmod>
+  </url>
+  <url>
+    <loc>https://netgameforge.com/games/merge-melons/</loc>
+    <lastmod>2026-05-31</lastmod>
+  </url>
+  <url>
+    <loc>https://netgameforge.com/games/waterjam/</loc>
+    <lastmod>2026-05-31</lastmod>
+  </url>
+  <url>
+    <loc>https://netgameforge.com/games/terra-craft-world/</loc>
+    <lastmod>2026-05-31</lastmod>
+  </url>
+  <url>
+    <loc>https://netgameforge.com/games/parkour-block-3d/</loc>
+    <lastmod>2026-05-31</lastmod>
+  </url>
+  <url>
+    <loc>https://netgameforge.com/games/melon-sandbox-online/</loc>
+    <lastmod>2026-05-31</lastmod>
   </url>
 </urlset>

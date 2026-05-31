@@ -53,6 +53,241 @@
         "i18nSourceHash": "6b33090a261631ff"
       },
       "draft": null
+    },
+    {
+      "id": "screw-master",
+      "published": {
+        "id": "screw-master",
+        "title": "Screw Master",
+        "description": "Откручивай гайки и винты в правильном порядке, разбирай головоломки из железных пластин и колец. Затягивающая ASMR-головоломка.",
+        "icon": "assets/covers/screw-master.jpg",
+        "coverUrl": "assets/covers/screw-master.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/iqspjudn3kxkhq6s7v05wn1rg7iegxsq/",
+        "provider": "gamemonetize",
+        "tags": [
+          "головоломка",
+          "гайки и винты",
+          "казуальная"
+        ],
+        "categories": [
+          "puzzle",
+          "clicker"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Мышь",
+          "mobile": "Тап"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "portrait",
+        "author": "GameMonetize",
+        "owner_id": "woel89"
+      },
+      "draft": null
+    },
+    {
+      "id": "merge-melons",
+      "published": {
+        "id": "merge-melons",
+        "title": "Merge Melons",
+        "description": "Бросай фрукты и соединяй одинаковые, чтобы получить арбуз. Вирусная drop-and-merge головоломка с затягивающей петлёй.",
+        "icon": "assets/covers/merge-melons.jpg",
+        "coverUrl": "assets/covers/merge-melons.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/m0lop3550vcyagcxyr3veqxisc4g1ani/",
+        "provider": "gamemonetize",
+        "tags": [
+          "головоломка",
+          "мердж",
+          "казуальная"
+        ],
+        "categories": [
+          "puzzle"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Мышь",
+          "mobile": "Свайп"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "portrait",
+        "author": "GameMonetize",
+        "owner_id": "woel89"
+      },
+      "draft": null
+    },
+    {
+      "id": "waterjam",
+      "published": {
+        "id": "waterjam",
+        "title": "WaterJam",
+        "description": "Переливай цветную воду по колбам так, чтобы в каждой остался один цвет. Спокойная головоломка-сортировка для долгих сессий.",
+        "icon": "assets/covers/waterjam.jpg",
+        "coverUrl": "assets/covers/waterjam.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/lnpfiu10yk6atgg474q5gk63ahh21yqj/",
+        "provider": "gamemonetize",
+        "tags": [
+          "головоломка",
+          "сортировка",
+          "вода"
+        ],
+        "categories": [
+          "puzzle",
+          "arcade"
+        ],
+        "platforms": [
+          "pc"
+        ],
+        "controls": {
+          "pc": "Мышь"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89"
+      },
+      "draft": null
+    },
+    {
+      "id": "terra-craft-world",
+      "published": {
+        "id": "terra-craft-world",
+        "title": "Terra Craft World",
+        "description": "Исследуй открытый мир, строй из блоков и выживай. Песочница-приключение, где каждое решение формирует твой путь.",
+        "icon": "assets/covers/terra-craft-world.jpg",
+        "coverUrl": "assets/covers/terra-craft-world.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/r613bammzs2ki30quv4whybuhua1itwf/",
+        "provider": "gamemonetize",
+        "tags": [
+          "песочница",
+          "craft",
+          "приключения"
+        ],
+        "categories": [
+          "adventure",
+          "action"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "WASD для движения, мышь для обзора",
+          "mobile": "Экранные кнопки"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89"
+      },
+      "draft": null
+    },
+    {
+      "id": "parkour-block-3d",
+      "published": {
+        "id": "parkour-block-3d",
+        "title": "Parkour Block 3D",
+        "description": "35 уровней браузерного паркура с разнообразной механикой и хардкорной прогрессией. Проверь свои навыки.",
+        "icon": "assets/covers/parkour-block-3d.jpg",
+        "coverUrl": "assets/covers/parkour-block-3d.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/hrsxh2clxg229ty294gdlbjzeejglgmp/",
+        "provider": "gamemonetize",
+        "tags": [
+          "паркур",
+          "3д",
+          "аркада"
+        ],
+        "categories": [
+          "action",
+          "arcade"
+        ],
+        "platforms": [
+          "pc"
+        ],
+        "controls": {
+          "pc": "Тап или клик"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "portrait",
+        "author": "GameMonetize",
+        "owner_id": "woel89"
+      },
+      "draft": null
+    },
+    {
+      "id": "melon-sandbox-online",
+      "published": {
+        "id": "melon-sandbox-online",
+        "title": "Melon Sandbox Online",
+        "description": "Экспериментальная физическая песочница с рэгдолл-физикой. Создавай, ломай, тестируй и повторяй в пиксельном мире.",
+        "icon": "assets/covers/melon-sandbox-online.jpg",
+        "coverUrl": "assets/covers/melon-sandbox-online.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/efoxwtdtls927pvhs87y0t895n7esdf8/",
+        "provider": "gamemonetize",
+        "tags": [
+          "песочница",
+          "физика",
+          "симулятор"
+        ],
+        "categories": [
+          "action",
+          "simulation"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Мышь",
+          "mobile": "Тап"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89"
+      },
+      "draft": null
     }
   ]
 }
