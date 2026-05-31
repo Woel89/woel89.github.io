@@ -146,11 +146,18 @@
     );
   }
 
+  var SHELF_MAX = 8; // полка-стрип, не дубль всего каталога
+
   function renderShelves(games) {
     if (!shelvesEl) return;
-    var isNew = games.filter(isNewGame);
     var popular = games.filter(function (g) { return g.flags && g.flags.isPopular; });
-    shelvesEl.innerHTML = renderShelf("Новинки", isNew) + renderShelf("Популярное", popular);
+    // «Новинки» — стрип последних добавленных. Не показываем, если он повторил бы весь
+    // грид «Все игры» (когда новых ровно столько же, сколько всего игр).
+    var isNew = games.filter(isNewGame);
+    var newShelf = isNew.length && isNew.length < games.length
+      ? renderShelf("Новинки", isNew.slice(0, SHELF_MAX))
+      : "";
+    shelvesEl.innerHTML = renderShelf("Популярное", popular.slice(0, SHELF_MAX)) + newShelf;
   }
 
   function applyFilter() {

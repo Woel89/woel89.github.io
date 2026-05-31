@@ -165,6 +165,9 @@ function gamePageHTML(g, all) {
   <meta name="twitter:description" content="${desc}">
   ${image ? `<meta name="twitter:image" content="${esc(image)}">` : ""}
 
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo/favicon-48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/favicon-32.png">
+
   <link rel="stylesheet" href="/css/styles.css">
 
   <!-- Analytics: Google Analytics 4 -->
