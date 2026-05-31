@@ -399,6 +399,136 @@ section.shelf > h2 {
   border: 0;
 }
 
+/* ---------- Game player states ---------- */
+
+/* Обёртка, управляет видимостью через data-state */
+#game-player[data-state="idle"] iframe,
+#game-player[data-state="loading"] iframe {
+  /* iframe в DOM, но визуально скрыт до playing */
+  visibility: hidden;
+  pointer-events: none;
+}
+#game-player[data-state="playing"] iframe {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Превью-обложка */
+.game-cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  z-index: 2;
+}
+.game-cover[hidden] { display: none; }
+.game-cover__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.45; /* затемнение поверх обложки */
+}
+.game-cover__placeholder {
+  position: absolute;
+  inset: 0;
+  background: var(--cover-fallback, #1a1c1b);
+}
+
+/* Кнопка «Играть» */
+.game-play-btn {
+  position: relative; /* выше img */
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-accent);
+  color: #0d0f0e;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 2.2rem;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(155, 230, 0, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.game-play-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 32px rgba(155, 230, 0, 0.5);
+}
+.game-play-btn:active { transform: scale(0.97); }
+
+/* Прелоадер */
+.game-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  z-index: 2;
+  gap: 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+.game-loader[hidden] { display: none; }
+.game-loader__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: ngf-spin 0.8s linear infinite;
+}
+@keyframes ngf-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Кнопка фуллскрин */
+.game-fullscreen-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--color-text);
+  transition: background 0.15s;
+}
+.game-fullscreen-btn[hidden] { display: none; }
+.game-fullscreen-btn:hover { background: rgba(0, 0, 0, 0.8); }
+
+/* Hint «Переверни телефон» */
+.game-rotate-hint {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  background: rgba(0, 0, 0, 0.75);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.game-rotate-hint[hidden] { display: none; }
+
 .game-meta { margin-block: 1.5rem; color: var(--color-text-muted); }
 .game-meta .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
 .game-meta .tags span {

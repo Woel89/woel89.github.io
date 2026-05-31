@@ -168,7 +168,7 @@ function gamePageHTML(g, all) {
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo/favicon-48.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/favicon-32.png">
 
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css?v=20260531b">
 
   <!-- Analytics: Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VT82NLXH9"></script>
@@ -223,21 +223,111 @@ function gamePageHTML(g, all) {
       <p class="game-lead">${leadSentence(g)}</p>
     </div>
 
-    <div class="game-frame ${orientation}">
+    <div class="game-frame ${orientation}" id="game-player" data-state="idle">
+
+      <!-- Слой превью — видим только в state=idle -->
+      <div class="game-cover" id="game-cover" aria-hidden="false">
+        ${cover ? `<img src="${esc(cover)}" alt="${esc(g.title)}" class="game-cover__img" loading="eager" decoding="async">` : `<div class="game-cover__placeholder"></div>`}
+        <button class="game-play-btn" id="game-play-btn" type="button" aria-label="Играть в ${esc(g.title)}">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Играть
+        </button>
+      </div>
+
+      <!-- Прелоадер — видим только в state=loading -->
+      <div class="game-loader" id="game-loader" aria-live="polite" aria-label="Игра загружается..." hidden>
+        <div class="game-loader__spinner"></div>
+        <p>Загружается...</p>
+      </div>
+
 ${(function() {
   const isExternal = g.source === "external";
   if (isExternal) {
-    return `      <iframe id="game-frame" src="${esc(g.embedUrl)}" title="${esc(g.title)}"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
-        allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer-when-downgrade"
-        loading="lazy"></iframe>`;
+    return `      <iframe id="game-frame" src="about:blank" title="${esc(g.title)}"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
+          allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
   }
-  return `      <iframe id="game-frame" src="${esc(g.buildUrl)}" title="${esc(g.title)}"
-        sandbox="allow-scripts allow-pointer-lock allow-same-origin"
-        allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"
-        loading="lazy"></iframe>`;
+  return `      <iframe id="game-frame" src="about:blank" title="${esc(g.title)}"
+          sandbox="allow-scripts allow-pointer-lock allow-same-origin"
+          allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"></iframe>`;
 })()}
+
+      <!-- Кнопка фуллскрин — видима только в state=playing -->
+      <button class="game-fullscreen-btn" id="game-fs-btn" type="button" aria-label="Полный экран" hidden>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+        </svg>
+      </button>
+
+${orientation === "landscape" ? `      <!-- Hint переверни телефон — только для landscape-игр -->
+      <div class="game-rotate-hint" id="game-rotate-hint" hidden role="status">
+        &#8635; Поверни телефон горизонтально
+      </div>` : ""}
     </div>
+
+  <script>
+    (function () {
+      var player  = document.getElementById("game-player");
+      var cover   = document.getElementById("game-cover");
+      var loader  = document.getElementById("game-loader");
+      var frame   = document.getElementById("game-frame");
+      var fsBtn   = document.getElementById("game-fs-btn");
+      var playBtn = document.getElementById("game-play-btn");
+      var hint    = document.getElementById("game-rotate-hint");
+      var REAL_SRC = ${JSON.stringify(g.source === "external" ? (g.embedUrl || "") : (g.buildUrl || ""))};
+      var IS_EXTERNAL = ${g.source === "external" ? "true" : "false"};
+      var loadTimeout = null;
+
+      function setState(s) {
+        player.dataset.state = s;
+        cover.hidden  = s !== "idle";
+        loader.hidden = s !== "loading";
+        fsBtn.hidden  = s !== "playing";
+        cover.setAttribute("aria-hidden", s !== "idle" ? "true" : "false");
+      }
+
+      playBtn.addEventListener("click", function () {
+        setState("loading");
+        frame.src = REAL_SRC;
+        if (IS_EXTERNAL) {
+          loadTimeout = setTimeout(function () {
+            var p = loader.querySelector("p");
+            if (p) p.textContent = "Не удалось загрузить игру. Попробуй обновить страницу.";
+            var sp = loader.querySelector(".game-loader__spinner");
+            if (sp) sp.style.display = "none";
+          }, 15000);
+        }
+      });
+
+      frame.addEventListener("load", function () {
+        if (frame.src === "about:blank" || frame.src === "") return;
+        if (loadTimeout) { clearTimeout(loadTimeout); loadTimeout = null; }
+        setState("playing");
+${orientation === "landscape" ? `        if (hint) {
+          checkOrientation();
+          window.addEventListener("resize", checkOrientation);
+        }` : ""}
+      });
+
+${orientation === "landscape" ? `      function checkOrientation() {
+        if (!hint) return;
+        if (window.innerWidth < window.innerHeight && player.dataset.state === "playing") {
+          hint.hidden = false;
+          setTimeout(function () { hint.hidden = true; }, 3000);
+        } else {
+          hint.hidden = true;
+        }
+      }` : ""}
+
+      fsBtn.addEventListener("click", function () {
+        var el = player;
+        var req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+        if (req) req.call(el);
+      });
+    })();
+  </script>
 ${g.source !== "external" ? `  <script>
     (function () {
       var SLUG = "${esc(g.id)}";
@@ -255,6 +345,7 @@ ${g.source !== "external" ? `  <script>
             if (!entry || !entry.buildUrl) return;
             var frame = document.getElementById("game-frame");
             if (!frame) return;
+            if (frame.src === "about:blank" || frame.src === "") return; // idle — не трогаем до клика Играть
             if (entry.buildUrl !== frame.src) { frame.src = entry.buildUrl; }
           })
           .catch(function () { /* молчок — оставляем захардкоженный src */ });
@@ -334,7 +425,10 @@ ${(function() {
         var seconds = Math.round((Date.now() - playStart) / 1000);
         track("play_end", { game_id: slug, play_seconds: seconds });
       }
-      if (frame) frame.addEventListener("load", start, { once: true });
+      if (frame) frame.addEventListener("load", function () {
+        if (frame.src === "about:blank" || frame.src === "") return;
+        start();
+      }, { once: true });
       document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "hidden") end();
       });
@@ -440,6 +534,7 @@ ${(function() {
       var frame = document.getElementById("game-frame");
       if (frame) {
         frame.addEventListener("load", function () {
+          if (frame.src === "about:blank" || frame.src === "") return; // idle — не считаем
           if (started) return; // уже запущено (buildUrl-sync вызвал второй load) — игнорируем
           if (sdkStarted) return; // SDK уже взял управление
           var vid = (window.NGFRatings && window.NGFRatings.getVisitorId()) || mkUuid();

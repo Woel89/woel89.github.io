@@ -25,7 +25,7 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo/favicon-48.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/favicon-32.png">
 
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css?v=20260531b">
 
   <!-- Analytics: Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VT82NLXH9"></script>
@@ -95,12 +95,103 @@
       <p class="game-lead">Melon Sandbox Online — это action-игра, ПК и мобильные. Играйте прямо в браузере.</p>
     </div>
 
-    <div class="game-frame landscape">
-      <iframe id="game-frame" src="https://html5.gamemonetize.co/efoxwtdtls927pvhs87y0t895n7esdf8/" title="Melon Sandbox Online"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
-        allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer-when-downgrade"
-        loading="lazy"></iframe>
+    <div class="game-frame landscape" id="game-player" data-state="idle">
+
+      <!-- Слой превью — видим только в state=idle -->
+      <div class="game-cover" id="game-cover" aria-hidden="false">
+        <img src="https://netgameforge.com/assets/covers/melon-sandbox-online.jpg" alt="Melon Sandbox Online" class="game-cover__img" loading="eager" decoding="async">
+        <button class="game-play-btn" id="game-play-btn" type="button" aria-label="Играть в Melon Sandbox Online">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Играть
+        </button>
+      </div>
+
+      <!-- Прелоадер — видим только в state=loading -->
+      <div class="game-loader" id="game-loader" aria-live="polite" aria-label="Игра загружается..." hidden>
+        <div class="game-loader__spinner"></div>
+        <p>Загружается...</p>
+      </div>
+
+      <iframe id="game-frame" src="about:blank" title="Melon Sandbox Online"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
+          allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+      <!-- Кнопка фуллскрин — видима только в state=playing -->
+      <button class="game-fullscreen-btn" id="game-fs-btn" type="button" aria-label="Полный экран" hidden>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+        </svg>
+      </button>
+
+      <!-- Hint переверни телефон — только для landscape-игр -->
+      <div class="game-rotate-hint" id="game-rotate-hint" hidden role="status">
+        &#8635; Поверни телефон горизонтально
+      </div>
     </div>
+
+  <script>
+    (function () {
+      var player  = document.getElementById("game-player");
+      var cover   = document.getElementById("game-cover");
+      var loader  = document.getElementById("game-loader");
+      var frame   = document.getElementById("game-frame");
+      var fsBtn   = document.getElementById("game-fs-btn");
+      var playBtn = document.getElementById("game-play-btn");
+      var hint    = document.getElementById("game-rotate-hint");
+      var REAL_SRC = "https://html5.gamemonetize.co/efoxwtdtls927pvhs87y0t895n7esdf8/";
+      var IS_EXTERNAL = true;
+      var loadTimeout = null;
+
+      function setState(s) {
+        player.dataset.state = s;
+        cover.hidden  = s !== "idle";
+        loader.hidden = s !== "loading";
+        fsBtn.hidden  = s !== "playing";
+        cover.setAttribute("aria-hidden", s !== "idle" ? "true" : "false");
+      }
+
+      playBtn.addEventListener("click", function () {
+        setState("loading");
+        frame.src = REAL_SRC;
+        if (IS_EXTERNAL) {
+          loadTimeout = setTimeout(function () {
+            var p = loader.querySelector("p");
+            if (p) p.textContent = "Не удалось загрузить игру. Попробуй обновить страницу.";
+            var sp = loader.querySelector(".game-loader__spinner");
+            if (sp) sp.style.display = "none";
+          }, 15000);
+        }
+      });
+
+      frame.addEventListener("load", function () {
+        if (frame.src === "about:blank" || frame.src === "") return;
+        if (loadTimeout) { clearTimeout(loadTimeout); loadTimeout = null; }
+        setState("playing");
+        if (hint) {
+          checkOrientation();
+          window.addEventListener("resize", checkOrientation);
+        }
+      });
+
+      function checkOrientation() {
+        if (!hint) return;
+        if (window.innerWidth < window.innerHeight && player.dataset.state === "playing") {
+          hint.hidden = false;
+          setTimeout(function () { hint.hidden = true; }, 3000);
+        } else {
+          hint.hidden = true;
+        }
+      }
+
+      fsBtn.addEventListener("click", function () {
+        var el = player;
+        var req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+        if (req) req.call(el);
+      });
+    })();
+  </script>
 
 
     <div id="ngf-ratings" data-slug="melon-sandbox-online"></div>
@@ -197,7 +288,10 @@
         var seconds = Math.round((Date.now() - playStart) / 1000);
         track("play_end", { game_id: slug, play_seconds: seconds });
       }
-      if (frame) frame.addEventListener("load", start, { once: true });
+      if (frame) frame.addEventListener("load", function () {
+        if (frame.src === "about:blank" || frame.src === "") return;
+        start();
+      }, { once: true });
       document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "hidden") end();
       });
@@ -303,6 +397,7 @@
       var frame = document.getElementById("game-frame");
       if (frame) {
         frame.addEventListener("load", function () {
+          if (frame.src === "about:blank" || frame.src === "") return; // idle — не считаем
           if (started) return; // уже запущено (buildUrl-sync вызвал второй load) — игнорируем
           if (sdkStarted) return; // SDK уже взял управление
           var vid = (window.NGFRatings && window.NGFRatings.getVisitorId()) || mkUuid();
