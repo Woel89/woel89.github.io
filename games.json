@@ -6,7 +6,7 @@
       "published": {
         "id": "broadside-caribean-4",
         "title": "Broadside caribean",
-        "description": "Почувствуй себя капитаном корабля плавающем в море пиратов",
+        "description": "Ты — капитан пиратского корабля в Карибском море. Управляй судном, уклоняйся от вражеских ядер и открывай огонь в ответ. Управление простое: A/D — повернуть влево/вправо, пробел — выстрел; на мобильном — свайп и кнопка огня. Игра хороша для тех, кто хочет почувствовать себя в роли морского капитана без сложного обучения и лишних экранов — заходишь и сразу в бой. Волны врагов нарастают, нужно держать курс и следить за позицией. Подходит для коротких сессий и мобильной игры. Играть в Broadside Caribbean онлайн бесплатно, на ПК и мобильном, прямо в браузере.",
         "icon": "assets/icons/broadside-caribean-4.webp",
         "coverUrl": "assets/covers/broadside-caribean-4.webp",
         "buildUrl": "https://builds.netgameforge.com/builds/broadside-caribean-4/20260528-070826/",
@@ -36,21 +36,18 @@
         "i18n": {
           "en": {
             "title": "Broadside caribean",
-            "description": "Feel like the captain of a ship sailing in a sea of pirates",
             "howToPlay": ""
           },
           "es": {
             "title": "Broadside caribean",
-            "description": "Siéntete como el capitán de un barco navegando en un mar de piratas",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Broadside caribean",
-            "description": "Sinta-se como o capitão de um navio navegando em um mar de piratas",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "6b33090a261631ff"
+        "i18nSourceHash": "c770fa3741b13f53"
       },
       "draft": null
     },
@@ -59,7 +56,7 @@
       "published": {
         "id": "screw-master",
         "title": "Screw Master",
-        "description": "Откручивай гайки и винты в правильном порядке, разбирай головоломки из железных пластин и колец. Затягивающая ASMR-головоломка.",
+        "description": "Открути все гайки и болты в правильном порядке — и металлическая конструкция рассыплется на части. Звучит просто, но с каждым уровнем пазл становится сложнее: болты перекрывают друг друга, и нужно думать наперёд. Игра затягивает мгновенно — тот самый ASMR-эффект от щелчков и звяканья металла, который не даёт оторваться. Идеально для коротких перерывов: один уровень занимает минуту, но незаметно проходит час. Играть в Screw Master онлайн бесплатно можно прямо в браузере, без скачивания — на ПК мышью, на телефоне тапом. Один из самых популярных казуальных жанров 2024–2026 годов, и теперь доступен на NetGameForge.",
         "icon": "assets/covers/screw-master.jpg",
         "coverUrl": "assets/covers/screw-master.jpg",
         "buildUrl": "",
@@ -94,21 +91,18 @@
         "i18n": {
           "en": {
             "title": "Screw Master",
-            "description": "Unscrew the nuts and screws in the correct order, disassemble the puzzles from the iron plates and rings. Tightening ASMR puzzle.",
             "howToPlay": ""
           },
           "es": {
             "title": "Screw Master",
-            "description": "Desatornille las tuercas y los tornillos en el orden correcto, desmonte los rompecabezas de las placas y anillos de hierro. Apriete el rompecabezas ASMR.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Parafuso Mestre",
-            "description": "Desaparafuse as porcas e parafusos na ordem correta, desmonte os quebra-cabeças das placas de ferro e anéis. Aperte o quebra-cabeça ASMR.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "5bdabc481b4b535a"
+        "i18nSourceHash": "c4b4e6a968b0e63e"
       },
       "draft": null
     },
@@ -117,7 +111,7 @@
       "published": {
         "id": "merge-melons",
         "title": "Merge Melons",
-        "description": "Бросай фрукты и соединяй одинаковые, чтобы получить арбуз. Вирусная drop-and-merge головоломка с затягивающей петлёй.",
+        "description": "Бросай фрукты в стакан и соединяй одинаковые — они сливаются в более крупные. Вишня становится виноградом, виноград — апельсином, и так до арбуза. Главное — не дать фруктам переполнить стакан. Механика простая, но удержать от игры «ещё один раз» почти невозможно. Это браузерная версия вирусного «Watermelon Game», который покорил весь мир в 2024 году. Подходит всем: школьникам в перерыве, взрослым за чашкой кофе — и тем, кто просто хочет ненадолго отвлечься. Играть в Merge Melons онлайн бесплатно, управление мышью или свайпом на экране.",
         "icon": "assets/covers/merge-melons.jpg",
         "coverUrl": "assets/covers/merge-melons.jpg",
         "buildUrl": "",
@@ -151,21 +145,18 @@
         "i18n": {
           "en": {
             "title": "Merge Melons",
-            "description": "Throw fruit and combine the same to get a watermelon. Viral drop-and-merge puzzle with a tightening loop.",
             "howToPlay": ""
           },
           "es": {
             "title": "Combinar melones",
-            "description": "Tira la fruta y combina la misma para obtener una sandía. Rompecabezas de caída y fusión viral con un bucle de apriete.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Mesclar Melões",
-            "description": "Jogue frutas e misture as mesmas para obter uma melancia. Quebra-cabeça viral de soltar e mesclar com um laço de aperto.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "31f464562a68b390"
+        "i18nSourceHash": "85c75b558a82684c"
       },
       "draft": null
     },
@@ -174,7 +165,7 @@
       "published": {
         "id": "waterjam",
         "title": "WaterJam",
-        "description": "Переливай цветную воду по колбам так, чтобы в каждой остался один цвет. Спокойная головоломка-сортировка для долгих сессий.",
+        "description": "Переливай цветную воду из колбы в колбу так, чтобы в каждой сосуде оказалась жидкость только одного цвета. Ни спешки, ни таймера — чистая логика и спокойствие. Жанр сортировки воды уже несколько лет держится в топах казуальных игр: он одновременно расслабляет и держит ум в тонусе. WaterJam хорошо работает как антистресс-пауза в рабочий день или перед сном. Уровни постепенно усложняются — добавляются новые цвета и меньше свободных ёмкостей. Играть в WaterJam онлайн бесплатно, без регистрации — запускается в браузере прямо на странице игры, управление мышью.",
         "icon": "assets/covers/waterjam.jpg",
         "coverUrl": "assets/covers/waterjam.jpg",
         "buildUrl": "",
@@ -207,21 +198,18 @@
         "i18n": {
           "en": {
             "title": "WaterJam",
-            "description": "Pour colored water into the flasks so that one color remains in each. Calm puzzle sorting for long sessions.",
             "howToPlay": ""
           },
           "es": {
             "title": "WaterJam",
-            "description": "Vierta agua de color en los matraces para que quede un color en cada uno. Calma la clasificación de rompecabezas para sesiones largas.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "WaterJam",
-            "description": "Despeje água colorida nos frascos para que uma cor permaneça em cada um. Classificação calma de quebra-cabeças para longas sessões.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "6b20b260d6a04888"
+        "i18nSourceHash": "813f145092456654"
       },
       "draft": null
     },
@@ -230,7 +218,7 @@
       "published": {
         "id": "terra-craft-world",
         "title": "Terra Craft World",
-        "description": "Исследуй открытый мир, строй из блоков и выживай. Песочница-приключение, где каждое решение формирует твой путь.",
+        "description": "Открытый мир из блоков — исследуй, добывай ресурсы, строй и выживай. Рубишь деревья, копаешь землю, крафтишь инструменты и возводишь всё, что придумаешь. Никаких ограничений по стилю: хочешь — строй крепость, хочешь — уходи глубже под землю. Это браузерная песочница с механикой в духе популярных блочных игр, которая запускается без установки прямо в браузере. Подходит тем, кто любит строить и исследовать в своём темпе, без давления. Управление на ПК — WASD и мышь, на мобильном — экранные кнопки. Играть в Terra Craft World онлайн бесплатно, на ПК и телефоне.",
         "icon": "assets/covers/terra-craft-world.jpg",
         "coverUrl": "assets/covers/terra-craft-world.jpg",
         "buildUrl": "",
@@ -265,21 +253,18 @@
         "i18n": {
           "en": {
             "title": "Terra craft world",
-            "description": "Explore the open world, build blocks and survive. A sandbox adventure where every decision shapes your path.",
             "howToPlay": ""
           },
           "es": {
             "title": "Terra Craft World",
-            "description": "Explora el mundo abierto, construye bloques y sobrevive. Una aventura sandbox donde cada decisión da forma a tu camino.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Terra Craft World",
-            "description": "Explore o mundo aberto, construa blocos e sobreviva. Uma aventura sandbox onde cada decisão molda o seu caminho.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "b6aa4eaf5172d679"
+        "i18nSourceHash": "9f5427140855b2f9"
       },
       "draft": null
     },
@@ -288,7 +273,7 @@
       "published": {
         "id": "parkour-block-3d",
         "title": "Parkour Block 3D",
-        "description": "35 уровней браузерного паркура с разнообразной механикой и хардкорной прогрессией. Проверь свои навыки.",
+        "description": "35 уровней паркура в 3D прямо в браузере. Прыгаешь с платформы на платформу, уклоняешься от ловушек, проходишь препятствия — и каждый следующий уровень требует точности и реакции. Механика простая: тап или клик управляет прыжком. Но простота обманчива — дальше по уровням нужна аккуратность и терпение. Жанр обби/паркур пришёл из Roblox и стал популярным в браузерных играх: здесь та же идея, но запускается моментально без аккаунтов. Хорошо для тех, кто любит испытать себя и дойти до конца. Играть в Parkour Block 3D онлайн бесплатно, только на ПК.",
         "icon": "assets/covers/parkour-block-3d.jpg",
         "coverUrl": "assets/covers/parkour-block-3d.jpg",
         "buildUrl": "",
@@ -321,21 +306,18 @@
         "i18n": {
           "en": {
             "title": "Parkour Block 3D",
-            "description": "35 levels of browser parkour with a variety of mechanics and hardcore progression. Test your skills.",
             "howToPlay": ""
           },
           "es": {
             "title": "Parkour Block 3D",
-            "description": "35 niveles de parkour de navegador con una variedad de mecánicas y progresión hardcore. Pon a prueba tus habilidades.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Parkour Block 3D",
-            "description": "35 níveis de parkour de navegador com uma variedade de mecânicas e progressão hardcore. Teste suas habilidades.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "7778b9796cced7f8"
+        "i18nSourceHash": "2371dcf5627c2f89"
       },
       "draft": null
     },
@@ -344,7 +326,7 @@
       "published": {
         "id": "melon-sandbox-online",
         "title": "Melon Sandbox Online",
-        "description": "Экспериментальная физическая песочница с рэгдолл-физикой. Создавай, ломай, тестируй и повторяй в пиксельном мире.",
+        "description": "Физическая песочница, где нет цели — только эксперименты. Выбираешь объекты, роняешь их, швыряешь, заставляешь падать каскадами — рэгдолл-физика делает каждое взаимодействие непредсказуемым и смешным. Можно строить сложные конструкции и смотреть, как они рассыпаются. Можно просто разнести всё вокруг. Игра особенно популярна у тех, кто снимает летсплеи — результаты всегда получаются разными и выглядят эффектно. Нет победы, нет проигрыша — только процесс. Играть в Melon Sandbox Online онлайн бесплатно, на ПК мышью, на мобильном тапом. Запускается в браузере, установка не нужна.",
         "icon": "assets/covers/melon-sandbox-online.jpg",
         "coverUrl": "assets/covers/melon-sandbox-online.jpg",
         "buildUrl": "",
@@ -379,21 +361,18 @@
         "i18n": {
           "en": {
             "title": "Melon Sandbox Online",
-            "description": "Experimental physical sandbox with ragdoll physics. Create, break, test and repeat in a pixelated world.",
             "howToPlay": ""
           },
           "es": {
             "title": "Melon Sandbox Online",
-            "description": "Sandbox físico experimental con física ragdoll. Crea, rompe, prueba y repite en un mundo pixelado.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Melon Sandbox Online",
-            "description": "Sandbox físico experimental com física ragdoll. Crie, quebre, teste e repita em um mundo pixelizado.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "ed7e14429bd5e7f8"
+        "i18nSourceHash": "7491ca7cbfaea585"
       },
       "draft": null
     },
@@ -402,7 +381,7 @@
       "published": {
         "id": "hoop-stack-color-sort",
         "title": "Сортировка колец: Hoop Stack",
-        "description": "Сортируй разноцветные кольца по стойкам — каждая должна содержать кольца одного цвета. Новый взгляд на жанр головоломок с сортировкой: вместо воды — стопки колец.",
+        "description": "Расставь разноцветные кольца по стойкам так, чтобы на каждой оказались кольца только одного цвета. Похоже на головоломку с сортировкой воды, но вместо колб — стопки колец, и правила расстановки немного другие. Задачи решаются неспешно: это не аркада с таймером, а чистая логика. Хорошо зайдёт тем, кто уже прошёл Water Sort и хочет что-то в том же духе, но с новой механикой. Уровней достаточно для долгих сессий. Играть в Hoop Stack онлайн бесплатно в браузере, управление мышью — кликни кольцо и выбери стойку для переноса.",
         "icon": "assets/covers/hoop-stack-color-sort.jpg",
         "coverUrl": "assets/covers/hoop-stack-color-sort.jpg",
         "buildUrl": "",
@@ -436,21 +415,18 @@
         "i18n": {
           "en": {
             "title": "Sorting Rings: Hoop Stack",
-            "description": "Sort the multicolored rings into racks — each should contain rings of the same color. A new look at the genre of puzzles with sorting: instead of water — stacks of rings.",
             "howToPlay": ""
           },
           "es": {
             "title": "Anillos de clasificación: pila de aro",
-            "description": "Ordena los anillos multicolores en estantes; cada uno debe contener anillos del mismo color. Una nueva mirada al género de los rompecabezas con clasificación: en lugar de agua, pilas de anillos.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Classificando Anéis: Pilha de Aro",
-            "description": "Classifique os anéis multicoloridos em racks — cada um deve conter anéis da mesma cor. Um novo olhar sobre o gênero de quebra-cabeças com classificação: em vez de água — pilhas de anéis.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "23b3236b3229d19a"
+        "i18nSourceHash": "6adbad246ab13c1f"
       },
       "draft": null
     },
@@ -459,7 +435,7 @@
       "published": {
         "id": "ocean-fish-merge",
         "title": "Океан: Слияние рыб",
-        "description": "Бросай рыбок вниз и соединяй одинаковых — они сливаются в более крупных морских существ. Не дай пузырям дотянуться до верхней линии!",
+        "description": "Бросай рыбок в воду и соединяй одинаковых — они сливаются в более крупных морских обитателей. Маленькая рыбка превращается в большую, большая — в осьминога или акулу. Не давай пузырям дотянуться до верхней границы — иначе конец. Та же захватывающая drop-and-merge механика, что и в Merge Melons, но с морской темой и другими персонажами — подойдёт тем, кто хочет разнообразия. Игра работает на ПК и мобильном. Играть в Ocean Fish Merge онлайн бесплатно, без скачивания — управление мышью на компьютере, тапом на телефоне. Отличный выбор для коротких расслабленных сессий.",
         "icon": "assets/covers/ocean-fish-merge.jpg",
         "coverUrl": "assets/covers/ocean-fish-merge.jpg",
         "buildUrl": "",
@@ -494,21 +470,18 @@
         "i18n": {
           "en": {
             "title": "Ocean: Fish Fusion",
-            "description": "Throw the fish down and connect the identical ones — they merge into larger sea creatures. Don't let the bubbles reach the top line!",
             "howToPlay": ""
           },
           "es": {
             "title": "Océano: Fish Fusion",
-            "description": "Arroja los peces hacia abajo y conecta los idénticos: se funden en criaturas marinas más grandes. ¡No dejes que las burbujas lleguen a la línea superior!",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Oceano: Fusão de Peixes",
-            "description": "Jogue os peixes para baixo e conecte os idênticos — eles se fundem em criaturas marinhas maiores. Não deixe que as bolhas atinjam a linha superior!",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "24b934273e6a4b93"
+        "i18nSourceHash": "a5ea4c1c2cafb3b1"
       },
       "draft": null
     },
@@ -517,7 +490,7 @@
       "published": {
         "id": "max-speed",
         "title": "Макс Спид: Аркадные гонки",
-        "description": "Мчись на спортивных машинах по трекам с прыжками и трюками. Кастомизируй и прокачивай авто, побеждай в скоростных аркадных заездах.",
+        "description": "Спортивные машины, трассы с прыжками и трамплинами, аркадная физика без лишних условностей — просто жми газ и побеждай. Между заездами кастомизируй авто и вкладывай заработанные монеты в улучшения: двигатель, управление, внешний вид. Игра не симулятор — она про адреналин и прогресс, а не про точное вождение. Подходит тем, кто хочет погонять в браузере без установки — запускается мгновенно. Управление на ПК — WASD или стрелки, на мобильном — тач-кнопки на экране. Играть в Max Speed онлайн бесплатно на ПК и телефоне — гонки в браузере без регистрации.",
         "icon": "assets/covers/max-speed.jpg",
         "coverUrl": "assets/covers/max-speed.jpg",
         "buildUrl": "",
@@ -552,21 +525,18 @@
         "i18n": {
           "en": {
             "title": "Max Speed: Arcade Racing",
-            "description": "Race in sports cars on tracks with jumps and tricks. Customize and upgrade your car, win high-speed arcade races.",
             "howToPlay": ""
           },
           "es": {
             "title": "Velocidad máxima: Arcade Racing",
-            "description": "Carrera en coches deportivos en pistas con saltos y trucos. Personaliza y mejora tu coche, gana carreras de arcade de alta velocidad.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Velocidade Máxima: Corrida Arcade",
-            "description": "Corra em carros esportivos em pistas com saltos e truques. Personalize e atualize o seu carro, vença corridas arcade de alta velocidade.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "f97e8ff13e791667"
+        "i18nSourceHash": "e8ddffc062bf1c80"
       },
       "draft": null
     },
@@ -575,7 +545,7 @@
       "published": {
         "id": "dead-paradise",
         "title": "Мёртвый рай: Боевые гонки",
-        "description": "Апокалиптические гонки с боем: веди машину и одновременно уничтожай врагов. Прокачивай броню, ракеты и движок на заработанные монеты.",
+        "description": "Постапокалипсис: ты на дороге, вокруг — враги, и нужно одновременно ехать и стрелять. Уничтожай противников, зарабатывай монеты и между уровнями прокачивай машину: броню, ракеты, двигатель. С каждым уровнем давление нарастает. Это не просто гонки — это боевик за рулём, где правильная прокачка решает исход схватки. Жанр vehicular combat классический и понятный: хочется пройти дальше, сделать машину мощнее. Управление на ПК — стрелки/WASD для движения, мышь для прицела и стрельбы; на мобильном — тач-кнопки. Играть в Dead Paradise онлайн бесплатно в браузере.",
         "icon": "assets/covers/dead-paradise.jpg",
         "coverUrl": "assets/covers/dead-paradise.jpg",
         "buildUrl": "",
@@ -610,21 +580,18 @@
         "i18n": {
           "en": {
             "title": "Dead Paradise: Battle Races",
-            "description": "Apocalyptic battle races: drive a car and destroy enemies at the same time. Upgrade armor, rockets, and engine for earned coins.",
             "howToPlay": ""
           },
           "es": {
             "title": "Paraíso Muerto: Carreras de Batalla",
-            "description": "Carreras de batalla apocalípticas: conduce un coche y destruye enemigos al mismo tiempo. Mejora la armadura, los cohetes y el motor para ganar monedas.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Paraíso Morto: Corridas de Batalha",
-            "description": "Corridas de batalha apocalípticas: dirija um carro e destrua inimigos ao mesmo tempo. Aprimore armaduras, foguetes e motores para ganhar moedas.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "a0d0d9dca65a0b39"
+        "i18nSourceHash": "95fe1a35d869e735"
       },
       "draft": null
     },
@@ -633,7 +600,7 @@
       "published": {
         "id": "crazy-moto",
         "title": "Безумный Мото: Трюки и гонки",
-        "description": "Крути газ и лети с трамплинов в физически реалистичной гонке на мотоциклах. 22 уровня, звёзды за трюки, новые байки за прогресс.",
+        "description": "Мотоцикл, трамплины и физика, которая не прощает ошибок. Газуй, лети с рампы, держи равновесие в воздухе — и приземляйся, не упав. За трюки начисляются звёзды, звёзды открывают новые байки. 22 уровня с нарастающей сложностью: сначала кажется легко, потом требует концентрации. Управление на ПК — стрелки (газ/тормоз/наклон), на мобильном — тач-кнопки плюс наклон устройства. Игра нравится тем, кто любит физические головоломки с байками и не против переиграть уровень несколько раз ради идеального прохождения. Играть в Crazy Moto онлайн бесплатно, на ПК и мобильном.",
         "icon": "assets/covers/crazy-moto.jpg",
         "coverUrl": "assets/covers/crazy-moto.jpg",
         "buildUrl": "",
@@ -668,21 +635,18 @@
         "i18n": {
           "en": {
             "title": "Crazy Moto: Stunts & Racing",
-            "description": "Spin the gas and fly off the jumps in a physically realistic motorcycle race. Level 22, stars for tricks, new bikes for progress.",
             "howToPlay": ""
           },
           "es": {
             "title": "Crazy Moto: Acrobacias y carreras",
-            "description": "Gira el acelerador y vuela fuera de los saltos en una carrera de motos físicamente realista. Nivel 22, estrellas para los trucos, nuevas motos para el progreso.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Moto Louco: Acrobacias e Corridas",
-            "description": "Gire o acelerador e voe fora dos saltos em uma corrida de motocicletas fisicamente realista. Nível 22, estrelas para truques, novas motos para o progresso.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "8fba9772ffe74df6"
+        "i18nSourceHash": "e817d5cd014bddaf"
       },
       "draft": null
     },
@@ -691,7 +655,7 @@
       "published": {
         "id": "snake-warz",
         "title": "Змеиные войны",
-        "description": "Управляй змейкой, ешь еду и расти. Будь осторожен — другие змейки тоже охотятся. Обхитри соперников и стань самой большой змеёй на арене.",
+        "description": "Классическая змейка на арене с противниками. Собирай еду, расти и не врезайся — ни в стены, ни в чужие хвосты. Заставь соперника врезаться в тебя — он погибнет, а ты станешь ещё длиннее. Механика проверена временем: Snake появилась ещё в Nokia-эпоху, но в формате .io-арены она приобрела конкурентный азарт. Легко начать, сложно оторваться, когда стал самой большой змеёй на поле. Хороший выбор для паузы в 5–10 минут — или на час, если затянет. Играть в Snake Warz онлайн бесплатно в браузере, управление мышью — тянешь в нужную сторону.",
         "icon": "assets/covers/snake-warz.jpg",
         "coverUrl": "assets/covers/snake-warz.jpg",
         "buildUrl": "",
@@ -724,21 +688,18 @@
         "i18n": {
           "en": {
             "title": "Serpent Wars",
-            "description": "Control the snake, eat the food, and grow. Be careful — other snakes are also hunting. Outsmart your opponents and become the biggest snake in the arena.",
             "howToPlay": ""
           },
           "es": {
             "title": "Guerras de serpientes",
-            "description": "Controla la serpiente, come la comida y crece. Ten cuidado, otras serpientes también están cazando. Supera a tus oponentes y conviértete en la serpiente más grande de la arena.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Guerras das Serpentes",
-            "description": "Controle a cobra, coma a comida e cresça. Tenha cuidado — outras cobras também estão caçando. Seja mais esperto que seus oponentes e se torne a maior cobra da arena.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "3cb0e94c61b47503"
+        "i18nSourceHash": "c3140c8ea3ebedc0"
       },
       "draft": null
     },
@@ -747,7 +708,7 @@
       "published": {
         "id": "tornado-io",
         "title": "Торнадо.io",
-        "description": "Управляй торнадо, поглощай здания и машины, становись мощнее и поглощай других игроков. Физическая .io-арена с разрушениями.",
+        "description": "Управляй торнадо: поглощай здания, машины, деревья — и всё, что встречается на пути. Чем больше поглощаешь, тем мощнее становишься. Когда вырос достаточно — можно поглощать чужие торнадо. Физика разрушений делает каждую сессию зрелищной: объекты разлетаются реалистично, город буквально исчезает на глазах. Простое управление мышью или свайпом — игра заходит без объяснений. Из жанра .io взята идея «расти и побеждай других», но реализация через разрушение города — нестандартная и эффектная. Играть в Tornado.io онлайн бесплатно в браузере, на ПК и мобильном.",
         "icon": "assets/covers/tornado-io.jpg",
         "coverUrl": "assets/covers/tornado-io.jpg",
         "buildUrl": "",
@@ -781,21 +742,18 @@
         "i18n": {
           "en": {
             "title": "Tornado.io",
-            "description": "Control tornadoes, absorb buildings and cars, become more powerful and absorb other players. Physical .io-arena with destructions.",
             "howToPlay": ""
           },
           "es": {
             "title": "Tornado.io",
-            "description": "Controla tornados, absorbe edificios y coches, se vuelve más poderoso y absorbe a otros jugadores. Físico .io-arena con destrucciones.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Tornado.io",
-            "description": "Controle tornados, absorva edifícios e carros, torne-se mais poderoso e absorva outros jogadores. .io-arena física com destruições.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "e3579577a2eb4c39"
+        "i18nSourceHash": "01b7a24d32e163a4"
       },
       "draft": null
     },
@@ -804,7 +762,7 @@
       "published": {
         "id": "zombie-grave-yard",
         "title": "Зомби на Кладбище",
-        "description": "Аркадный 3D-шутер: сражайся с нежитью на кладбище. Режим кампании с нарастающей сложностью или бесконечное выживание — сколько продержишься?",
+        "description": "3D-шутер от третьего лица: на тебя со всех сторон идут зомби, и нужно продержаться как можно дольше. Есть режим кампании с нарастающей сложностью по уровням и режим бесконечного выживания — для тех, кто хочет побить свой рекорд. Атмосфера кладбища ночью: туман, тени, звуки, которые держат в напряжении. Управление стандартное: на ПК — WASD и мышь, на мобильном — виртуальный джойстик. Игра подходит подросткам и взрослым, кому нравятся зомби-экшены без скачивания. Играть в Zombie Graveyard онлайн бесплатно прямо в браузере — кампания или выживание, выбирай сам.",
         "icon": "assets/covers/zombie-grave-yard.jpg",
         "coverUrl": "assets/covers/zombie-grave-yard.jpg",
         "buildUrl": "",
@@ -839,21 +797,18 @@
         "i18n": {
           "en": {
             "title": "Zombies in the Cemetery",
-            "description": "Arcade 3D Shooter: Fight the undead in the cemetery. Campaign mode with increasing difficulty or endless survival — how long will you last?",
             "howToPlay": ""
           },
           "es": {
             "title": "Zombies en el cementerio",
-            "description": "Arcade 3D Shooter: Lucha contra los muertos vivientes en el cementerio. Modo campaña con dificultad creciente o supervivencia sin fin: ¿cuánto tiempo durarás?",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Zumbis no Cemitério",
-            "description": "Arcade 3D Shooter: Lute contra os mortos-vivos no cemitério. Modo campanha com dificuldade crescente ou sobrevivência sem fim — quanto tempo você vai durar?",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "b40b4ac6b3ed5261"
+        "i18nSourceHash": "411dc794af106dd1"
       },
       "draft": null
     },
@@ -862,7 +817,7 @@
       "published": {
         "id": "zombie-swarm",
         "title": "Орды Зомби",
-        "description": "Выживай в бесконечных волнах нежити в виде сверху. Выбирай героев, прокачивай способности, собирай ресурсы и защищай базу.",
+        "description": "Выживание под натиском волн нежити — вид сверху, авто-стрельба, нарастающее безумие. Ты двигаешься, персонаж стреляет сам: задача — не дать толпе зомби тебя окружить. Между волнами выбираешь улучшения: новые способности, прокачку урона, скорость. С каждой волной врагов становится больше и быстрее. Жанр «survivors / horde survival» — один из самых популярных в инди-играх последних лет, и теперь доступен в браузере без установки. Управление на ПК — WASD, мышь задаёт направление; на мобильном — виртуальный джойстик с авто-огнём. Играть в Zombie Swarm онлайн бесплатно.",
         "icon": "assets/covers/zombie-swarm.jpg",
         "coverUrl": "assets/covers/zombie-swarm.jpg",
         "buildUrl": "",
@@ -897,21 +852,18 @@
         "i18n": {
           "en": {
             "title": "Zombie Hordes",
-            "description": "Survive the endless waves of the undead in the form of the top. Choose heroes, level up abilities, collect resources and protect the base.",
             "howToPlay": ""
           },
           "es": {
             "title": "Hordas de zombis",
-            "description": "Sobrevive a las olas interminables de los no-muertos en la forma de la cima. Elige héroes, sube de nivel de habilidades, recoge recursos y protege la base.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Hordas de Zumbis",
-            "description": "Sobreviva às ondas intermináveis dos mortos-vivos na forma do topo. Escolha heróis, aumente o nível das habilidades, colete recursos e proteja a base.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "7e7e3ad8b1ff7447"
+        "i18nSourceHash": "1865d975f6e4fb3b"
       },
       "draft": null
     },
@@ -920,7 +872,7 @@
       "published": {
         "id": "truck-slam",
         "title": "Трак Слэм: Арена грузовиков",
-        "description": "Разгоняйся и тарань соперников, чтобы сбросить их с платформы. Физическая арена на грузовиках — есть режим для двух игроков на одном устройстве.",
+        "description": "Выезжаешь на платформу на грузовике — и цель одна: столкнуть соперников вниз, самому устояв. Разгоняйся, тарань, используй физику удара. Простое правило, но матчи горячие: один неудачный манёвр — и уже ты летишь с края. Есть режим для двух игроков на одном устройстве — хороший повод сыграть с другом или младшим братом. Управление на ПК — стрелки или WASD для движения, пробел для удара; на мобильном — тач-кнопки. Игра быстрая и без лишних экранов: зашёл, нажал старт — уже в бою. Играть в Truck Slam онлайн бесплатно в браузере.",
         "icon": "assets/covers/truck-slam.jpg",
         "coverUrl": "assets/covers/truck-slam.jpg",
         "buildUrl": "",
@@ -955,21 +907,18 @@
         "i18n": {
           "en": {
             "title": "Truck Slam: Truck Arena",
-            "description": "Accelerate and ram opponents to throw them off the platform. Physical arena on trucks — there is a mode for two players on one device.",
             "howToPlay": ""
           },
           "es": {
             "title": "Truck Slam: Truck Arena",
-            "description": "Acelera y embiste a los oponentes para arrojarlos de la plataforma. Arena física en camiones: hay un modo para dos jugadores en un dispositivo.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Truck Slam: Arena de Caminhões",
-            "description": "Acelere e empurre os oponentes para jogá-los para fora da plataforma. Arena física em caminhões — há um modo para dois jogadores em um dispositivo.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "22b7f1beec7f47c8"
+        "i18nSourceHash": "fdfab4d5f9097666"
       },
       "draft": null
     },
@@ -978,7 +927,7 @@
       "published": {
         "id": "resource-empire",
         "title": "Империя Ресурсов",
-        "description": "Строй горнодобывающую империю с нуля: нанимай шахтёров, прокачивай лифты и склады, добывай уголь, золото и алмазы. Идеально для расслабленной игры — жми и смотри, как растёт состояние.",
+        "description": "Строишь шахту с нуля: нанимаешь горняков, прокачиваешь лифты и склады, добываешь уголь, потом золото, потом алмазы. Доходы растут, открываются новые шахты, масштаб расширяется. Это idle/кликер-менеджмент: можно активно кликать по улучшениям, а можно оставить и вернуться через несколько минут — прогресс копится сам. Хороший выбор для тех, кто любит смотреть, как «растут числа» и выстраивать эффективные цепочки. Нет жёсткого финала — можно играть до тех пор, пока интересно. Управление мышью на ПК, тапом на мобильном. Играть в Resource Empire онлайн бесплатно в браузере, без регистрации.",
         "icon": "assets/covers/resource-empire.jpg",
         "coverUrl": "assets/covers/resource-empire.jpg",
         "buildUrl": "",
@@ -1013,21 +962,18 @@
         "i18n": {
           "en": {
             "title": "Empire of Resources",
-            "description": "Build a mining empire from scratch: hire miners, pump elevators and warehouses, extract coal, gold and diamonds. Perfect for a relaxed game — click and watch your fortune grow.",
             "howToPlay": ""
           },
           "es": {
             "title": "Imperio de los recursos",
-            "description": "Construye un imperio minero desde cero: contrata mineros, bombea ascensores y almacenes, extrae carbón, oro y diamantes. Perfecto para un juego relajado: haga clic y vea crecer su fortuna.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Império de Recursos",
-            "description": "Construa um império mineiro a partir do zero: contrate mineiros, bombeie elevadores e armazéns, extraia carvão, ouro e diamantes. Perfeito para um jogo descontraído — clique e veja a sua fortuna crescer.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "a97c1bfd7e4eb526"
+        "i18nSourceHash": "218794be9d9e6ff1"
       },
       "draft": null
     },
@@ -1036,7 +982,7 @@
       "published": {
         "id": "duo-water-and-fire",
         "title": "Вода и Огонь: Дуэт",
-        "description": "Управляй двумя стикменами с противоположными силами — огнём и водой. Собирай ключи, избегай ловушек и добирайся до двери. Можно играть вдвоём или одному поочерёдно.",
+        "description": "Два стикмена с противоположными силами — один управляется водой, другой огнём. Они должны добраться до своих выходов, но уровни устроены так, что без взаимодействия не пройти: один открывает путь для другого. Огненный персонаж гибнет в воде, водяной — в огне, поэтому маршруты нужно продумывать вместе. Можно играть вдвоём на одной клавиатуре (WASD + стрелки) или одному, переключаясь между персонажами. На мобильном — тач-кнопки на экране. Отличный вариант для совместной игры с другом или ребёнком. Играть в Duo Water and Fire онлайн бесплатно в браузере, без скачивания.",
         "icon": "assets/covers/duo-water-and-fire.jpg",
         "coverUrl": "assets/covers/duo-water-and-fire.jpg",
         "buildUrl": "",
@@ -1072,21 +1018,18 @@
         "i18n": {
           "en": {
             "title": "Water & Fire Duo",
-            "description": "Control two stickmen with opposite powers — fire and water. Collect the keys, avoid the traps, and get to the door. You can play together or one at a time.",
             "howToPlay": ""
           },
           "es": {
             "title": "Dúo de agua y fuego",
-            "description": "Controla a dos stickmen con poderes opuestos: fuego y agua. Recoge las llaves, evita las trampas y llega a la puerta. Pueden jugar juntos o uno a la vez.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Duo Água e Fogo",
-            "description": "Controle dois stickmen com poderes opostos — fogo e água. Pegue as chaves, evite as armadilhas e chegue até a porta. Vocês podem jogar juntos ou um de cada vez.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "201fa850a35bfbae"
+        "i18nSourceHash": "7e22f3e6bf7ea52d"
       },
       "draft": null
     },
@@ -1095,7 +1038,7 @@
       "published": {
         "id": "ocean-match-puzzle",
         "title": "Морская Головоломка: Совпадения",
-        "description": "Найди и совмести одинаковых морских существ в этой красочной казуальной головоломке. Расслабляющий темп, яркая подводная тема.",
+        "description": "Нажимай на группы одинаковых морских существ, чтобы убрать их с поля. Осьминоги, рыбки, морские звёзды — яркая подводная тема, мягкая анимация, никакого таймера. Это расслабленный вариант match-головоломки: темп ты задаёшь сам. Хорошо подходит для коротких сессий в очереди или за чашкой чая. Уровни постепенно усложняются — появляются новые комбинации и препятствия. Управление простое: мышь на ПК, тап на мобильном. Играть в Ocean Match Puzzle онлайн бесплатно в браузере — запускается моментально, без регистрации. Лёгкий вход и приятная картинка делают игру доступной для любого возраста.",
         "icon": "assets/covers/ocean-match-puzzle.jpg",
         "coverUrl": "assets/covers/ocean-match-puzzle.jpg",
         "buildUrl": "",
@@ -1129,21 +1072,18 @@
         "i18n": {
           "en": {
             "title": "Sea Puzzle: Coincidences",
-            "description": "Find and match identical sea creatures in this colorful casual puzzle game. Relaxing pace, vibrant underwater theme.",
             "howToPlay": ""
           },
           "es": {
             "title": "Rompecabezas marino: coincidencias",
-            "description": "Encuentra y combina criaturas marinas idénticas en este colorido juego de rompecabezas informal. Ritmo relajante, tema subacuático vibrante.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Quebra-cabeça do mar: coincidências",
-            "description": "Encontre e combine criaturas marinhas idênticas neste colorido jogo de quebra-cabeça casual. Ritmo relaxante, tema subaquático vibrante.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "5e383adf3089ce78"
+        "i18nSourceHash": "e05eaeb87584a490"
       },
       "draft": null
     }
