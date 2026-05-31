@@ -78,7 +78,7 @@ img { max-width: 100%; display: block; }
   font-weight: 700;
   font-size: 1.15rem;
 }
-.brand img, .brand svg { height: 32px; width: auto; aspect-ratio: 1 / 1; }
+.brand img, .brand svg { height: 30px; width: auto; }
 
 /* ---------- Main / sections ---------- */
 main { padding-block: 1.5rem 3rem; }
