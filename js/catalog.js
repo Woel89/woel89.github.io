@@ -13,6 +13,11 @@
   var activePlatform = null;
   var catFilterEl = document.getElementById("category-filter");
   var platFilterEl = document.getElementById("platform-filter");
+  var filterToggleBtn = document.getElementById("filter-toggle");
+  var filterPanel = document.getElementById("filter-panel");
+  var filterBackdrop = document.getElementById("filter-backdrop");
+  var filterApplyBtn = document.getElementById("filter-apply");
+  var filterResetBtn = document.getElementById("filter-reset");
 
   var NEW_DAYS = 14;
 
@@ -144,6 +149,7 @@
       return true;
     });
     renderGrid(filtered);
+    updateFilterBtn();
   }
 
   function renderCategoryFilter(games) {
@@ -229,6 +235,98 @@
     });
   }
 
+  // ---- Filter panel toggle (desktop dropdown / mobile bottom sheet) ----
+
+  function openFilterPanel() {
+    if (!filterPanel || !filterToggleBtn) return;
+    filterPanel.hidden = false;
+    filterToggleBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closeFilterPanel() {
+    if (!filterPanel || !filterToggleBtn) return;
+    filterPanel.hidden = true;
+    filterToggleBtn.setAttribute("aria-expanded", "false");
+    filterToggleBtn.focus();
+  }
+
+  function updateFilterBtn() {
+    if (!filterToggleBtn) return;
+    var count = (activeTag ? 1 : 0) + (activePlatform ? 1 : 0);
+    var hasActive = count > 0;
+    filterToggleBtn.classList.toggle("has-active", hasActive);
+    filterToggleBtn.textContent = hasActive ? "Фильтры \xB7 " + count : "Фильтры";
+  }
+
+  function initFilterToggle() {
+    if (!filterToggleBtn || !filterPanel) return;
+
+    filterToggleBtn.addEventListener("click", function () {
+      if (filterPanel.hidden) {
+        openFilterPanel();
+      } else {
+        closeFilterPanel();
+      }
+    });
+
+    if (filterBackdrop) {
+      filterBackdrop.addEventListener("click", closeFilterPanel);
+    }
+
+    if (filterApplyBtn) {
+      filterApplyBtn.addEventListener("click", function () {
+        closeFilterPanel();
+        applyFilter();
+      });
+    }
+
+    if (filterResetBtn) {
+      filterResetBtn.addEventListener("click", function () {
+        activeTag = null;
+        activePlatform = null;
+        if (platFilterEl) {
+          Array.prototype.forEach.call(platFilterEl.querySelectorAll("button"), function (b) {
+            b.setAttribute("aria-pressed", (b.getAttribute("data-platform") === "").toString());
+          });
+        }
+        if (tagFilterEl) {
+          Array.prototype.forEach.call(tagFilterEl.querySelectorAll("button"), function (b) {
+            b.setAttribute("aria-pressed", (b.getAttribute("data-tag") === "").toString());
+          });
+        }
+        updateFilterBtn();
+        closeFilterPanel();
+        applyFilter();
+      });
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && filterPanel && !filterPanel.hidden) {
+        closeFilterPanel();
+      }
+    });
+
+    // Закрытие по клику вне панели (desktop)
+    document.addEventListener("click", function (e) {
+      if (!filterPanel || filterPanel.hidden) return;
+      var withinPanel = filterPanel.contains(e.target);
+      var withinToggle = filterToggleBtn && filterToggleBtn.contains(e.target);
+      if (!withinPanel && !withinToggle) {
+        closeFilterPanel();
+      }
+    });
+  }
+
+  // Показать/скрыть кнопку «Фильтры» в зависимости от наличия платформ/тегов.
+  function maybeShowFilterBtn(games) {
+    if (!filterToggleBtn) return;
+    var hasPlatforms = games.some(function (g) { return (g.platforms || []).length > 0; });
+    var hasTags = games.some(function (g) { return (g.tags || []).length > 0; });
+    if (hasPlatforms || hasTags) {
+      filterToggleBtn.hidden = false;
+    }
+  }
+
   fetch("games.json?v=" + Date.now(), { cache: "no-cache" })
     .then(function (r) { return r.json(); })
     .then(function (data) {
@@ -242,6 +340,8 @@
       renderTagFilter(allGames);
       renderCategoryFilter(allGames);
       renderPlatformFilter(allGames);
+      maybeShowFilterBtn(allGames);
+      initFilterToggle();
       renderShelves(allGames);
       renderGrid(allGames);
     })

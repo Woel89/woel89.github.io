@@ -125,9 +125,26 @@
       <p>Играйте в аркады, головоломки и казуальные игры без установки — на телефоне и на компьютере.</p>
     </div>
 
-    <nav class="tag-filter" id="category-filter" aria-label="Фильтр по категориям"></nav>
-    <nav class="tag-filter" id="platform-filter" aria-label="Фильтр по платформам"></nav>
-    <nav class="tag-filter" id="tag-filter" aria-label="Фильтр по тегам"></nav>
+    <!-- один ряд: категории + кнопка фильтров -->
+    <div class="filter-bar">
+      <nav class="chip-row" id="category-filter" aria-label="Фильтр по категориям"></nav>
+      <button class="filter-btn" id="filter-toggle" aria-expanded="false" aria-controls="filter-panel" hidden>
+        Фильтры
+      </button>
+    </div>
+
+    <!-- dropdown (desktop) / bottom-sheet (mobile) -->
+    <div class="filter-panel" id="filter-panel" hidden>
+      <div class="filter-panel__backdrop" id="filter-backdrop"></div>
+      <div class="filter-panel__inner">
+        <nav id="platform-filter" aria-label="Фильтр по платформам"></nav>
+        <nav id="tag-filter" aria-label="Фильтр по тегам"></nav>
+        <div class="filter-panel__actions">
+          <button type="button" id="filter-apply">Применить</button>
+          <button type="button" id="filter-reset">Сбросить</button>
+        </div>
+      </div>
+    </div>
 
     <div id="shelves"></div>
 
