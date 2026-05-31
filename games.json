@@ -396,6 +396,626 @@
         "i18nSourceHash": "ed7e14429bd5e7f8"
       },
       "draft": null
+    },
+    {
+      "id": "hoop-stack-color-sort",
+      "published": {
+        "id": "hoop-stack-color-sort",
+        "title": "Сортировка колец: Hoop Stack",
+        "description": "Сортируй разноцветные кольца по стойкам — каждая должна содержать кольца одного цвета. Новый взгляд на жанр головоломок с сортировкой: вместо воды — стопки колец.",
+        "icon": "assets/covers/hoop-stack-color-sort.jpg",
+        "coverUrl": "assets/covers/hoop-stack-color-sort.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/a8g3nsr0ebyunaf5ct6avg0qfdb228vf/",
+        "provider": "gamemonetize",
+        "tags": [
+          "головоломка",
+          "сортировка",
+          "кольца"
+        ],
+        "categories": [
+          "puzzle",
+          "arcade"
+        ],
+        "platforms": [
+          "pc"
+        ],
+        "controls": {
+          "pc": "Мышь — выбрать и поставить кольцо",
+          "mobile": ""
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Hoop Stack - Color Sort Puzzle",
+            "description": "Sort colored hoops onto pegs so each peg holds rings of the same color. A fresh spin on sorting puzzles — rings instead of water tubes.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "2b6fedc45de4561b"
+      },
+      "draft": null
+    },
+    {
+      "id": "ocean-fish-merge",
+      "published": {
+        "id": "ocean-fish-merge",
+        "title": "Океан: Слияние рыб",
+        "description": "Бросай рыбок вниз и соединяй одинаковых — они сливаются в более крупных морских существ. Не дай пузырям дотянуться до верхней линии!",
+        "icon": "assets/covers/ocean-fish-merge.jpg",
+        "coverUrl": "assets/covers/ocean-fish-merge.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/00bjdjuknl26np8fc5ftujvob1sxzldw/",
+        "provider": "gamemonetize",
+        "tags": [
+          "слияние",
+          "рыбки",
+          "морская тема"
+        ],
+        "categories": [
+          "puzzle",
+          "clicker"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Мышь — выбрать позицию сброса",
+          "mobile": "Тап — выбрать позицию сброса"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "portrait",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Ocean Fish Merge",
+            "description": "Drop fish into the tank and merge identical ones into bigger sea creatures. Don't let bubbles reach the top red line!",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "98229dcbd401effa"
+      },
+      "draft": null
+    },
+    {
+      "id": "max-speed",
+      "published": {
+        "id": "max-speed",
+        "title": "Макс Спид: Аркадные гонки",
+        "description": "Мчись на спортивных машинах по трекам с прыжками и трюками. Кастомизируй и прокачивай авто, побеждай в скоростных аркадных заездах.",
+        "icon": "assets/covers/max-speed.jpg",
+        "coverUrl": "assets/covers/max-speed.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/ai9lo8rruqqnfxpsvk6fveoe6yzs9bfo/",
+        "provider": "gamemonetize",
+        "tags": [
+          "гонки",
+          "машины",
+          "трюки"
+        ],
+        "categories": [
+          "racing",
+          "action"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "WASD / стрелки — движение",
+          "mobile": "Тач-кнопки на экране"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Max Speed",
+            "description": "Race sports cars on 3D tracks packed with jumps, stunts, and battles. Upgrade and customize your car, then dominate arcade-style races.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "5b7f25a24d8f13a6"
+      },
+      "draft": null
+    },
+    {
+      "id": "dead-paradise",
+      "published": {
+        "id": "dead-paradise",
+        "title": "Мёртвый рай: Боевые гонки",
+        "description": "Апокалиптические гонки с боем: веди машину и одновременно уничтожай врагов. Прокачивай броню, ракеты и движок на заработанные монеты.",
+        "icon": "assets/covers/dead-paradise.jpg",
+        "coverUrl": "assets/covers/dead-paradise.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/td7r994z5ls02swod3lm0gk9h2jl2jmi/",
+        "provider": "gamemonetize",
+        "tags": [
+          "гонки",
+          "боевик",
+          "апокалипсис"
+        ],
+        "categories": [
+          "racing",
+          "action"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Стрелки/WASD — движение, мышь — прицел и стрельба",
+          "mobile": "Тач-кнопки на экране"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Dead Paradise",
+            "description": "Post-apocalyptic drive-and-shoot racing: blast enemy vehicles while staying alive. Earn coins to upgrade armor, missiles, and engine.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "ef2f045e9add006b"
+      },
+      "draft": null
+    },
+    {
+      "id": "crazy-moto",
+      "published": {
+        "id": "crazy-moto",
+        "title": "Безумный Мото: Трюки и гонки",
+        "description": "Крути газ и лети с трамплинов в физически реалистичной гонке на мотоциклах. 22 уровня, звёзды за трюки, новые байки за прогресс.",
+        "icon": "assets/covers/crazy-moto.jpg",
+        "coverUrl": "assets/covers/crazy-moto.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/s74g69865ye0ps8z2bvoc4cyu7r5iock/",
+        "provider": "gamemonetize",
+        "tags": [
+          "мото",
+          "трюки",
+          "гонки"
+        ],
+        "categories": [
+          "racing",
+          "arcade"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Стрелки — газ/тормоз/наклон",
+          "mobile": "Тач-кнопки + наклон устройства"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Crazy Moto",
+            "description": "Twist the throttle and fly off ramps in this physics-based motorcycle stunt game. 22 handcrafted levels, star ratings, and bikes to unlock.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "030aa6858f3d7039"
+      },
+      "draft": null
+    },
+    {
+      "id": "snake-warz",
+      "published": {
+        "id": "snake-warz",
+        "title": "Змеиные войны",
+        "description": "Управляй змейкой, ешь еду и расти. Будь осторожен — другие змейки тоже охотятся. Обхитри соперников и стань самой большой змеёй на арене.",
+        "icon": "assets/covers/snake-warz.jpg",
+        "coverUrl": "assets/covers/snake-warz.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/uxv01zwcngh7d3xm1aqdg9t91qfuh59n/",
+        "provider": "gamemonetize",
+        "tags": [
+          "змейка",
+          "арена",
+          ".io"
+        ],
+        "categories": [
+          "arcade"
+        ],
+        "platforms": [
+          "pc"
+        ],
+        "controls": {
+          "pc": "Мышь — направление движения",
+          "mobile": ""
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Snake Warz",
+            "description": "Guide your snake, eat to grow, and outmaneuver rivals in the arena. Avoid other snakes and fight to become the biggest.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "bcb0b0cd7b2ee997"
+      },
+      "draft": null
+    },
+    {
+      "id": "tornado-io",
+      "published": {
+        "id": "tornado-io",
+        "title": "Торнадо.io",
+        "description": "Управляй торнадо, поглощай здания и машины, становись мощнее и поглощай других игроков. Физическая .io-арена с разрушениями.",
+        "icon": "assets/covers/tornado-io.jpg",
+        "coverUrl": "assets/covers/tornado-io.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/1smka6j97blcuektwham1dtdk7atuhzd/",
+        "provider": "gamemonetize",
+        "tags": [
+          "торнадо",
+          "разрушения",
+          ".io"
+        ],
+        "categories": [
+          "arcade"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Мышь — направление",
+          "mobile": "Тап и свайп"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Tornado.io",
+            "description": "Control a tornado to swallow buildings, vehicles, and rival tornadoes. Grow your destructive power in this physics-based .io arena.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "1d0097bae3e1f6e6"
+      },
+      "draft": null
+    },
+    {
+      "id": "zombie-grave-yard",
+      "published": {
+        "id": "zombie-grave-yard",
+        "title": "Зомби на Кладбище",
+        "description": "Аркадный 3D-шутер: сражайся с нежитью на кладбище. Режим кампании с нарастающей сложностью или бесконечное выживание — сколько продержишься?",
+        "icon": "assets/covers/zombie-grave-yard.jpg",
+        "coverUrl": "assets/covers/zombie-grave-yard.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/5k1yi3sk6s1oc2walu3po2ujxylbvjb6/",
+        "provider": "gamemonetize",
+        "tags": [
+          "зомби",
+          "шутер",
+          "выживание"
+        ],
+        "categories": [
+          "shooter",
+          "adventure"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "WASD — движение, мышь — прицел и стрельба",
+          "mobile": "Виртуальный джойстик"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Zombie Grave Yard",
+            "description": "Fast-paced 3D arcade shooter set in a haunted cemetery. Choose Campaign mode or Survival — fight the undead and see how long you last.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "5e83be72e7e64e1e"
+      },
+      "draft": null
+    },
+    {
+      "id": "zombie-swarm",
+      "published": {
+        "id": "zombie-swarm",
+        "title": "Орды Зомби",
+        "description": "Выживай в бесконечных волнах нежити в виде сверху. Выбирай героев, прокачивай способности, собирай ресурсы и защищай базу.",
+        "icon": "assets/covers/zombie-swarm.jpg",
+        "coverUrl": "assets/covers/zombie-swarm.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/jgbxplcymt6ccgoo4j724csv030uthxd/",
+        "provider": "gamemonetize",
+        "tags": [
+          "зомби",
+          "выживание",
+          "волны"
+        ],
+        "categories": [
+          "shooter",
+          "action"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "WASD — движение, мышь — прицел (авто-стрельба)",
+          "mobile": "Виртуальный джойстик + авто-огонь"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Zombie Swarm",
+            "description": "Top-down survival shooter: withstand endless zombie waves, choose heroes, upgrade abilities, and defend your base.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "80be1a53804b489d"
+      },
+      "draft": null
+    },
+    {
+      "id": "truck-slam",
+      "published": {
+        "id": "truck-slam",
+        "title": "Трак Слэм: Арена грузовиков",
+        "description": "Разгоняйся и тарань соперников, чтобы сбросить их с платформы. Физическая арена на грузовиках — есть режим для двух игроков на одном устройстве.",
+        "icon": "assets/covers/truck-slam.jpg",
+        "coverUrl": "assets/covers/truck-slam.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/zzkoub6xkzrqd9v58hl50i25hk86dcjm/",
+        "provider": "gamemonetize",
+        "tags": [
+          "грузовики",
+          "арена",
+          "физика"
+        ],
+        "categories": [
+          "arcade",
+          "action"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Стрелки/WASD — движение, пробел — удар",
+          "mobile": "Тач-кнопки на экране"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Truck Slam",
+            "description": "Ram opponents off the arena platform in this physics-based truck combat game. Upgrade durability and power — play solo or with a friend on the same screen.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "c93769b47c13c0ca"
+      },
+      "draft": null
+    },
+    {
+      "id": "resource-empire",
+      "published": {
+        "id": "resource-empire",
+        "title": "Империя Ресурсов",
+        "description": "Строй горнодобывающую империю с нуля: нанимай шахтёров, прокачивай лифты и склады, добывай уголь, золото и алмазы. Идеально для расслабленной игры — жми и смотри, как растёт состояние.",
+        "icon": "assets/covers/resource-empire.jpg",
+        "coverUrl": "assets/covers/resource-empire.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/suh0t5ba29tw7m38daqzscuhfspi93e1/",
+        "provider": "gamemonetize",
+        "tags": [
+          "шахта",
+          "кликер",
+          "менеджмент"
+        ],
+        "categories": [
+          "clicker",
+          "simulation"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Мышь — клики по улучшениям",
+          "mobile": "Тап"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Resource Empire",
+            "description": "Build a mining empire from a single shaft: hire workers, upgrade speed and capacity, unlock coal, gold, and diamonds. Relaxing idle clicker with dozens of upgrades.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "daf52d298f50f684"
+      },
+      "draft": null
+    },
+    {
+      "id": "duo-water-and-fire",
+      "published": {
+        "id": "duo-water-and-fire",
+        "title": "Вода и Огонь: Дуэт",
+        "description": "Управляй двумя стикменами с противоположными силами — огнём и водой. Собирай ключи, избегай ловушек и добирайся до двери. Можно играть вдвоём или одному поочерёдно.",
+        "icon": "assets/covers/duo-water-and-fire.jpg",
+        "coverUrl": "assets/covers/duo-water-and-fire.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/iwwffks7uv61lj9mhvmz1263abloo3xh/",
+        "provider": "gamemonetize",
+        "tags": [
+          "кооп",
+          "стикмен",
+          "головоломка-платформер"
+        ],
+        "categories": [
+          "adventure",
+          "action",
+          "arcade"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "WASD + стрелки (2 игрока) или чередование",
+          "mobile": "Тач-кнопки на экране"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Duo Water and Fire",
+            "description": "Control fire and water stickmen through obstacle-filled levels. Collect keys, avoid elemental traps, and reach the exit door — play solo or with a friend.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "38bbdf12143bb119"
+      },
+      "draft": null
+    },
+    {
+      "id": "ocean-match-puzzle",
+      "published": {
+        "id": "ocean-match-puzzle",
+        "title": "Морская Головоломка: Совпадения",
+        "description": "Найди и совмести одинаковых морских существ в этой красочной казуальной головоломке. Расслабляющий темп, яркая подводная тема.",
+        "icon": "assets/covers/ocean-match-puzzle.jpg",
+        "coverUrl": "assets/covers/ocean-match-puzzle.jpg",
+        "buildUrl": "",
+        "source": "external",
+        "embedUrl": "https://html5.gamemonetize.co/aosox6ysmr96mpeteubtsnrfh2gqadei/",
+        "provider": "gamemonetize",
+        "tags": [
+          "мэтч-3",
+          "морская тема",
+          "казуал"
+        ],
+        "categories": [
+          "puzzle"
+        ],
+        "platforms": [
+          "pc",
+          "mobile"
+        ],
+        "controls": {
+          "pc": "Мышь — клик на совпадающих существ",
+          "mobile": "Тап"
+        },
+        "dateAdded": "2026-05-31",
+        "flags": {
+          "isPopular": false,
+          "isPublished": true
+        },
+        "orientation": "landscape",
+        "author": "GameMonetize",
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Ocean Match Puzzle",
+            "description": "Match colorful sea creatures in this fun, relaxing casual puzzle. Dive into the ocean depths and clear the board.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "4b68de85fd330cf9"
+      },
+      "draft": null
     }
   ]
 }

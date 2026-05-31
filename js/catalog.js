@@ -50,6 +50,18 @@
     return out;
   }
 
+  // RU-лейблы жанровых чипов (в games.json categories — англ-коды).
+  var CATEGORY_LABELS = {
+    arcade: "Аркады",
+    puzzle: "Головоломки",
+    action: "Экшн",
+    adventure: "Приключения",
+    clicker: "Кликеры",
+    simulation: "Симуляторы",
+    racing: "Гонки",
+    shooter: "Шутеры"
+  };
+
   // Категории игры: categories[] или фолбэк со старого одиночного category.
   function gameCategories(g) {
     if (Array.isArray(g.categories) && g.categories.length) return g.categories;
@@ -167,7 +179,7 @@
         (cat == null ? "" : esc(cat)) + '">' + esc(label) + "</button>";
     }
     catFilterEl.innerHTML =
-      btn("Все", null) + cats.map(function (c) { return btn(c, c); }).join("");
+      btn("Все", null) + cats.map(function (c) { return btn(CATEGORY_LABELS[c] || c, c); }).join("");
 
     catFilterEl.addEventListener("click", function (e) {
       var b = e.target.closest("button");
