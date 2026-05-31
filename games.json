@@ -90,7 +90,25 @@
         },
         "orientation": "portrait",
         "author": "GameMonetize",
-        "owner_id": "woel89"
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Screw Master",
+            "description": "Unscrew the nuts and screws in the correct order, disassemble the puzzles from the iron plates and rings. Tightening ASMR puzzle.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Screw Master",
+            "description": "Desatornille las tuercas y los tornillos en el orden correcto, desmonte los rompecabezas de las placas y anillos de hierro. Apriete el rompecabezas ASMR.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Parafuso Mestre",
+            "description": "Desaparafuse as porcas e parafusos na ordem correta, desmonte os quebra-cabeças das placas de ferro e anéis. Aperte o quebra-cabeça ASMR.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "5bdabc481b4b535a"
       },
       "draft": null
     },
@@ -129,7 +147,25 @@
         },
         "orientation": "portrait",
         "author": "GameMonetize",
-        "owner_id": "woel89"
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Merge Melons",
+            "description": "Throw fruit and combine the same to get a watermelon. Viral drop-and-merge puzzle with a tightening loop.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Combinar melones",
+            "description": "Tira la fruta y combina la misma para obtener una sandía. Rompecabezas de caída y fusión viral con un bucle de apriete.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Mesclar Melões",
+            "description": "Jogue frutas e misture as mesmas para obter uma melancia. Quebra-cabeça viral de soltar e mesclar com um laço de aperto.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "31f464562a68b390"
       },
       "draft": null
     },
@@ -167,7 +203,25 @@
         },
         "orientation": "landscape",
         "author": "GameMonetize",
-        "owner_id": "woel89"
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "WaterJam",
+            "description": "Pour colored water into the flasks so that one color remains in each. Calm puzzle sorting for long sessions.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "WaterJam",
+            "description": "Vierta agua de color en los matraces para que quede un color en cada uno. Calma la clasificación de rompecabezas para sesiones largas.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "WaterJam",
+            "description": "Despeje água colorida nos frascos para que uma cor permaneça em cada um. Classificação calma de quebra-cabeças para longas sessões.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "6b20b260d6a04888"
       },
       "draft": null
     },
@@ -207,7 +261,25 @@
         },
         "orientation": "landscape",
         "author": "GameMonetize",
-        "owner_id": "woel89"
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Terra craft world",
+            "description": "Explore the open world, build blocks and survive. A sandbox adventure where every decision shapes your path.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Terra Craft World",
+            "description": "Explora el mundo abierto, construye bloques y sobrevive. Una aventura sandbox donde cada decisión da forma a tu camino.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Terra Craft World",
+            "description": "Explore o mundo aberto, construa blocos e sobreviva. Uma aventura sandbox onde cada decisão molda o seu caminho.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "b6aa4eaf5172d679"
       },
       "draft": null
     },
@@ -245,7 +317,25 @@
         },
         "orientation": "portrait",
         "author": "GameMonetize",
-        "owner_id": "woel89"
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Parkour Block 3D",
+            "description": "35 levels of browser parkour with a variety of mechanics and hardcore progression. Test your skills.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Parkour Block 3D",
+            "description": "35 niveles de parkour de navegador con una variedad de mecánicas y progresión hardcore. Pon a prueba tus habilidades.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Parkour Block 3D",
+            "description": "35 níveis de parkour de navegador com uma variedade de mecânicas e progressão hardcore. Teste suas habilidades.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "7778b9796cced7f8"
       },
       "draft": null
     },
@@ -285,7 +375,25 @@
         },
         "orientation": "landscape",
         "author": "GameMonetize",
-        "owner_id": "woel89"
+        "owner_id": "woel89",
+        "i18n": {
+          "en": {
+            "title": "Melon Sandbox Online",
+            "description": "Experimental physical sandbox with ragdoll physics. Create, break, test and repeat in a pixelated world.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Melon Sandbox Online",
+            "description": "Sandbox físico experimental con física ragdoll. Crea, rompe, prueba y repite en un mundo pixelado.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Melon Sandbox Online",
+            "description": "Sandbox físico experimental com física ragdoll. Crie, quebre, teste e repita em um mundo pixelizado.",
+            "howToPlay": ""
+          }
+        },
+        "i18nSourceHash": "ed7e14429bd5e7f8"
       },
       "draft": null
     }
