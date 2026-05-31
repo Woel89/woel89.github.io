@@ -154,6 +154,17 @@
       playBtn.addEventListener("click", function () {
         setState("loading");
         frame.src = REAL_SRC;
+        // Записать игру в историю «Продолжить играть»
+        try {
+          var _recentRaw = localStorage.getItem("ngf_recent_v1");
+          var _recent = [];
+          try { _recent = JSON.parse(_recentRaw || "[]"); } catch (e2) { _recent = []; }
+          if (!Array.isArray(_recent)) _recent = [];
+          _recent = _recent.filter(function(r) { return r && r.id !== "snake-warz"; });
+          _recent.unshift({ id: "snake-warz", title: "Змеиные войны", icon: "assets/covers/snake-warz.jpg", ts: Math.floor(Date.now() / 1000) });
+          if (_recent.length > 8) _recent = _recent.slice(0, 8);
+          localStorage.setItem("ngf_recent_v1", JSON.stringify(_recent));
+        } catch (e) {}
         if (IS_EXTERNAL) {
           loadTimeout = setTimeout(function () {
             var p = loader.querySelector("p");
@@ -223,15 +234,15 @@
           </a>
         </article>
         <article class="game-card">
-          <a href="/games/broadside-caribean-4/">
-            <span class="cover"><img src="/assets/icons/broadside-caribean-4.webp" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <span class="body"><h3>Broadside caribean</h3></span>
-          </a>
-        </article>
-        <article class="game-card">
           <a href="/games/waterjam/">
             <span class="cover"><img src="/assets/covers/waterjam.jpg" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
             <span class="body"><h3>WaterJam</h3></span>
+          </a>
+        </article>
+        <article class="game-card">
+          <a href="/games/parkour-block-3d/">
+            <span class="cover"><img src="/assets/covers/parkour-block-3d.jpg" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <span class="body"><h3>Parkour Block 3D</h3></span>
           </a>
         </article>
       </div>

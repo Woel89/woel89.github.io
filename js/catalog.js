@@ -19,7 +19,7 @@
   var filterApplyBtn = document.getElementById("filter-apply");
   var filterResetBtn = document.getElementById("filter-reset");
 
-  var NEW_DAYS = 14;
+  var NEW_DAYS = 30;
 
   // i18n: поддерживаемые локали (совпадает с scripts/translate.js).
   var SUPPORTED_LANGS = ["en", "es", "pt-br"];
@@ -134,12 +134,26 @@
     grid.innerHTML = games.map(function (g) { return cardHTML(g, "h2"); }).join("");
   }
 
+  function getRecentGames(allGames) {
+    var recent;
+    try {
+      recent = JSON.parse(localStorage.getItem("ngf_recent_v1") || "[]");
+    } catch (e) { return []; }
+    if (!Array.isArray(recent) || !recent.length) return [];
+    var byId = {};
+    allGames.forEach(function (g) { byId[g.id] = g; });
+    return recent
+      .map(function (r) { return byId[r.id]; })
+      .filter(Boolean)
+      .slice(0, 4);
+  }
+
   function renderShelf(title, games) {
     if (!games.length) return "";
     return (
       '<section class="shelf">' +
         "<h2>" + esc(title) + "</h2>" +
-        '<div class="game-grid">' +
+        '<div class="shelf-row">' +
           games.map(function (g) { return cardHTML(g, "h3"); }).join("") +
         "</div>" +
       "</section>"
@@ -150,14 +164,41 @@
 
   function renderShelves(games) {
     if (!shelvesEl) return;
+    var html = "";
+
+    // 1. «Продолжить играть» — из localStorage, cap 4
+    var recent = getRecentGames(games);
+    if (recent.length) {
+      html += renderShelf("Продолжить играть", recent.slice(0, 4));
+    }
+
+    // 2. «Популярное» — flags.isPopular, cap 8
     var popular = games.filter(function (g) { return g.flags && g.flags.isPopular; });
-    // «Новинки» — стрип последних добавленных. Не показываем, если он повторил бы весь
-    // грид «Все игры» (когда новых ровно столько же, сколько всего игр).
+    html += renderShelf("Популярное", popular.slice(0, 8));
+
+    // 3. «Новинки» — скрыть если совпадает со всем каталогом, cap 6
     var isNew = games.filter(isNewGame);
-    var newShelf = isNew.length && isNew.length < games.length
-      ? renderShelf("Новинки", isNew.slice(0, SHELF_MAX))
-      : "";
-    shelvesEl.innerHTML = renderShelf("Популярное", popular.slice(0, SHELF_MAX)) + newShelf;
+    if (isNew.length && isNew.length < games.length) {
+      html += renderShelf("Новинки", isNew.slice(0, 6));
+    }
+
+    // 4. Жанровые полки — ≥4 игр в категории, cap 6, порядок по убыванию числа игр
+    var catCounts = {};
+    games.forEach(function (g) {
+      gameCategories(g).forEach(function (c) {
+        if (c) catCounts[c] = (catCounts[c] || 0) + 1;
+      });
+    });
+    var sortedCats = Object.keys(catCounts)
+      .filter(function (c) { return catCounts[c] >= 4; })
+      .sort(function (a, b) { return catCounts[b] - catCounts[a]; });
+    sortedCats.forEach(function (cat) {
+      var catGames = games.filter(function (g) { return gameCategories(g).indexOf(cat) !== -1; });
+      var label = CATEGORY_LABELS[cat] || cat;
+      html += renderShelf(label, catGames.slice(0, 6));
+    });
+
+    shelvesEl.innerHTML = html;
   }
 
   function applyFilter() {

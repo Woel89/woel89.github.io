@@ -151,6 +151,17 @@
       playBtn.addEventListener("click", function () {
         setState("loading");
         frame.src = REAL_SRC;
+        // Записать игру в историю «Продолжить играть»
+        try {
+          var _recentRaw = localStorage.getItem("ngf_recent_v1");
+          var _recent = [];
+          try { _recent = JSON.parse(_recentRaw || "[]"); } catch (e2) { _recent = []; }
+          if (!Array.isArray(_recent)) _recent = [];
+          _recent = _recent.filter(function(r) { return r && r.id !== "merge-melons"; });
+          _recent.unshift({ id: "merge-melons", title: "Merge Melons", icon: "assets/covers/merge-melons.jpg", ts: Math.floor(Date.now() / 1000) });
+          if (_recent.length > 8) _recent = _recent.slice(0, 8);
+          localStorage.setItem("ngf_recent_v1", JSON.stringify(_recent));
+        } catch (e) {}
         if (IS_EXTERNAL) {
           loadTimeout = setTimeout(function () {
             var p = loader.querySelector("p");

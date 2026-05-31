@@ -85,7 +85,7 @@
         },
         "dateAdded": "2026-05-31",
         "flags": {
-          "isPopular": false,
+          "isPopular": true,
           "isPublished": true
         },
         "orientation": "portrait",
@@ -142,7 +142,7 @@
         },
         "dateAdded": "2026-05-31",
         "flags": {
-          "isPopular": false,
+          "isPopular": true,
           "isPublished": true
         },
         "orientation": "portrait",
@@ -198,7 +198,7 @@
         },
         "dateAdded": "2026-05-31",
         "flags": {
-          "isPopular": false,
+          "isPopular": true,
           "isPublished": true
         },
         "orientation": "landscape",
@@ -256,7 +256,7 @@
         },
         "dateAdded": "2026-05-31",
         "flags": {
-          "isPopular": false,
+          "isPopular": true,
           "isPublished": true
         },
         "orientation": "landscape",
@@ -312,7 +312,7 @@
         },
         "dateAdded": "2026-05-31",
         "flags": {
-          "isPopular": false,
+          "isPopular": true,
           "isPublished": true
         },
         "orientation": "portrait",
@@ -370,7 +370,7 @@
         },
         "dateAdded": "2026-05-31",
         "flags": {
-          "isPopular": false,
+          "isPopular": true,
           "isPublished": true
         },
         "orientation": "landscape",
@@ -543,7 +543,7 @@
         },
         "dateAdded": "2026-05-31",
         "flags": {
-          "isPopular": false,
+          "isPopular": true,
           "isPublished": true
         },
         "orientation": "landscape",
@@ -888,7 +888,7 @@
         },
         "dateAdded": "2026-05-31",
         "flags": {
-          "isPopular": false,
+          "isPopular": true,
           "isPublished": true
         },
         "orientation": "landscape",

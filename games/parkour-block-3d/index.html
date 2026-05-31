@@ -152,6 +152,17 @@
       playBtn.addEventListener("click", function () {
         setState("loading");
         frame.src = REAL_SRC;
+        // Записать игру в историю «Продолжить играть»
+        try {
+          var _recentRaw = localStorage.getItem("ngf_recent_v1");
+          var _recent = [];
+          try { _recent = JSON.parse(_recentRaw || "[]"); } catch (e2) { _recent = []; }
+          if (!Array.isArray(_recent)) _recent = [];
+          _recent = _recent.filter(function(r) { return r && r.id !== "parkour-block-3d"; });
+          _recent.unshift({ id: "parkour-block-3d", title: "Parkour Block 3D", icon: "assets/covers/parkour-block-3d.jpg", ts: Math.floor(Date.now() / 1000) });
+          if (_recent.length > 8) _recent = _recent.slice(0, 8);
+          localStorage.setItem("ngf_recent_v1", JSON.stringify(_recent));
+        } catch (e) {}
         if (IS_EXTERNAL) {
           loadTimeout = setTimeout(function () {
             var p = loader.querySelector("p");
@@ -198,6 +209,18 @@
       <div class="game-grid">
         
         <article class="game-card">
+          <a href="/games/truck-slam/">
+            <span class="cover"><img src="/assets/covers/truck-slam.jpg" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <span class="body"><h3>Трак Слэм: Арена грузовиков</h3></span>
+          </a>
+        </article>
+        <article class="game-card">
+          <a href="/games/duo-water-and-fire/">
+            <span class="cover"><img src="/assets/covers/duo-water-and-fire.jpg" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
+            <span class="body"><h3>Вода и Огонь: Дуэт</h3></span>
+          </a>
+        </article>
+        <article class="game-card">
           <a href="/games/broadside-caribean-4/">
             <span class="cover"><img src="/assets/icons/broadside-caribean-4.webp" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
             <span class="body"><h3>Broadside caribean</h3></span>
@@ -207,18 +230,6 @@
           <a href="/games/waterjam/">
             <span class="cover"><img src="/assets/covers/waterjam.jpg" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
             <span class="body"><h3>WaterJam</h3></span>
-          </a>
-        </article>
-        <article class="game-card">
-          <a href="/games/terra-craft-world/">
-            <span class="cover"><img src="/assets/covers/terra-craft-world.jpg" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <span class="body"><h3>Terra Craft World</h3></span>
-          </a>
-        </article>
-        <article class="game-card">
-          <a href="/games/melon-sandbox-online/">
-            <span class="cover"><img src="/assets/covers/melon-sandbox-online.jpg" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()"></span>
-            <span class="body"><h3>Melon Sandbox Online</h3></span>
           </a>
         </article>
       </div>

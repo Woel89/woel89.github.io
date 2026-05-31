@@ -81,8 +81,14 @@ function relatedGames(g, all) {
   const cats = new Set(gameCategories(g));
   return all
     .filter((x) => x.id !== g.id && x.flags && x.flags.isPublished)
-    .map((x) => ({ x, score: (x.tags || []).filter((t) => tags.has(t)).length + (gameCategories(x).some((c) => cats.has(c)) ? 1 : 0) }))
-    .sort((a, b) => b.score - a.score)
+    .map((x) => {
+      const tagMatches = (x.tags || []).filter((t) => tags.has(t)).length;
+      const categoryMatches = gameCategories(x).filter((c) => cats.has(c)).length;
+      const ratingBonus = (x.flags && x.flags.isPopular) ? 1 : 0;
+      const score = tagMatches * 2 + categoryMatches * 3 + ratingBonus;
+      return { x, score };
+    })
+    .sort((a, b) => b.score - a.score || new Date(b.x.dateAdded || 0) - new Date(a.x.dateAdded || 0))
     .slice(0, 4)
     .map((o) => o.x);
 }
@@ -291,6 +297,17 @@ ${orientation === "landscape" ? `      <!-- Hint переверни телефо
       playBtn.addEventListener("click", function () {
         setState("loading");
         frame.src = REAL_SRC;
+        // Записать игру в историю «Продолжить играть»
+        try {
+          var _recentRaw = localStorage.getItem("ngf_recent_v1");
+          var _recent = [];
+          try { _recent = JSON.parse(_recentRaw || "[]"); } catch (e2) { _recent = []; }
+          if (!Array.isArray(_recent)) _recent = [];
+          _recent = _recent.filter(function(r) { return r && r.id !== ${JSON.stringify(g.id)}; });
+          _recent.unshift({ id: ${JSON.stringify(g.id)}, title: ${JSON.stringify(g.title)}, icon: ${JSON.stringify(g.icon || g.coverUrl || "")}, ts: Math.floor(Date.now() / 1000) });
+          if (_recent.length > 8) _recent = _recent.slice(0, 8);
+          localStorage.setItem("ngf_recent_v1", JSON.stringify(_recent));
+        } catch (e) {}
         if (IS_EXTERNAL) {
           loadTimeout = setTimeout(function () {
             var p = loader.querySelector("p");

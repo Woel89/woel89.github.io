@@ -97,6 +97,28 @@ section.shelf > h2 {
   margin: 0 0 0.75rem;
 }
 
+.shelf-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .shelf-row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .shelf-row .game-card {
+    flex: 0 0 140px;
+    scroll-snap-align: start;
+  }
+}
+
 /* ---------- Filter bar ---------- */
 .filter-bar {
   display: flex;
