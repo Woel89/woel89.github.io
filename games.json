@@ -1072,21 +1072,21 @@
         "i18n": {
           "en": {
             "title": "Water & Fire Duo",
-            "description": "Control two stickmen with opposite powers — fire and water. Collect the keys, avoid the traps, and get to the door. You can play together or one at a time.",
+            "description": "Two stickmen with opposing forces — one controlled by water, the other by fire. They have to get to their exits, but the levels are arranged in such a way that it is impossible to pass without interaction: one opens the way for the other.The fire character dies in the water, the water character dies in the fire, so the routes need to be thought out together. You can play together on one keyboard (WASD + arrows) or one by switching between characters. On mobile — touch buttons on the screen.A great option for playing together with a friend or child. Play Duo Water and Fire online for free in your browser, no downloads required.",
             "howToPlay": ""
           },
           "es": {
             "title": "Dúo de agua y fuego",
-            "description": "Controla a dos stickmen con poderes opuestos: fuego y agua. Recoge las llaves, evita las trampas y llega a la puerta. Pueden jugar juntos o uno a la vez.",
+            "description": "Dos palos con fuerzas opuestas, uno controlado por el agua y el otro por el fuego. Tienen que llegar a sus salidas, pero los niveles están dispuestos de tal manera que es imposible pasar sin interacción: uno abre el camino para el otro.El personaje de fuego muere en el agua, el personaje de agua muere en el fuego, por lo que las rutas deben pensarse juntas. Puede tocar juntos en un teclado (WASD + flechas) o en uno cambiando entre caracteres. En el móvil: toque los botones en la pantalla.Una gran opción para jugar con un amigo o un niño. Juega a Duo Water and Fire en línea de forma gratuita en tu navegador, sin descargas.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Duo Água e Fogo",
-            "description": "Controle dois stickmen com poderes opostos — fogo e água. Pegue as chaves, evite as armadilhas e chegue até a porta. Vocês podem jogar juntos ou um de cada vez.",
+            "description": "Dois pauzinhos com forças opostas — um controlado pela água, o outro pelo fogo. Eles têm que chegar às suas saídas, mas os níveis são organizados de tal forma que é impossível passar sem interação: um abre o caminho para o outro.O personagem fogo morre na água, o personagem água morre no fogo, então as rotas precisam ser pensadas juntas. Você pode tocar juntos em um teclado (WASD + setas) ou em um alternando entre caracteres. No celular — toque nos botões na tela.Uma ótima opção para brincar junto com um amigo ou criança. Jogue Duo Water and Fire online gratuitamente no seu navegador, sem downloads.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "7e22f3e6bf7ea52d"
+        "i18nSourceHash": "009fbfca1650c6eb"
       },
       "draft": null
     },
@@ -1129,21 +1129,21 @@
         "i18n": {
           "en": {
             "title": "Sea Puzzle: Coincidences",
-            "description": "Find and match identical sea creatures in this colorful casual puzzle game. Relaxing pace, vibrant underwater theme.",
+            "description": "Tap on groups of identical sea creatures to remove them from the field. Octopuses, fish, starfish — bright underwater theme, soft animation, no timer. This is a relaxed version of the match puzzle: you set the pace yourself.Good for short sessions in line or over a cup of tea. Levels gradually become more complex — new combinations and obstacles appear. The control is simple: a mouse on a PC, a tap on a mobile phone.Play Ocean Match Puzzle online for free in the browser — starts instantly, without registration. Easy entry and nice picture make the game accessible for any age.",
             "howToPlay": ""
           },
           "es": {
             "title": "Rompecabezas marino: coincidencias",
-            "description": "Encuentra y combina criaturas marinas idénticas en este colorido juego de rompecabezas informal. Ritmo relajante, tema subacuático vibrante.",
+            "description": "Toca grupos de criaturas marinas idénticas para eliminarlas del campo. Pulpos, peces, estrellas de mar: tema submarino brillante, animación suave, sin temporizador. Esta es una versión relajada del rompecabezas del partido: tú mismo marcas el ritmo.Ideal para sesiones cortas en línea o con una taza de té. Los niveles se vuelven gradualmente más complejos: aparecen nuevas combinaciones y obstáculos. El control es simple: un ratón en un PC, un toque en un teléfono móvil.Juega a Ocean Match Puzzle en línea de forma gratuita en el navegador: comienza al instante, sin registro. La entrada fácil y la bonita imagen hacen que el juego sea accesible para cualquier edad.",
             "howToPlay": ""
           },
           "pt-br": {
             "title": "Quebra-cabeça do mar: coincidências",
-            "description": "Encontre e combine criaturas marinhas idênticas neste colorido jogo de quebra-cabeça casual. Ritmo relaxante, tema subaquático vibrante.",
+            "description": "Toque em grupos de criaturas marinhas idênticas para removê-las do campo. Polvos, peixes, estrelas-do-mar — tema subaquático brilhante, animação suave, sem temporizador. Esta é uma versão descontraída do quebra-cabeça da partida: você mesmo define o ritmo.Bom para sessões curtas na fila ou com uma xícara de chá. Os níveis gradualmente se tornam mais complexos — novas combinações e obstáculos aparecem. O controle é simples: um mouse em um PC, um toque em um telefone celular.Jogue Ocean Match Puzzle online gratuitamente no navegador — começa instantaneamente, sem registro. Entrada fácil e boa imagem tornam o jogo acessível para qualquer idade.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "e05eaeb87584a490"
+        "i18nSourceHash": "c96f1177e9f5f811"
       },
       "draft": null
     }
