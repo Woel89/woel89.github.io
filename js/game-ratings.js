@@ -37,12 +37,12 @@
   var bar = el("section", "ngf-actionbar");
   bar.setAttribute("aria-label", "Оценка игры");
 
-  var likeBtn = el("button", "ngf-vote", "👍");
+  var likeBtn = el("button", "ngf-vote ngf-vote--like", "");
   likeBtn.type = "button";
   likeBtn.setAttribute("aria-label", "Нравится");
   likeBtn.setAttribute("aria-pressed", "false");
 
-  var dislikeBtn = el("button", "ngf-vote", "👎");
+  var dislikeBtn = el("button", "ngf-vote ngf-vote--dislike", "");
   dislikeBtn.type = "button";
   dislikeBtn.setAttribute("aria-label", "Не нравится");
   dislikeBtn.setAttribute("aria-pressed", "false");

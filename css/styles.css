@@ -800,17 +800,31 @@ section.shelf > h2 {
 .ngf-vote {
   min-width: 44px; min-height: 44px;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 1.25rem; line-height: 1;
-  background: var(--color-surface-2); color: var(--color-text);
+  background: var(--color-surface-2);
   border: 1px solid var(--color-border); border-radius: var(--radius);
   cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
 }
+/* Глиф через CSS-маску (кастомная иконка владельца), цвет — фоном ::before */
+.ngf-vote::before {
+  content: ""; display: block;
+  width: 24px; height: 24px;
+  background-color: var(--color-text);
+  -webkit-mask: var(--ngf-vote-icon) center / contain no-repeat;
+  mask: var(--ngf-vote-icon) center / contain no-repeat;
+  transition: background-color 0.12s;
+}
+.ngf-vote--like { --ngf-vote-icon: url(/assets/ui/like.png); }
+.ngf-vote--dislike { --ngf-vote-icon: url(/assets/ui/dislike.png); }
+.ngf-vote:hover { border-color: var(--color-text-muted); }
 .ngf-vote.is-active {
   background: var(--color-accent); border-color: var(--color-accent);
 }
 .ngf-vote.is-active[aria-label="Не нравится"] {
   background: var(--color-accent-2); border-color: var(--color-accent-2);
 }
+/* Нажато: тёмный глиф поверх яркой заливки (контраст как у кнопки «Играть») */
+.ngf-vote.is-active::before { background-color: var(--color-bg); }
 .ngf-vote-summary { color: var(--color-text-muted); font-size: 0.95rem; }
 
 /* ---------- Ratings: reviews accordion (FE-14) ---------- */

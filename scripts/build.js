@@ -174,7 +174,7 @@ function gamePageHTML(g, all) {
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo/favicon-48.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/favicon-32.png">
 
-  <link rel="stylesheet" href="/css/styles.css?v=20260531b">
+  <link rel="stylesheet" href="/css/styles.css?v=20260531c">
 
   <!-- Analytics: Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VT82NLXH9"></script>
@@ -424,7 +424,7 @@ ${(function() {
 
   <script src="/js/track.js"></script>
   <script src="/js/ratings.js"></script>
-  <script src="/js/game-ratings.js"></script>
+  <script src="/js/game-ratings.js?v=20260531b"></script>
   <script>
     (function () {
       var slug = "${esc(g.id)}";
