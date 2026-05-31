@@ -435,12 +435,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Hoop Stack - Color Sort Puzzle",
-            "description": "Sort colored hoops onto pegs so each peg holds rings of the same color. A fresh spin on sorting puzzles — rings instead of water tubes.",
+            "title": "Sorting Rings: Hoop Stack",
+            "description": "Sort the multicolored rings into racks — each should contain rings of the same color. A new look at the genre of puzzles with sorting: instead of water — stacks of rings.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Anillos de clasificación: pila de aro",
+            "description": "Ordena los anillos multicolores en estantes; cada uno debe contener anillos del mismo color. Una nueva mirada al género de los rompecabezas con clasificación: en lugar de agua, pilas de anillos.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Classificando Anéis: Pilha de Aro",
+            "description": "Classifique os anéis multicoloridos em racks — cada um deve conter anéis da mesma cor. Um novo olhar sobre o gênero de quebra-cabeças com classificação: em vez de água — pilhas de anéis.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "2b6fedc45de4561b"
+        "i18nSourceHash": "23b3236b3229d19a"
       },
       "draft": null
     },
@@ -483,12 +493,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Ocean Fish Merge",
-            "description": "Drop fish into the tank and merge identical ones into bigger sea creatures. Don't let bubbles reach the top red line!",
+            "title": "Ocean: Fish Fusion",
+            "description": "Throw the fish down and connect the identical ones — they merge into larger sea creatures. Don't let the bubbles reach the top line!",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Océano: Fish Fusion",
+            "description": "Arroja los peces hacia abajo y conecta los idénticos: se funden en criaturas marinas más grandes. ¡No dejes que las burbujas lleguen a la línea superior!",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Oceano: Fusão de Peixes",
+            "description": "Jogue os peixes para baixo e conecte os idênticos — eles se fundem em criaturas marinhas maiores. Não deixe que as bolhas atinjam a linha superior!",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "98229dcbd401effa"
+        "i18nSourceHash": "24b934273e6a4b93"
       },
       "draft": null
     },
@@ -531,12 +551,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Max Speed",
-            "description": "Race sports cars on 3D tracks packed with jumps, stunts, and battles. Upgrade and customize your car, then dominate arcade-style races.",
+            "title": "Max Speed: Arcade Racing",
+            "description": "Race in sports cars on tracks with jumps and tricks. Customize and upgrade your car, win high-speed arcade races.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Velocidad máxima: Arcade Racing",
+            "description": "Carrera en coches deportivos en pistas con saltos y trucos. Personaliza y mejora tu coche, gana carreras de arcade de alta velocidad.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Velocidade Máxima: Corrida Arcade",
+            "description": "Corra em carros esportivos em pistas com saltos e truques. Personalize e atualize o seu carro, vença corridas arcade de alta velocidade.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "5b7f25a24d8f13a6"
+        "i18nSourceHash": "f97e8ff13e791667"
       },
       "draft": null
     },
@@ -579,12 +609,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Dead Paradise",
-            "description": "Post-apocalyptic drive-and-shoot racing: blast enemy vehicles while staying alive. Earn coins to upgrade armor, missiles, and engine.",
+            "title": "Dead Paradise: Battle Races",
+            "description": "Apocalyptic battle races: drive a car and destroy enemies at the same time. Upgrade armor, rockets, and engine for earned coins.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Paraíso Muerto: Carreras de Batalla",
+            "description": "Carreras de batalla apocalípticas: conduce un coche y destruye enemigos al mismo tiempo. Mejora la armadura, los cohetes y el motor para ganar monedas.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Paraíso Morto: Corridas de Batalha",
+            "description": "Corridas de batalha apocalípticas: dirija um carro e destrua inimigos ao mesmo tempo. Aprimore armaduras, foguetes e motores para ganhar moedas.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "ef2f045e9add006b"
+        "i18nSourceHash": "a0d0d9dca65a0b39"
       },
       "draft": null
     },
@@ -627,12 +667,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Crazy Moto",
-            "description": "Twist the throttle and fly off ramps in this physics-based motorcycle stunt game. 22 handcrafted levels, star ratings, and bikes to unlock.",
+            "title": "Crazy Moto: Stunts & Racing",
+            "description": "Spin the gas and fly off the jumps in a physically realistic motorcycle race. Level 22, stars for tricks, new bikes for progress.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Crazy Moto: Acrobacias y carreras",
+            "description": "Gira el acelerador y vuela fuera de los saltos en una carrera de motos físicamente realista. Nivel 22, estrellas para los trucos, nuevas motos para el progreso.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Moto Louco: Acrobacias e Corridas",
+            "description": "Gire o acelerador e voe fora dos saltos em uma corrida de motocicletas fisicamente realista. Nível 22, estrelas para truques, novas motos para o progresso.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "030aa6858f3d7039"
+        "i18nSourceHash": "8fba9772ffe74df6"
       },
       "draft": null
     },
@@ -673,12 +723,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Snake Warz",
-            "description": "Guide your snake, eat to grow, and outmaneuver rivals in the arena. Avoid other snakes and fight to become the biggest.",
+            "title": "Serpent Wars",
+            "description": "Control the snake, eat the food, and grow. Be careful — other snakes are also hunting. Outsmart your opponents and become the biggest snake in the arena.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Guerras de serpientes",
+            "description": "Controla la serpiente, come la comida y crece. Ten cuidado, otras serpientes también están cazando. Supera a tus oponentes y conviértete en la serpiente más grande de la arena.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Guerras das Serpentes",
+            "description": "Controle a cobra, coma a comida e cresça. Tenha cuidado — outras cobras também estão caçando. Seja mais esperto que seus oponentes e se torne a maior cobra da arena.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "bcb0b0cd7b2ee997"
+        "i18nSourceHash": "3cb0e94c61b47503"
       },
       "draft": null
     },
@@ -721,11 +781,21 @@
         "i18n": {
           "en": {
             "title": "Tornado.io",
-            "description": "Control a tornado to swallow buildings, vehicles, and rival tornadoes. Grow your destructive power in this physics-based .io arena.",
+            "description": "Control tornadoes, absorb buildings and cars, become more powerful and absorb other players. Physical .io-arena with destructions.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Tornado.io",
+            "description": "Controla tornados, absorbe edificios y coches, se vuelve más poderoso y absorbe a otros jugadores. Físico .io-arena con destrucciones.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Tornado.io",
+            "description": "Controle tornados, absorva edifícios e carros, torne-se mais poderoso e absorva outros jogadores. .io-arena física com destruições.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "1d0097bae3e1f6e6"
+        "i18nSourceHash": "e3579577a2eb4c39"
       },
       "draft": null
     },
@@ -768,12 +838,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Zombie Grave Yard",
-            "description": "Fast-paced 3D arcade shooter set in a haunted cemetery. Choose Campaign mode or Survival — fight the undead and see how long you last.",
+            "title": "Zombies in the Cemetery",
+            "description": "Arcade 3D Shooter: Fight the undead in the cemetery. Campaign mode with increasing difficulty or endless survival — how long will you last?",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Zombies en el cementerio",
+            "description": "Arcade 3D Shooter: Lucha contra los muertos vivientes en el cementerio. Modo campaña con dificultad creciente o supervivencia sin fin: ¿cuánto tiempo durarás?",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Zumbis no Cemitério",
+            "description": "Arcade 3D Shooter: Lute contra os mortos-vivos no cemitério. Modo campanha com dificuldade crescente ou sobrevivência sem fim — quanto tempo você vai durar?",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "5e83be72e7e64e1e"
+        "i18nSourceHash": "b40b4ac6b3ed5261"
       },
       "draft": null
     },
@@ -816,12 +896,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Zombie Swarm",
-            "description": "Top-down survival shooter: withstand endless zombie waves, choose heroes, upgrade abilities, and defend your base.",
+            "title": "Zombie Hordes",
+            "description": "Survive the endless waves of the undead in the form of the top. Choose heroes, level up abilities, collect resources and protect the base.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Hordas de zombis",
+            "description": "Sobrevive a las olas interminables de los no-muertos en la forma de la cima. Elige héroes, sube de nivel de habilidades, recoge recursos y protege la base.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Hordas de Zumbis",
+            "description": "Sobreviva às ondas intermináveis dos mortos-vivos na forma do topo. Escolha heróis, aumente o nível das habilidades, colete recursos e proteja a base.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "80be1a53804b489d"
+        "i18nSourceHash": "7e7e3ad8b1ff7447"
       },
       "draft": null
     },
@@ -864,12 +954,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Truck Slam",
-            "description": "Ram opponents off the arena platform in this physics-based truck combat game. Upgrade durability and power — play solo or with a friend on the same screen.",
+            "title": "Truck Slam: Truck Arena",
+            "description": "Accelerate and ram opponents to throw them off the platform. Physical arena on trucks — there is a mode for two players on one device.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Truck Slam: Truck Arena",
+            "description": "Acelera y embiste a los oponentes para arrojarlos de la plataforma. Arena física en camiones: hay un modo para dos jugadores en un dispositivo.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Truck Slam: Arena de Caminhões",
+            "description": "Acelere e empurre os oponentes para jogá-los para fora da plataforma. Arena física em caminhões — há um modo para dois jogadores em um dispositivo.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "c93769b47c13c0ca"
+        "i18nSourceHash": "22b7f1beec7f47c8"
       },
       "draft": null
     },
@@ -912,12 +1012,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Resource Empire",
-            "description": "Build a mining empire from a single shaft: hire workers, upgrade speed and capacity, unlock coal, gold, and diamonds. Relaxing idle clicker with dozens of upgrades.",
+            "title": "Empire of Resources",
+            "description": "Build a mining empire from scratch: hire miners, pump elevators and warehouses, extract coal, gold and diamonds. Perfect for a relaxed game — click and watch your fortune grow.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Imperio de los recursos",
+            "description": "Construye un imperio minero desde cero: contrata mineros, bombea ascensores y almacenes, extrae carbón, oro y diamantes. Perfecto para un juego relajado: haga clic y vea crecer su fortuna.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Império de Recursos",
+            "description": "Construa um império mineiro a partir do zero: contrate mineiros, bombeie elevadores e armazéns, extraia carvão, ouro e diamantes. Perfeito para um jogo descontraído — clique e veja a sua fortuna crescer.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "daf52d298f50f684"
+        "i18nSourceHash": "a97c1bfd7e4eb526"
       },
       "draft": null
     },
@@ -961,12 +1071,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Duo Water and Fire",
-            "description": "Control fire and water stickmen through obstacle-filled levels. Collect keys, avoid elemental traps, and reach the exit door — play solo or with a friend.",
+            "title": "Water & Fire Duo",
+            "description": "Control two stickmen with opposite powers — fire and water. Collect the keys, avoid the traps, and get to the door. You can play together or one at a time.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Dúo de agua y fuego",
+            "description": "Controla a dos stickmen con poderes opuestos: fuego y agua. Recoge las llaves, evita las trampas y llega a la puerta. Pueden jugar juntos o uno a la vez.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Duo Água e Fogo",
+            "description": "Controle dois stickmen com poderes opostos — fogo e água. Pegue as chaves, evite as armadilhas e chegue até a porta. Vocês podem jogar juntos ou um de cada vez.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "38bbdf12143bb119"
+        "i18nSourceHash": "201fa850a35bfbae"
       },
       "draft": null
     },
@@ -1008,12 +1128,22 @@
         "owner_id": "woel89",
         "i18n": {
           "en": {
-            "title": "Ocean Match Puzzle",
-            "description": "Match colorful sea creatures in this fun, relaxing casual puzzle. Dive into the ocean depths and clear the board.",
+            "title": "Sea Puzzle: Coincidences",
+            "description": "Find and match identical sea creatures in this colorful casual puzzle game. Relaxing pace, vibrant underwater theme.",
+            "howToPlay": ""
+          },
+          "es": {
+            "title": "Rompecabezas marino: coincidencias",
+            "description": "Encuentra y combina criaturas marinas idénticas en este colorido juego de rompecabezas informal. Ritmo relajante, tema subacuático vibrante.",
+            "howToPlay": ""
+          },
+          "pt-br": {
+            "title": "Quebra-cabeça do mar: coincidências",
+            "description": "Encontre e combine criaturas marinhas idênticas neste colorido jogo de quebra-cabeça casual. Ritmo relaxante, tema subaquático vibrante.",
             "howToPlay": ""
           }
         },
-        "i18nSourceHash": "4b68de85fd330cf9"
+        "i18nSourceHash": "5e383adf3089ce78"
       },
       "draft": null
     }
