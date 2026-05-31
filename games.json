@@ -26,7 +26,7 @@
           "pc": "A\\D для управления влево\\вправо, пробел для выстрела",
           "mobile": "свайп влево\\вправо для управления влево\\вправо, кнопка огонь для выстрела"
         },
-        "dateAdded": "2026-05-28",
+        "dateAdded": "2026-02-20",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -83,7 +83,7 @@
           "pc": "Мышь",
           "mobile": "Тап"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-03-04",
         "flags": {
           "isPopular": true,
           "isPublished": true
@@ -140,7 +140,7 @@
           "pc": "Мышь",
           "mobile": "Свайп"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-03-11",
         "flags": {
           "isPopular": true,
           "isPublished": true
@@ -196,7 +196,7 @@
         "controls": {
           "pc": "Мышь"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-03-18",
         "flags": {
           "isPopular": true,
           "isPublished": true
@@ -254,7 +254,7 @@
           "pc": "WASD для движения, мышь для обзора",
           "mobile": "Экранные кнопки"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-03-25",
         "flags": {
           "isPopular": true,
           "isPublished": true
@@ -310,7 +310,7 @@
         "controls": {
           "pc": "Тап или клик"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-01",
         "flags": {
           "isPopular": true,
           "isPublished": true
@@ -368,7 +368,7 @@
           "pc": "Мышь",
           "mobile": "Тап"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-07",
         "flags": {
           "isPopular": true,
           "isPublished": true
@@ -425,7 +425,7 @@
           "pc": "Мышь — выбрать и поставить кольцо",
           "mobile": ""
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-12",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -483,7 +483,7 @@
           "pc": "Мышь — выбрать позицию сброса",
           "mobile": "Тап — выбрать позицию сброса"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-16",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -541,7 +541,7 @@
           "pc": "WASD / стрелки — движение",
           "mobile": "Тач-кнопки на экране"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-20",
         "flags": {
           "isPopular": true,
           "isPublished": true
@@ -599,7 +599,7 @@
           "pc": "Стрелки/WASD — движение, мышь — прицел и стрельба",
           "mobile": "Тач-кнопки на экране"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-24",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -657,7 +657,7 @@
           "pc": "Стрелки — газ/тормоз/наклон",
           "mobile": "Тач-кнопки + наклон устройства"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-05-16",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -713,7 +713,7 @@
           "pc": "Мышь — направление движения",
           "mobile": ""
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-27",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -770,7 +770,7 @@
           "pc": "Мышь — направление",
           "mobile": "Тап и свайп"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-05-21",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -828,7 +828,7 @@
           "pc": "WASD — движение, мышь — прицел и стрельба",
           "mobile": "Виртуальный джойстик"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-29",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -886,7 +886,7 @@
           "pc": "WASD — движение, мышь — прицел (авто-стрельба)",
           "mobile": "Виртуальный джойстик + авто-огонь"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-22",
         "flags": {
           "isPopular": true,
           "isPublished": true
@@ -944,7 +944,7 @@
           "pc": "Стрелки/WASD — движение, пробел — удар",
           "mobile": "Тач-кнопки на экране"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-15",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -1002,7 +1002,7 @@
           "pc": "Мышь — клики по улучшениям",
           "mobile": "Тап"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-05-25",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -1061,7 +1061,7 @@
           "pc": "WASD + стрелки (2 игрока) или чередование",
           "mobile": "Тач-кнопки на экране"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-05-28",
         "flags": {
           "isPopular": false,
           "isPublished": true
@@ -1118,7 +1118,7 @@
           "pc": "Мышь — клик на совпадающих существ",
           "mobile": "Тап"
         },
-        "dateAdded": "2026-05-31",
+        "dateAdded": "2026-04-09",
         "flags": {
           "isPopular": false,
           "isPublished": true
