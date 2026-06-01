@@ -41,6 +41,7 @@
     <section id="cabinet-view" hidden>
       <div class="cab-toolbar">
         <h1>Мои игры</h1>
+        <button type="button" id="admin-open-btn" class="cab-btn cab-btn--ghost" hidden>Вся площадка</button>
         <button type="button" id="new-game-btn" class="cab-btn cab-btn--primary">+ Новая игра</button>
       </div>
 
@@ -232,6 +233,38 @@
       </div>
     </section>
 
+    <!-- Admin: сводная статистика площадки (NGF-073) -->
+    <section id="admin-view" hidden aria-labelledby="admin-heading">
+      <div class="cab-toolbar">
+        <h1 id="admin-heading">Вся площадка</h1>
+        <button type="button" id="admin-back-btn" class="cab-btn cab-btn--ghost">← Назад к списку</button>
+      </div>
+
+      <!-- Переключатель периода -->
+      <div class="cab-subtabs" role="group" aria-label="Период статистики" style="margin-bottom:1.25rem">
+        <button class="cab-subtab" id="admin-period-7d" aria-selected="true">7 дней</button>
+        <button class="cab-subtab" id="admin-period-30d" aria-selected="false">30 дней</button>
+      </div>
+
+      <p class="cab-status" id="admin-status" role="status"></p>
+      <p class="cab-error" id="admin-error" role="alert" hidden></p>
+
+      <!-- Сводные карточки -->
+      <div class="studio-metrics" id="admin-metrics"></div>
+
+      <!-- График запусков -->
+      <div class="studio-chart" id="admin-chart" hidden>
+        <div class="studio-chart__title" id="admin-chart-title">Запуски по дням</div>
+        <div class="studio-bars" id="admin-bars"></div>
+      </div>
+
+      <!-- Таблица по играм -->
+      <div id="admin-games-section" hidden>
+        <div class="studio-section-title">По играм</div>
+        <div id="admin-games-table" style="overflow-x:auto"></div>
+      </div>
+    </section>
+
     <!-- Модерация отзывов (отдельный вход по модер-токену) — скрыта из UI (NGF-027) -->
     <section id="mod-view" class="cab-card" hidden aria-labelledby="mod-heading" aria-hidden="true">
       <h2 id="mod-heading">Модерация отзывов</h2>
@@ -255,5 +288,6 @@
 
   <script type="module" src="/my/cabinet.js"></script>
   <script type="module" src="/my/studio.js"></script>
+  <script type="module" src="/my/admin.js"></script>
 </body>
 </html>
