@@ -6,6 +6,37 @@
 const fs = require("fs");
 const path = require("path");
 
+const API_BASE = "https://ngf-api.kovalevde.workers.dev/api/game";
+const RATING_TIMEOUT_MS = 5000;
+
+// Fetch rating for a single slug. Returns null on any error/timeout.
+async function fetchRating(slug) {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), RATING_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${API_BASE}/${slug}`, { signal: ac.signal });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Returns Map slug -> { totalVotes, percentPositive } for games with enoughVotes.
+async function fetchAllRatings(slugs) {
+  const results = await Promise.allSettled(slugs.map((s) => fetchRating(s)));
+  const map = new Map();
+  slugs.forEach((slug, i) => {
+    const r = results[i];
+    if (r.status === "fulfilled" && r.value && r.value.enoughVotes) {
+      map.set(slug, { totalVotes: r.value.totalVotes, percentPositive: r.value.percentPositive });
+    }
+  });
+  return map;
+}
+
 const ROOT = path.resolve(__dirname, "..");
 const SITE = "https://netgameforge.com";
 
@@ -93,7 +124,7 @@ function relatedGames(g, all) {
     .map((o) => o.x);
 }
 
-function gamePageHTML(g, all) {
+function gamePageHTML(g, all, ratingsMap) {
   const url = `${SITE}/games/${g.id}/`;
   const cover = pageCover(g);
   const icon = pageIcon(g);
@@ -146,6 +177,16 @@ function gamePageHTML(g, all) {
     applicationCategory: "Game",
     operatingSystem: "Web"
   };
+  const ratingData = ratingsMap && ratingsMap.get(g.id);
+  if (ratingData && ratingData.totalVotes >= 10) {
+    jsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: Math.round(ratingData.percentPositive / 20 * 10) / 10,
+      ratingCount: ratingData.totalVotes,
+      bestRating: 5,
+      worstRating: 1
+    };
+  }
 
   return `<!DOCTYPE html>
 <html lang="ru">
@@ -176,7 +217,7 @@ function gamePageHTML(g, all) {
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/favicon-32.png?v=3">
   <link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png?v=3">
 
-  <link rel="stylesheet" href="/css/styles.css?v=20260531c">
+  <link rel="stylesheet" href="/css/styles.css?v=20260531d">
 
   <!-- Analytics: Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VT82NLXH9"></script>
@@ -229,6 +270,7 @@ function gamePageHTML(g, all) {
         return badges ? `<p class="platform-badges">${badges}</p>` : "";
       })()}
       <p class="game-lead">${leadSentence(g)}</p>
+      <button class="share-btn" type="button" aria-label="Поделиться игрой ${esc(g.title)}" onclick="(function(){var t=${JSON.stringify(esc(g.title))};var u=${JSON.stringify(url)}+'?utm_source=share&utm_medium=social';var tx='Играю в '+t+' на NetGameForge — играй бесплатно';if(navigator.share){navigator.share({title:t,text:tx,url:u}).catch(function(){});}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){var b=document.querySelector('.share-btn');if(b){var orig=b.textContent;b.textContent='Ссылка скопирована';setTimeout(function(){b.textContent=orig;},2000);}}).catch(function(){});}})()">Поделиться</button>
     </div>
 
     <div class="game-frame ${orientation}" id="game-player" data-state="idle">
@@ -613,16 +655,21 @@ function writeItemList(published) {
   console.log("  updated index.html ItemList");
 }
 
-function main() {
+async function main() {
   const games = readGames();
   const published = games.filter((g) => g.flags && g.flags.isPublished);
   let count = 0;
+
+  console.log("  fetching ratings from worker...");
+  const slugs = published.map((g) => g.id);
+  const ratingsMap = await fetchAllRatings(slugs);
+  console.log(`  ratings fetched: ${ratingsMap.size} game(s) with enough votes`);
 
   published.forEach((g) => {
     if (!/^[a-z0-9-]+$/.test(g.id)) throw new Error(`Invalid slug: ${g.id}`);
     const dir = path.join(ROOT, "games", g.id);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, "index.html"), gamePageHTML(g, games), "utf8");
+    fs.writeFileSync(path.join(dir, "index.html"), gamePageHTML(g, games, ratingsMap), "utf8");
     count++;
     console.log("  generated games/" + g.id + "/index.html");
   });
@@ -634,4 +681,4 @@ function main() {
   console.log(`Done: ${count} game page(s).`);
 }
 
-main();
+main().catch((e) => { console.error(e); process.exit(1); });

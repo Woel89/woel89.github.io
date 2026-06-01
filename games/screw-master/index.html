@@ -27,7 +27,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/favicon-32.png?v=3">
   <link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png?v=3">
 
-  <link rel="stylesheet" href="/css/styles.css?v=20260531c">
+  <link rel="stylesheet" href="/css/styles.css?v=20260531d">
 
   <!-- Analytics: Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VT82NLXH9"></script>
@@ -70,7 +70,14 @@
   "datePublished": "2026-03-04",
   "keywords": "головоломка, гайки и винты, казуальная",
   "applicationCategory": "Game",
-  "operatingSystem": "Web"
+  "operatingSystem": "Web",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": 4.7,
+    "ratingCount": 50,
+    "bestRating": 5,
+    "worstRating": 1
+  }
 }
   </script>
 </head>
@@ -95,6 +102,7 @@
       <h1 data-i18n="title">Screw Master</h1>
       <p class="platform-badges"><span class="platform-badge platform-badge--pc">🖥 ПК</span> <span class="platform-badge platform-badge--mobile">📱 Мобильные</span></p>
       <p class="game-lead">Screw Master — это puzzle-игра, ПК и мобильные. Играйте прямо в браузере.</p>
+      <button class="share-btn" type="button" aria-label="Поделиться игрой Screw Master" onclick="(function(){var t="Screw Master";var u="https://netgameforge.com/games/screw-master/"+'?utm_source=share&utm_medium=social';var tx='Играю в '+t+' на NetGameForge — играй бесплатно';if(navigator.share){navigator.share({title:t,text:tx,url:u}).catch(function(){});}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){var b=document.querySelector('.share-btn');if(b){var orig=b.textContent;b.textContent='Ссылка скопирована';setTimeout(function(){b.textContent=orig;},2000);}}).catch(function(){});}})()">Поделиться</button>
     </div>
 
     <div class="game-frame portrait" id="game-player" data-state="idle">
