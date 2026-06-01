@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-/* NetGameForge build: games.json -> games/<slug>/index.html + sitemap.xml.
+/* NetGameForge build: games.json -> games/<slug>/index.html + sitemap.xml
+   + zhanr/<code>/index.html (NGF-065) + IndexNow key file (NGF-063).
    Zero dependencies — Node built-ins only. */
 "use strict";
 
@@ -8,6 +9,65 @@ const path = require("path");
 
 const API_BASE = "https://ngf-api.kovalevde.workers.dev/api/game";
 const RATING_TIMEOUT_MS = 5000;
+
+// NGF-063: IndexNow — статический ключ верификации.
+const INDEXNOW_KEY = "7f3a9c2e-b841-4d6f-8e05-1a2b3c4d5e6f";
+
+// NGF-065: маппинг кода категории → RU-лейбл (зеркало CATEGORY_LABELS из js/catalog.js).
+const CATEGORY_LABELS = {
+  arcade:     "Аркады",
+  puzzle:     "Головоломки",
+  action:     "Экшн",
+  adventure:  "Приключения",
+  clicker:    "Кликеры",
+  simulation: "Симуляторы",
+  racing:     "Гонки",
+  shooter:    "Шутеры"
+};
+
+// NGF-065: SEO-контент для жанровых лендингов (из docs/seo-content-v1.md, раздел A).
+const GENRE_SEO = {
+  arcade: {
+    title: "Аркады играть онлайн бесплатно — NetGameForge",
+    description: "Аркадные игры прямо в браузере: Tornado.io, Snake Warz, Truck Slam и ещё десятки. Без установки, без регистрации — запустил и играешь.",
+    intro: "Аркады — это когда правила объясняются за пять секунд, а оторваться невозможно. Управляй торнадо и сноси целые кварталы в Tornado.io, сражайся за место на арене в Snake Warz, таранись с соперниками в Truck Slam. Каждая игра запускается прямо в окне браузера — ни скачивания, ни регистрации. Аркадные игры играть онлайн бесплатно в браузере: выбирай из подборки и стартуй сразу."
+  },
+  puzzle: {
+    title: "Головоломки онлайн бесплатно в браузере — NetGameForge",
+    description: "Головоломки без скачивания: Merge Melons, WaterJam, Screw Master. Сортировка, слияние, логика — выбирай жанр и играй прямо сейчас.",
+    intro: "Головоломки — жанр, который одновременно расслабляет и держит ум в тонусе. Соединяй фрукты в Merge Melons, переливай цветную воду в WaterJam, откручивай болты в правильном порядке в Screw Master. Нет таймера давления — темп задаёшь ты сам. Головоломки играть онлайн бесплатно в браузере: управление мышью или тапом, запуск в один клик."
+  },
+  action: {
+    title: "Экшн игры онлайн бесплатно в браузере — NetGameForge",
+    description: "Экшн в браузере без установки: паркур в Parkour Block 3D, выживание в Zombie Swarm, физическая песочница Melon Sandbox. Быстрый старт, горячие матчи.",
+    intro: "Экшн — для тех, кому нужен быстрый ритм и постоянное движение. Прыгай по блокам в Parkour Block 3D, отбивайся от волн нежити в Zombie Swarm, или просто крушишь всё вокруг в Melon Sandbox Online. Игры запускаются мгновенно — без аккаунтов и загрузок. Экшн игры играть онлайн бесплатно в браузере: на ПК и мобильном, прямо сейчас."
+  },
+  adventure: {
+    title: "Приключения играть онлайн в браузере — NetGameForge",
+    description: "Приключенческие игры без скачивания: пиратский бой в Broadside Caribbean, блочный мир Terra Craft World, кооп-платформер Duo Water and Fire.",
+    intro: "Приключения — это исследование, неожиданные ситуации и история, в которой ты сам принимаешь решения. Командуй пиратским кораблём в Broadside Caribbean, строй и выживай в открытом блочном мире Terra Craft World, или пройди кооп-уровни вместе с другом в Duo Water and Fire. Приключенческие игры играть онлайн бесплатно в браузере: на ПК и мобильном, без регистрации."
+  },
+  clicker: {
+    title: "Кликеры онлайн бесплатно в браузере — NetGameForge",
+    description: "Кликеры и idle-игры: шахта в Resource Empire, гайки в Screw Master, слияние рыб в Ocean Fish Merge. Прогресс растёт сам — заходи и смотри.",
+    intro: "Кликеры — жанр, в котором прогресс виден сразу и непрерывно. Строй шахтёрскую империю с нуля в Resource Empire, откручивай болты быстрее с каждым уровнем в Screw Master, или соединяй рыбок в Ocean Fish Merge. Можно активно кликать, можно оставить на пару минут — игра работает в фоне. Кликеры играть онлайн бесплатно в браузере: без установки, на ПК и телефоне."
+  },
+  simulation: {
+    title: "Симуляторы играть онлайн бесплатно — NetGameForge",
+    description: "Симуляторы в браузере: шахтёрский менеджмент Resource Empire и физическая песочница Melon Sandbox Online. Строй, управляй, экспериментируй без скачивания.",
+    intro: "Симуляторы дают свободу: сам решаешь, что строить, как развиваться и что ломать. В Resource Empire управляешь растущей горнодобывающей империей — нанимаешь работников, прокачиваешь шахты, наращиваешь добычу. В Melon Sandbox Online никакой цели нет вообще — только физика, объекты и твои эксперименты. Симуляторы играть онлайн бесплатно в браузере: запуск без регистрации, на ПК и мобильном."
+  },
+  racing: {
+    title: "Гонки онлайн бесплатно в браузере — NetGameForge",
+    description: "Гонки без установки: аркадный Max Speed, постапокалиптические Dead Paradise, трюки на мото в Crazy Moto. Стартуй прямо в браузере.",
+    intro: "Гонки в браузере — от чистого адреналина до трюков и боевых схваток за рулём. Прокачивай спорткар и обгоняй соперников в Max Speed, уничтожай врагов на постапокалиптических трассах в Dead Paradise, или выполняй сложные прыжки на байке в Crazy Moto. Гонки играть онлайн бесплатно в браузере: управление с клавиатуры или тач-кнопками, без регистрации."
+  },
+  shooter: {
+    title: "Шутеры онлайн бесплатно в браузере — NetGameForge",
+    description: "Браузерные шутеры без скачивания: 3D зомби-экшн Zombie Graveyard и horde survival Zombie Swarm. WASD + мышь — и сразу в бой.",
+    intro: "Шутеры — для тех, кому нравится держать оборону под давлением. В Zombie Graveyard ты один против толп нежити в 3D: кампания с нарастающей сложностью или бесконечное выживание на рекорд. В Zombie Swarm — вид сверху, авто-стрельба и лавина врагов, которая с каждой волной становится плотнее. Шутеры играть онлайн бесплатно в браузере: на ПК, без установки и регистрации."
+  }
+};
 
 // Fetch rating for a single slug. Returns null on any error/timeout.
 async function fetchRating(slug) {
@@ -240,6 +300,50 @@ function gamePageHTML(g, all, ratingsMap) {
   <script type="application/ld+json">
   ${JSON.stringify(jsonLd, null, 2)}
   </script>
+
+  <script type="application/ld+json">
+  ${(function() {
+    const pl = Array.isArray(g.platforms) ? g.platforms : [];
+    const ctrl = g.controls || {};
+    const hasMobile = pl.indexOf("mobile") !== -1 && ctrl.mobile;
+    const platformText = (pl.indexOf("pc") !== -1 && pl.indexOf("mobile") !== -1)
+      ? "ПК и мобильном (браузер)"
+      : (pl.indexOf("mobile") !== -1 ? "мобильном (браузер)" : "ПК (браузер)");
+    const q4answer = `На компьютере: ${ctrl.pc || "мышь или клавиатура"}.${hasMobile ? " На телефоне: " + ctrl.mobile + "." : ""}`;
+    const faqLd = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: `Сколько стоит играть в ${g.title}?`,
+          acceptedAnswer: { "@type": "Answer", text: "Игра полностью бесплатная. Никаких платежей, подписок и скрытых покупок — просто нажми «Играть»." }
+        },
+        {
+          "@type": "Question",
+          name: `Нужно ли скачивать или устанавливать ${g.title}?`,
+          acceptedAnswer: { "@type": "Answer", text: `Нет. ${g.title} запускается прямо в браузере — заходишь на страницу игры и начинаешь без установки.` }
+        },
+        {
+          "@type": "Question",
+          name: `На каком устройстве можно играть в ${g.title}?`,
+          acceptedAnswer: { "@type": "Answer", text: `Игра работает на ${platformText}. Открой страницу в браузере на нужном устройстве — дополнительных настроек не требуется.` }
+        },
+        {
+          "@type": "Question",
+          name: `Как управлять в ${g.title}?`,
+          acceptedAnswer: { "@type": "Answer", text: q4answer }
+        },
+        {
+          "@type": "Question",
+          name: "Безопасно ли играть в браузере на NetGameForge?",
+          acceptedAnswer: { "@type": "Answer", text: "Да. Все игры на NetGameForge запускаются в изолированном iframe — никакого доступа к файлам устройства, никаких дополнительных разрешений браузеру давать не нужно." }
+        }
+      ]
+    };
+    return JSON.stringify(faqLd, null, 2);
+  })()}
+  </script>
 </head>
 <body>
   <header class="site-header">
@@ -254,7 +358,9 @@ function gamePageHTML(g, all, ratingsMap) {
   <main class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
       <a href="/">Каталог</a> ›
-      <a href="/?category=${encodeURIComponent(primary)}">${esc(primary)}</a> ›
+      ${CATEGORY_LABELS[primary]
+        ? `<a href="/zhanr/${encodeURIComponent(primary)}/">${esc(CATEGORY_LABELS[primary])}</a>`
+        : `<a href="/?category=${encodeURIComponent(primary)}">${esc(primary)}</a>`} ›
       <span aria-current="page">${esc(g.title)}</span>
     </nav>
 
@@ -434,6 +540,32 @@ ${(function() {
       <dl>${items}</dl>
     </section>` : "";
 })()}
+
+    <section class="game-faq" aria-labelledby="faq-h">
+      <h2 id="faq-h">Часто спрашивают</h2>
+      <dl class="faq-list">
+        <dt>Сколько стоит играть в ${esc(g.title)}?</dt>
+        <dd>Игра полностью бесплатная. Никаких платежей, подписок и скрытых покупок — просто нажми «Играть».</dd>
+        <dt>Нужно ли скачивать или устанавливать ${esc(g.title)}?</dt>
+        <dd>Нет. ${esc(g.title)} запускается прямо в браузере — заходишь на страницу игры и начинаешь без установки.</dd>
+        <dt>На каком устройстве можно играть в ${esc(g.title)}?</dt>
+        <dd>Игра работает на ${(function() {
+          const pl = Array.isArray(g.platforms) ? g.platforms : [];
+          return (pl.indexOf("pc") !== -1 && pl.indexOf("mobile") !== -1)
+            ? "ПК и мобильном (браузер)"
+            : (pl.indexOf("mobile") !== -1 ? "мобильном (браузер)" : "ПК (браузер)");
+        })()} . Открой страницу в браузере на нужном устройстве — дополнительных настроек не требуется.</dd>
+        <dt>Как управлять в ${esc(g.title)}?</dt>
+        <dd>${(function() {
+          const pl = Array.isArray(g.platforms) ? g.platforms : [];
+          const ctrl = g.controls || {};
+          const hasMobile = pl.indexOf("mobile") !== -1 && ctrl.mobile;
+          return `На компьютере: ${esc(ctrl.pc || "мышь или клавиатура")}.${hasMobile ? " На телефоне: " + esc(ctrl.mobile) + "." : ""}`;
+        })()}</dd>
+        <dt>Безопасно ли играть в браузере на NetGameForge?</dt>
+        <dd>Да. Все игры на NetGameForge запускаются в изолированном iframe — никакого доступа к файлам устройства, никаких дополнительных разрешений браузеру давать не нужно.</dd>
+      </dl>
+    </section>
 
     ${relatedHTML}
   </main>
@@ -617,9 +749,11 @@ ${(function() {
 `;
 }
 
-function buildSitemap(games) {
+function buildSitemap(games, genreCodes) {
   const today = new Date().toISOString().slice(0, 10);
   const urls = [{ loc: SITE + "/", lastmod: today }];
+  // Жанровые страницы (NGF-065).
+  genreCodes.forEach((code) => urls.push({ loc: `${SITE}/zhanr/${code}/`, lastmod: today }));
   games
     .filter((g) => g.flags && g.flags.isPublished)
     .forEach((g) => urls.push({ loc: `${SITE}/games/${g.id}/`, lastmod: g.dateAdded || today }));
@@ -627,6 +761,126 @@ function buildSitemap(games) {
     .map((u) => `  <url>\n    <loc>${esc(u.loc)}</loc>\n    <lastmod>${esc(u.lastmod)}</lastmod>\n  </url>`)
     .join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
+}
+
+// NGF-065: строит HTML страницы жанра.
+function genrePageHTML(code, label, seo, gamesInGenre) {
+  const url = `${SITE}/zhanr/${code}/`;
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${label} — NetGameForge`,
+    url: url,
+    itemListElement: gamesInGenre.map((g, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE}/games/${g.id}/`,
+      name: g.title
+    }))
+  };
+
+  const cardsHTML = gamesInGenre.map((g) => {
+    const rawSrc = g.icon || g.coverUrl;
+    const imgSrc = rawSrc
+      ? (/^https?:\/\//i.test(rawSrc)
+          ? esc(rawSrc)
+          : "/" + esc(rawSrc.replace(/^\/+/, "")) + (g.updatedAt ? "?v=" + encodeURIComponent(g.updatedAt) : ""))
+      : "";
+    return `
+        <article class="game-card">
+          <a href="/games/${esc(g.id)}/">
+            <span class="cover">${imgSrc ? `<img src="${imgSrc}" alt="" width="400" height="400" loading="lazy" decoding="async" onerror="this.remove()">` : ""}</span>
+            <span class="body"><h3>${esc(g.title)}</h3></span>
+          </a>
+        </article>`;
+  }).join("");
+
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(seo.title)}</title>
+  <meta name="description" content="${esc(seo.description)}">
+  <link rel="canonical" href="${url}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NetGameForge">
+  <meta property="og:title" content="${esc(seo.title)}">
+  <meta property="og:description" content="${esc(seo.description)}">
+  <meta property="og:url" content="${url}">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${esc(seo.title)}">
+  <meta name="twitter:description" content="${esc(seo.description)}">
+
+  <!-- Verification placeholders (NGF-063): вставь meta-теги верификации Яндекс.Вебмастера и GSC здесь. -->
+  <!-- <meta name="yandex-verification" content="XXXXXXXXXXXXXXXX"> -->
+  <!-- <meta name="google-site-verification" content="XXXXXXXXXXXXXXXX"> -->
+
+  <link rel="icon" href="/favicon.ico?v=3" sizes="any">
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo/favicon-48.png?v=3">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/favicon-32.png?v=3">
+  <link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png?v=3">
+
+  <link rel="stylesheet" href="/css/styles.css?v=20260531d">
+
+  <!-- Analytics: Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VT82NLXH9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2VT82NLXH9');
+  </script>
+  <!-- Analytics: Yandex.Metrika -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+    ym(109411317, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/109411317" style="position:absolute; left:-9999px;" alt=""></div></noscript>
+
+  <script type="application/ld+json">
+  ${JSON.stringify(itemListLd, null, 2)}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/">
+        <img src="/assets/logo/logo-header.png" alt="NetGameForge" width="895" height="342" decoding="async">
+        <span>NetGameForge</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <nav class="breadcrumbs" aria-label="Хлебные крошки">
+      <a href="/">Каталог</a> ›
+      <span aria-current="page">${esc(label)}</span>
+    </nav>
+
+    <h1>${esc(label)}</h1>
+    <p class="genre-intro">${esc(seo.intro)}</p>
+
+    <div class="game-grid">
+      ${cardsHTML}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p><a href="/">← Назад в каталог</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/track.js"></script>
+</body>
+</html>
+`;
 }
 
 function buildItemList(published) {
@@ -676,9 +930,36 @@ async function main() {
 
   writeItemList(published);
 
-  fs.writeFileSync(path.join(ROOT, "sitemap.xml"), buildSitemap(games), "utf8");
+  // NGF-065: Жанровые лендинги.
+  // Определяем, у каких категорий есть опубликованные игры.
+  const genreGamesMap = new Map(); // code -> Game[]
+  published.forEach((g) => {
+    gameCategories(g).forEach((code) => {
+      if (!CATEGORY_LABELS[code]) return; // пропускаем категории без SEO-данных
+      if (!genreGamesMap.has(code)) genreGamesMap.set(code, []);
+      genreGamesMap.get(code).push(g);
+    });
+  });
+
+  const genreCodes = [];
+  genreGamesMap.forEach((gamesInGenre, code) => {
+    const label = CATEGORY_LABELS[code];
+    const seo = GENRE_SEO[code];
+    if (!label || !seo) return;
+    const dir = path.join(ROOT, "zhanr", code);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, "index.html"), genrePageHTML(code, label, seo, gamesInGenre), "utf8");
+    genreCodes.push(code);
+    console.log(`  generated zhanr/${code}/index.html (${gamesInGenre.length} игр)`);
+  });
+
+  // NGF-063: IndexNow — файл верификации ключа в корне.
+  fs.writeFileSync(path.join(ROOT, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY, "utf8");
+  console.log(`  generated ${INDEXNOW_KEY}.txt (IndexNow key)`);
+
+  fs.writeFileSync(path.join(ROOT, "sitemap.xml"), buildSitemap(games, genreCodes), "utf8");
   console.log("  generated sitemap.xml");
-  console.log(`Done: ${count} game page(s).`);
+  console.log(`Done: ${count} game page(s), ${genreCodes.length} genre page(s).`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

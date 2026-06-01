@@ -573,6 +573,23 @@ section.shelf > h2 {
   padding: 0.2rem 0.6rem; border-radius: 6px; color: var(--color-text-muted);
 }
 
+/* ---------- FAQ (NGF-066) ---------- */
+.game-faq { margin-block: 1.5rem; }
+.game-faq h2 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--color-text-muted); }
+.faq-list { margin: 0; padding: 0; }
+.faq-list dt {
+  font-weight: 600; font-size: 0.9rem; margin-top: 0.9rem; color: var(--color-text);
+}
+.faq-list dd {
+  margin: 0.25rem 0 0; font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;
+}
+
+/* ---------- Genre landing /zhanr/<code>/ (NGF-065) ---------- */
+.genre-intro {
+  margin-block: 1rem 1.5rem; font-size: 0.95rem;
+  color: var(--color-text-muted); line-height: 1.6; max-width: 70ch;
+}
+
 /* ---------- Cabinet (/my/, noindex) ---------- */
 .cab { max-width: 760px; }
 .cab-muted { color: var(--color-text-muted); }
