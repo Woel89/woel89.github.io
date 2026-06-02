@@ -387,6 +387,144 @@
     }
   }
 
+  // ---- NGF-078: Sidebar / genre navigation ----
+
+  var GENRE_ICONS_SVG = {
+    arcade:     '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>',
+    action:     '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 3l7 14H3L10 3z" fill="currentColor"/></svg>',
+    puzzle:     '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="7" height="7" rx="1" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="1" fill="currentColor"/><rect x="2" y="11" width="7" height="7" rx="1" fill="currentColor"/><rect x="11" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>',
+    adventure:  '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 10l6-6 4 4-6 8-4-6z" fill="currentColor"/></svg>',
+    clicker:    '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2l2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z" fill="currentColor"/></svg>',
+    simulation: '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    racing:     '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12l4-6h8l4 6H2z" fill="currentColor"/><rect x="4" y="12" width="3" height="3" rx="1.5" fill="currentColor"/><rect x="13" y="12" width="3" height="3" rx="1.5" fill="currentColor"/></svg>',
+    shooter:    '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 10h14M14 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+  var ALL_ICON_SVG = '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="7" height="7" rx="1" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="1" fill="currentColor"/><rect x="2" y="11" width="7" height="7" rx="1" fill="currentColor"/><rect x="11" y="11" width="7" height="7" rx="1" fill="currentColor"/></svg>';
+
+  function renderSidebarGenres(games) {
+    var sidebarList = document.getElementById('sidebar-genre-list');
+    var drawerList = document.getElementById('genres-drawer-list');
+
+    var cats = Object.keys(CATEGORY_LABELS);
+    if (games && games.length) {
+      var existing = {};
+      games.forEach(function(g) { gameCategories(g).forEach(function(c) { existing[c] = true; }); });
+      cats = cats.filter(function(c) { return existing[c]; });
+    }
+    // If no games (e.g. fetch error), show all known categories
+
+    function makeSidebarItem(cat, label, iconSvg, isActive) {
+      return '<li><button type="button" class="sidebar-item' + (isActive ? ' sidebar-item--active' : '') +
+        '" data-category="' + esc(cat) + '" aria-pressed="' + isActive + '" title="' + esc(label) + '">' +
+        '<span class="sidebar-icon" aria-hidden="true">' + (iconSvg || '') + '</span>' +
+        '<span class="sidebar-label">' + esc(label) + '</span>' +
+        '</button></li>';
+    }
+
+    var allActive = !activeCategory;
+    var html = makeSidebarItem('', 'Все игры', ALL_ICON_SVG, allActive);
+    cats.forEach(function(c) {
+      html += makeSidebarItem(c, CATEGORY_LABELS[c], GENRE_ICONS_SVG[c] || '', activeCategory === c);
+    });
+
+    if (sidebarList) { sidebarList.innerHTML = html; }
+
+    if (drawerList) {
+      var drawerHtml = '<li><button type="button" class="genres-drawer__item' + (allActive ? ' genres-drawer__item--active' : '') +
+        '" data-category="">' +
+        '<span aria-hidden="true">' + ALL_ICON_SVG + '</span>Все игры</button></li>';
+      cats.forEach(function(c) {
+        var active = activeCategory === c;
+        drawerHtml += '<li><button type="button" class="genres-drawer__item' + (active ? ' genres-drawer__item--active' : '') +
+          '" data-category="' + esc(c) + '">' +
+          '<span aria-hidden="true">' + (GENRE_ICONS_SVG[c] || '') + '</span>' +
+          esc(CATEGORY_LABELS[c]) + '</button></li>';
+      });
+      drawerList.innerHTML = drawerHtml;
+    }
+  }
+
+  function initSidebar() {
+    var toggle = document.getElementById('sidebar-toggle');
+    var sidebar = document.getElementById('main-sidebar');
+    if (!toggle || !sidebar) return;
+
+    // Restore state from localStorage (default: collapsed)
+    var saved = localStorage.getItem('ngf_sidebar');
+    if (saved === 'expanded') {
+      document.body.classList.add('sidebar-expanded');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    toggle.addEventListener('click', function() {
+      var isExpanded = document.body.classList.toggle('sidebar-expanded');
+      toggle.setAttribute('aria-expanded', isExpanded.toString());
+      localStorage.setItem('ngf_sidebar', isExpanded ? 'expanded' : 'collapsed');
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.body.classList.contains('sidebar-expanded')) {
+        document.body.classList.remove('sidebar-expanded');
+        toggle.setAttribute('aria-expanded', 'false');
+        localStorage.setItem('ngf_sidebar', 'collapsed');
+      }
+    });
+  }
+
+  function initSidebarGenreClicks() {
+    var sidebarList = document.getElementById('sidebar-genre-list');
+    if (!sidebarList) return;
+    sidebarList.addEventListener('click', function(e) {
+      var btn = e.target.closest('button[data-category]');
+      if (!btn) return;
+      activeCategory = btn.getAttribute('data-category') || null;
+      applyFilter();
+      renderSidebarGenres(allGames);
+      var gridEl = document.getElementById('catalog-grid');
+      if (gridEl) gridEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  function initGenresDrawer() {
+    var trigger = document.getElementById('genres-drawer-trigger');
+    var drawer = document.getElementById('genres-drawer');
+    var backdrop = document.getElementById('genres-drawer-backdrop');
+    var drawerList = document.getElementById('genres-drawer-list');
+    if (!trigger || !drawer) return;
+
+    function openDrawer() {
+      drawer.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+    }
+    function closeDrawer() {
+      drawer.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    trigger.addEventListener('click', function() {
+      if (drawer.hidden) { openDrawer(); } else { closeDrawer(); }
+    });
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+    if (drawerList) {
+      drawerList.addEventListener('click', function(e) {
+        var btn = e.target.closest('button[data-category]');
+        if (!btn) return;
+        activeCategory = btn.getAttribute('data-category') || null;
+        applyFilter();
+        renderSidebarGenres(allGames);
+        closeDrawer();
+        var gridEl = document.getElementById('catalog-grid');
+        if (gridEl) gridEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+
+  // ---- end NGF-078 ----
+
+  // Init sidebar toggle immediately (before fetch) so hamburger is responsive on page load
+  initSidebar();
+
   fetch("games.json?v=" + Date.now(), { cache: "no-cache" })
     .then(function (r) { return r.json(); })
     .then(function (data) {
@@ -397,17 +535,25 @@
         ? entries.filter(function(e) { return e.published; }).map(function(e) { return e.published; })
         : entries.filter(function(g) { return g.flags && g.flags.isPublished; })
       );
+      // Применить ?cat= из URL если передан
+      var urlCat = new URLSearchParams(location.search).get('cat');
+      if (urlCat) activeCategory = urlCat;
+
       renderTagFilter(allGames);
-      renderCategoryFilter(allGames);
       renderPlatformFilter(allGames);
       maybeShowFilterBtn(allGames);
       initFilterToggle();
       renderShelves(allGames);
       renderGrid(allGames);
+      renderSidebarGenres(allGames);
+      initSidebarGenreClicks();
+      initGenresDrawer();
     })
     .catch(function () {
       grid.innerHTML =
         '<div class="empty-state"><h2>Скоро новые игры</h2>' +
         "<p>Не удалось загрузить каталог.</p></div>";
+      // Fallback: рендерим статичный список жанров из CATEGORY_LABELS
+      renderSidebarGenres([]);
     });
 })();

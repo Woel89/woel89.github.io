@@ -196,6 +196,17 @@
 <body>
   <header class="site-header">
     <div class="container">
+      <button id="sidebar-toggle" class="sidebar-toggle"
+              aria-expanded="false" aria-controls="main-sidebar"
+              aria-label="Открыть навигацию">
+        <span aria-hidden="true">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="0" width="18" height="2" rx="1" fill="currentColor"/>
+            <rect y="6" width="18" height="2" rx="1" fill="currentColor"/>
+            <rect y="12" width="18" height="2" rx="1" fill="currentColor"/>
+          </svg>
+        </span>
+      </button>
       <a class="brand" href="/">
         <img src="/assets/logo/logo-header.png" alt="NetGameForge" width="895" height="342" decoding="async">
         <span>NetGameForge</span>
@@ -203,53 +214,143 @@
     </div>
   </header>
 
-  <main class="container">
-    <div class="page-intro">
-      <h1>Бесплатные веб-игры, которые запускаются прямо в браузере</h1>
-      <p>Играйте в аркады, головоломки и казуальные игры без установки — на телефоне и на компьютере.</p>
-    </div>
+  <nav id="main-sidebar" class="sidebar" aria-label="Основная навигация">
+    <!-- Блок 1: главные разделы -->
+    <ul class="sidebar-nav" role="list">
+      <li>
+        <a href="/" class="sidebar-item sidebar-item--active" aria-label="Главная" title="Главная">
+          <span class="sidebar-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 2L2 9h2v9h5v-5h2v5h5V9h2L10 2z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="sidebar-label">Главная</span>
+        </a>
+      </li>
+      <li>
+        <a href="/my/" class="sidebar-item" aria-label="Кабинет" title="Кабинет">
+          <span class="sidebar-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M3 17c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="sidebar-label">Кабинет</span>
+        </a>
+      </li>
+      <li>
+        <a href="/my/" class="sidebar-item" aria-label="Разработчикам" title="Разработчикам">
+          <span class="sidebar-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 5l-4 5 4 5M13 5l4 5-4 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="sidebar-label">Разработчикам</span>
+        </a>
+      </li>
+    </ul>
 
-    <!-- один ряд: категории + кнопка фильтров -->
-    <div class="filter-bar">
-      <nav class="chip-row" id="category-filter" aria-label="Фильтр по категориям"></nav>
-      <button class="filter-btn" id="filter-toggle" aria-expanded="false" aria-controls="filter-panel" hidden>
-        Фильтры
-      </button>
+    <hr class="sidebar-divider">
 
-      <!-- dropdown (desktop, якорится к .filter-bar) / bottom-sheet (mobile) -->
-      <div class="filter-panel" id="filter-panel" hidden>
-        <div class="filter-panel__backdrop" id="filter-backdrop"></div>
-        <div class="filter-panel__inner">
-          <nav id="platform-filter" aria-label="Фильтр по платформам"></nav>
-          <nav id="tag-filter" aria-label="Фильтр по тегам"></nav>
-          <div class="filter-panel__actions">
-            <button type="button" id="filter-apply">Применить</button>
-            <button type="button" id="filter-reset">Сбросить</button>
+    <!-- Блок 2: жанры -->
+    <p class="sidebar-section-title" aria-hidden="true">Жанры</p>
+    <ul class="sidebar-nav sidebar-genres" id="sidebar-genre-list" role="list">
+      <!-- рендерится из catalog.js -->
+    </ul>
+  </nav>
+
+  <div id="page-layout" class="page-layout">
+    <main class="page-content container">
+      <div class="page-intro">
+        <h1>Бесплатные веб-игры, которые запускаются прямо в браузере</h1>
+        <p>Играйте в аркады, головоломки и казуальные игры без установки — на телефоне и на компьютере.</p>
+      </div>
+
+      <!-- фильтр-бар: только кнопка «Фильтры» (чипы категорий переехали в сайдбар) -->
+      <div class="filter-bar">
+        <button class="filter-btn" id="filter-toggle" aria-expanded="false" aria-controls="filter-panel" hidden>
+          Фильтры
+        </button>
+
+        <!-- dropdown (desktop) / bottom-sheet (mobile) -->
+        <div class="filter-panel" id="filter-panel" hidden>
+          <div class="filter-panel__backdrop" id="filter-backdrop"></div>
+          <div class="filter-panel__inner">
+            <nav id="platform-filter" aria-label="Фильтр по платформам"></nav>
+            <nav id="tag-filter" aria-label="Фильтр по тегам"></nav>
+            <div class="filter-panel__actions">
+              <button type="button" id="filter-apply">Применить</button>
+              <button type="button" id="filter-reset">Сбросить</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="shelves"></div>
+      <div id="shelves"></div>
 
-    <section aria-labelledby="all-games-heading">
-      <h2 id="all-games-heading" class="visually-hidden">Все игры</h2>
-      <div class="game-grid" id="catalog-grid">
-        <div class="empty-state">
-          <h2>Скоро новые игры</h2>
-          <p>Загрузка каталога…</p>
+      <section aria-labelledby="all-games-heading">
+        <h2 id="all-games-heading" class="visually-hidden">Все игры</h2>
+        <div class="game-grid" id="catalog-grid">
+          <div class="empty-state">
+            <h2>Скоро новые игры</h2>
+            <p>Загрузка каталога…</p>
+          </div>
         </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© NetGameForge. Все игры играются прямо в браузере.</p>
+        <p><a href="/my/">Разработчикам</a></p>
       </div>
-    </section>
-  </main>
+    </footer>
+  </div>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>© NetGameForge. Все игры играются прямо в браузере.</p>
-      <p><a href="/my/">Разработчикам</a></p>
+  <!-- Нижний таббар (только мобиле < 768px) -->
+  <nav id="bottom-nav" class="bottom-nav" aria-label="Мобильная навигация">
+    <a href="/" class="bottom-nav__item bottom-nav__item--active" aria-label="Главная">
+      <span class="bottom-nav__icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2L2 9h2v9h5v-5h2v5h5V9h2L10 2z" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="bottom-nav__label">Главная</span>
+    </a>
+    <button class="bottom-nav__item" id="genres-drawer-trigger"
+            aria-label="Жанры" aria-controls="genres-drawer" aria-expanded="false">
+      <span class="bottom-nav__icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="7" height="7" rx="1.5" fill="currentColor"/>
+          <rect x="11" y="2" width="7" height="7" rx="1.5" fill="currentColor"/>
+          <rect x="2" y="11" width="7" height="7" rx="1.5" fill="currentColor"/>
+          <rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="bottom-nav__label">Жанры</span>
+    </button>
+    <a href="/my/" class="bottom-nav__item" aria-label="Кабинет">
+      <span class="bottom-nav__icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M3 17c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="bottom-nav__label">Кабинет</span>
+    </a>
+  </nav>
+
+  <!-- Drawer жанров (мобиле) -->
+  <div id="genres-drawer" class="genres-drawer" hidden aria-modal="true" role="dialog" aria-label="Жанры">
+    <div class="genres-drawer__backdrop" id="genres-drawer-backdrop"></div>
+    <div class="genres-drawer__inner">
+      <div class="genres-drawer__handle" aria-hidden="true"></div>
+      <ul class="genres-drawer__list" id="genres-drawer-list" role="list">
+        <!-- рендерится из catalog.js -->
+      </ul>
     </div>
-  </footer>
+  </div>
 
-  <script src="js/catalog.js?v=20260531d" defer></script>
+  <script src="js/catalog.js?v=20260601a" defer></script>
 </body>
 </html>
