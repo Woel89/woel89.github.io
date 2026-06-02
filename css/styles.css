@@ -331,10 +331,9 @@ section.shelf > h2 {
   .game-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
 }
 
-/* Мелкие карточки на мобиле: скрыть теги, уменьшить заголовок */
+/* Мелкие карточки на мобиле: уменьшить заголовок */
 @media (max-width: 479px) {
   .game-card h2, .game-card h3 { font-size: 0.8rem; }
-  .game-card .tags { display: none; }
   .shelf-row .game-card { flex: 0 0 120px; }
 }
 
@@ -399,6 +398,18 @@ section.shelf > h2 {
   background: var(--color-surface-2);
   padding: 0.15rem 0.45rem;
   border-radius: 6px;
+}
+
+/* NGF-078: плотный мобильный каталог — компактный хедер + скрытые теги, чтобы игры были видны сразу без лишнего скролла */
+@media (max-width: 767px) {
+  /* Компактный хедер: меньше заголовок, скрыть описание-лид, меньше отступ */
+  .page-intro { margin-bottom: 0.75rem; }
+  .page-intro h1 { font-size: 1.15rem; line-height: 1.2; margin: 0 0 0.25rem; }
+  .page-intro p { display: none; }
+  /* Скрыть теги-категории под карточками (.body .tags = специфичность выше базового .game-card .tags) */
+  .game-card .body .tags { display: none; }
+  /* Плотнее тело карточки */
+  .game-card .body { padding: 0.5rem 0.6rem; gap: 0.25rem; }
 }
 
 /* ---------- Empty state ---------- */
