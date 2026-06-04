@@ -236,6 +236,7 @@
       Array.prototype.forEach.call(catFilterEl.querySelectorAll("button"), function (x) {
         x.setAttribute("aria-pressed", (x === b).toString());
       });
+      if (activeCategory) { try { if (typeof track === "function") track("filter_used", { type: "category", value: activeCategory }); } catch (e) {} }
       applyFilter();
     });
   }
@@ -263,6 +264,7 @@
       Array.prototype.forEach.call(platFilterEl.querySelectorAll("button"), function (x) {
         x.setAttribute("aria-pressed", (x === b).toString());
       });
+      if (activePlatform) { try { if (typeof track === "function") track("filter_used", { type: "platform", value: activePlatform }); } catch (e) {} }
       applyFilter();
     });
   }
@@ -291,6 +293,7 @@
       Array.prototype.forEach.call(tagFilterEl.querySelectorAll("button"), function (x) {
         x.setAttribute("aria-pressed", (x === b).toString());
       });
+      if (activeTag) { try { if (typeof track === "function") track("filter_used", { type: "tag", value: activeTag }); } catch (e) {} }
       applyFilter();
     });
   }
@@ -478,6 +481,7 @@
       var btn = e.target.closest('button[data-category]');
       if (!btn) return;
       activeCategory = btn.getAttribute('data-category') || null;
+      if (activeCategory) { try { if (typeof track === "function") track("filter_used", { type: "category", value: activeCategory }); } catch (e2) {} }
       applyFilter();
       renderSidebarGenres(allGames);
       var gridEl = document.getElementById('catalog-grid');
@@ -511,6 +515,7 @@
         var btn = e.target.closest('button[data-category]');
         if (!btn) return;
         activeCategory = btn.getAttribute('data-category') || null;
+        if (activeCategory) { try { if (typeof track === "function") track("filter_used", { type: "category", value: activeCategory }); } catch (e2) {} }
         applyFilter();
         renderSidebarGenres(allGames);
         closeDrawer();
@@ -530,6 +535,27 @@
   var IS_MOBILE_DEVICE = (function () {
     if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return true;
     return false;
+  })();
+
+  // NGF-084: game_card_click — делегирование на grid и shelves
+  (function () {
+    function onCardClick(source) {
+      return function (e) {
+        var a = e.target.closest('a[href]');
+        if (!a) return;
+        var m = a.getAttribute('href').match(/\/games\/([^\/]+)\//);
+        if (!m) return;
+        try {
+          if (typeof track === "function") track("game_card_click", {
+            slug: m[1],
+            source: source,
+            device: IS_MOBILE_DEVICE ? "mobile" : "desktop"
+          });
+        } catch (e2) {}
+      };
+    }
+    if (grid) grid.addEventListener('click', onCardClick('catalog'));
+    if (shelvesEl) shelvesEl.addEventListener('click', onCardClick('shelf'));
   })();
 
   fetch("games.json?v=" + Date.now(), { cache: "no-cache" })

@@ -64,7 +64,7 @@
         /* GameMonetize: запускаем probe doubleclick */
         probeDoubleclick(function (blocked) {
           if (blocked) {
-            showOverlay();
+            showOverlay('adblock');
           }
           /* blocked=false: doubleclick доступен → не показываем overlay */
         });
@@ -102,11 +102,22 @@
       document.head.appendChild(s);
     }
 
+    /* ---- Получить slug со страницы (canonical /games/<slug>/) ---- */
+    function getSlug() {
+      var canon = document.querySelector('link[rel="canonical"]');
+      if (canon) {
+        var m = canon.getAttribute('href').match(/\/games\/([^\/]+)\//);
+        if (m) return m[1];
+      }
+      return '';
+    }
+
     /* ---- Показать overlay (только adblock-кейс) ---- */
-    function showOverlay() {
+    function showOverlay(reason) {
       if (overlayShown) return;
       overlayShown = true;
       player.dataset.error = '1';
+      try { if (typeof window.track === 'function') window.track('game_fallback_shown', { slug: getSlug(), reason: reason || 'unknown' }); } catch (e) {}
 
       overlay.innerHTML =
         '<div class="game-error-overlay__box">'

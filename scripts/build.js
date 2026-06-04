@@ -293,7 +293,7 @@ function gamePageHTML(g, all, ratingsMap) {
     m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
     k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
     (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-    ym(109411317, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true});
+    ym(109411317, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/109411317" style="position:absolute; left:-9999px;" alt=""></div></noscript>
 
@@ -376,7 +376,7 @@ function gamePageHTML(g, all, ratingsMap) {
         return badges ? `<p class="platform-badges">${badges}</p>` : "";
       })()}
       <p class="game-lead">${leadSentence(g)}</p>
-      <button class="share-btn" type="button" aria-label="Поделиться игрой ${esc(g.title)}" onclick="(function(){var t=${JSON.stringify(esc(g.title))};var u=${JSON.stringify(url)}+'?utm_source=share&utm_medium=social';var tx='Играю в '+t+' на NetGameForge — играй бесплатно';if(navigator.share){navigator.share({title:t,text:tx,url:u}).catch(function(){});}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){var b=document.querySelector('.share-btn');if(b){var orig=b.textContent;b.textContent='Ссылка скопирована';setTimeout(function(){b.textContent=orig;},2000);}}).catch(function(){});}})()">Поделиться</button>
+      <button class="share-btn" type="button" aria-label="Поделиться игрой ${esc(g.title)}" onclick="(function(){try{if(typeof track==='function')track('share_click',{slug:${JSON.stringify(g.id)}});}catch(_e){}var t=${JSON.stringify(esc(g.title))};var u=${JSON.stringify(url)}+'?utm_source=share&utm_medium=social';var tx='Играю в '+t+' на NetGameForge — играй бесплатно';if(navigator.share){navigator.share({title:t,text:tx,url:u}).catch(function(){});}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){var b=document.querySelector('.share-btn');if(b){var orig=b.textContent;b.textContent='Ссылка скопирована';setTimeout(function(){b.textContent=orig;},2000);}}).catch(function(){});}})()">Поделиться</button>
     </div>
 
     <div class="game-frame ${orientation}" id="game-player" data-state="idle">
@@ -446,6 +446,7 @@ ${orientation === "landscape" ? `      <!-- Hint переверни телефо
 
       playBtn.addEventListener("click", function () {
         setState("loading");
+        try { if (typeof track === "function") track("play_click", { slug: ${JSON.stringify(g.id)}, device: /Mobi|Android/i.test(navigator.userAgent) ? "mobile" : "desktop" }); } catch (_e) {}
         frame.src = REAL_SRC;
         // Записать игру в историю «Продолжить играть»
         try {
@@ -598,6 +599,7 @@ ${(function() {
     })();
   </script>
 
+  <script src="/js/game-fallback.js?v=20260604"></script>
   <script src="/js/track.js"></script>
   <script src="/js/ratings.js"></script>
   <script src="/js/game-ratings.js?v=20260531b"></script>
@@ -606,11 +608,17 @@ ${(function() {
       var slug = "${esc(g.id)}";
       var frame = document.getElementById("game-frame");
       var started = false, playStart = 0, ended = false;
+      var engagedFired = false, engagedTimer = null;
       function start() {
         if (started) return;
         started = true;
         playStart = Date.now();
         track("play_start", { game_id: slug });
+        if (!engagedFired) {
+          engagedTimer = setTimeout(function () {
+            if (!document.hidden) { engagedFired = true; try { if (typeof track === "function") track("engaged_30s", { slug: ${JSON.stringify(g.id)} }); } catch (_e) {} }
+          }, 30000);
+        }
       }
       function end() {
         if (!started || ended) return;
@@ -839,7 +847,7 @@ function genrePageHTML(code, label, seo, gamesInGenre) {
     m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
     k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
     (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-    ym(109411317, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true});
+    ym(109411317, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/109411317" style="position:absolute; left:-9999px;" alt=""></div></noscript>
 

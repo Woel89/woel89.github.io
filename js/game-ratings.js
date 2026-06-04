@@ -88,7 +88,8 @@
       state.percentPositive = res.percentPositive;
       state.enoughVotes = res.totalVotes >= 10;
       renderVotes();
-      track("vote", { game_id: slug, value: next });
+      if (next === 1) track("rating_like", { slug: slug });
+      else if (next === -1) track("rating_dislike", { slug: slug });
     }).catch(function () {
       // Roll back on failure.
       state.myVote = prev.myVote;
@@ -250,7 +251,10 @@
   }
 
   details.addEventListener("toggle", function () {
-    if (details.open) loadReviews();
+    if (details.open) {
+      loadReviews();
+      track("reviews_open", { slug: slug });
+    }
   });
 
   form.addEventListener("submit", function (e) {

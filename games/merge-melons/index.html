@@ -43,7 +43,7 @@
     m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
     k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
     (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-    ym(109411317, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true});
+    ym(109411317, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/109411317" style="position:absolute; left:-9999px;" alt=""></div></noscript>
 
@@ -150,7 +150,7 @@
       <h1 data-i18n="title">Merge Melons</h1>
       <p class="platform-badges"><span class="platform-badge platform-badge--pc">🖥 ПК</span> <span class="platform-badge platform-badge--mobile">📱 Мобильные</span></p>
       <p class="game-lead">Merge Melons — это puzzle-игра, ПК и мобильные. Играйте прямо в браузере.</p>
-      <button class="share-btn" type="button" aria-label="Поделиться игрой Merge Melons" onclick="(function(){var t="Merge Melons";var u="https://netgameforge.com/games/merge-melons/"+'?utm_source=share&utm_medium=social';var tx='Играю в '+t+' на NetGameForge — играй бесплатно';if(navigator.share){navigator.share({title:t,text:tx,url:u}).catch(function(){});}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){var b=document.querySelector('.share-btn');if(b){var orig=b.textContent;b.textContent='Ссылка скопирована';setTimeout(function(){b.textContent=orig;},2000);}}).catch(function(){});}})()">Поделиться</button>
+      <button class="share-btn" type="button" aria-label="Поделиться игрой Merge Melons" onclick="(function(){try{if(typeof track==='function')track('share_click',{slug:"merge-melons"});}catch(_e){}var t="Merge Melons";var u="https://netgameforge.com/games/merge-melons/"+'?utm_source=share&utm_medium=social';var tx='Играю в '+t+' на NetGameForge — играй бесплатно';if(navigator.share){navigator.share({title:t,text:tx,url:u}).catch(function(){});}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){var b=document.querySelector('.share-btn');if(b){var orig=b.textContent;b.textContent='Ссылка скопирована';setTimeout(function(){b.textContent=orig;},2000);}}).catch(function(){});}})()">Поделиться</button>
     </div>
 
     <div class="game-frame portrait" id="game-player" data-state="idle">
@@ -209,6 +209,7 @@
 
       playBtn.addEventListener("click", function () {
         setState("loading");
+        try { if (typeof track === "function") track("play_click", { slug: "merge-melons", device: /Mobi|Android/i.test(navigator.userAgent) ? "mobile" : "desktop" }); } catch (_e) {}
         frame.src = REAL_SRC;
         // Записать игру в историю «Продолжить играть»
         try {
@@ -339,6 +340,7 @@
     })();
   </script>
 
+  <script src="/js/game-fallback.js?v=20260604"></script>
   <script src="/js/track.js"></script>
   <script src="/js/ratings.js"></script>
   <script src="/js/game-ratings.js?v=20260531b"></script>
@@ -347,11 +349,17 @@
       var slug = "merge-melons";
       var frame = document.getElementById("game-frame");
       var started = false, playStart = 0, ended = false;
+      var engagedFired = false, engagedTimer = null;
       function start() {
         if (started) return;
         started = true;
         playStart = Date.now();
         track("play_start", { game_id: slug });
+        if (!engagedFired) {
+          engagedTimer = setTimeout(function () {
+            if (!document.hidden) { engagedFired = true; try { if (typeof track === "function") track("engaged_30s", { slug: "merge-melons" }); } catch (_e) {} }
+          }, 30000);
+        }
       }
       function end() {
         if (!started || ended) return;
