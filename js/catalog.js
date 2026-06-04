@@ -525,16 +525,32 @@
   // Init sidebar toggle immediately (before fetch) so hamburger is responsive on page load
   initSidebar();
 
+  // NGF-082: определяем тип устройства один раз при загрузке.
+  // pointer:coarse — наиболее надёжный сигнал тач-устройства (мышь = fine).
+  var IS_MOBILE_DEVICE = (function () {
+    if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return true;
+    return false;
+  })();
+
   fetch("games.json?v=" + Date.now(), { cache: "no-cache" })
     .then(function (r) { return r.json(); })
     .then(function (data) {
       var entries = data.games || [];
       // v2: показывать только published-слой; draft-only в публичный каталог не идут.
       // legacy v1: фильтровать по flags.isPublished как прежде.
-      allGames = (data.version >= 2
+      var publishedGames = (data.version >= 2
         ? entries.filter(function(e) { return e.published; }).map(function(e) { return e.published; })
         : entries.filter(function(g) { return g.flags && g.flags.isPublished; })
       );
+      // NGF-082: авто-фильтр по устройству — скрывать несовместимые платформы.
+      // mobile-устройство видит только игры с "mobile" в platforms;
+      // desktop-устройство видит только игры с "pc" в platforms.
+      // Игры с обеими платформами видны везде.
+      allGames = publishedGames.filter(function (g) {
+        var plats = g.platforms || [];
+        if (IS_MOBILE_DEVICE) return plats.indexOf("mobile") !== -1;
+        return plats.indexOf("pc") !== -1;
+      });
       // Применить ?cat= из URL если передан
       var urlCat = new URLSearchParams(location.search).get('cat');
       if (urlCat) activeCategory = urlCat;
